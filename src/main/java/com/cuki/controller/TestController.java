@@ -31,4 +31,12 @@ public class TestController {
                 "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2MTU3MTczNjV9.tZytWyCWkWIYitvT3pa8FSnxilBDMtSevUzKRFK21TGLITf2eLXEwNNS_Q7rylD9uUe3Rx9ZR2NVqE_ZNWxTqg"
         );
     }
+
+    @GetMapping("/auth/reissue")
+    public AuthResponseDto reissue() {
+        return new AuthResponseDto(
+                "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTYxNTExNDM2NX0.5VXa6Cht_DPEEGe7-BrElvsrs7qRXmVnkDdi4Lm3PxZ0vAgqFdirhe5RlE1D-Wc1zaUepBmGhhw-u-oP_-rbKQ",
+                "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2MTU3MTczNjV9.tZytWyCWkWIYitvT3pa8FSnxilBDMtSevUzKRFK21TGLITf2eLXEwNNS_Q7rylD9uUe3Rx9ZR2NVqE_ZNWxTqg"
+        );
+    }
 }

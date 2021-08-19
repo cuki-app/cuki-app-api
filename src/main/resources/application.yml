@@ -12,6 +12,7 @@ spring:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: create-drop
     properties:
@@ -19,7 +20,12 @@ spring:
         format_sql: true
         show_sql: true
 
+jwt:
+  header: Authorization
+  #echo 'test-testtest-test-testtest-test-testtest-test-testtest-test-testtest-test-testtest'|base64
+  secret: dGVzdC10ZXN0dGVzdC10ZXN0LXRlc3R0ZXN0LXRlc3QtdGVzdHRlc3QtdGVzdC10ZXN0dGVzdC10ZXN0LXRlc3R0ZXN0LXRlc3QtdGVzdHRlc3QK
+  token-validity-in-seconds: 1800
+
 logging:
   level:
     com.cuki: DEBUG
-

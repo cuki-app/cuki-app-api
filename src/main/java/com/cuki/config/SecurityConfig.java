@@ -71,6 +71,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/sign-up").permitAll()
                 .antMatchers("/auth/reissue").permitAll()
                 .antMatchers("/auth").permitAll()
+                .antMatchers("/api/users/sign-up").permitAll() // TODO : 삭제하기
+                .antMatchers("/api/auth").permitAll() // TODO : 삭제하기
                 .anyRequest().authenticated()
 
                 .and()

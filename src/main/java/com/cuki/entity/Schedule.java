@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  *  1. 날짜 구간 (시작일 ~ 종료일)
@@ -25,6 +26,7 @@ public class Schedule extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "schedule_id")
     private Long id;
 
     @NotNull
@@ -47,11 +49,8 @@ public class Schedule extends BaseTimeEntity{
     @NotNull
     private int participants;
 
-    private String location;
-
-    private int locationX;
-
-    private int locationY;
+    @OneToMany(mappedBy = "location")
+    private List<Location> locations;
 
     @NotNull
     @Column(length = 300)

@@ -1,5 +1,6 @@
 package com.cuki.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,9 +18,11 @@ import java.util.List;
  *  5. 설명
  *  * 1 ~ 5 필수 입력 사항
  *  * timestamp
+ *  * 부모 클래스를 만들고 1 개인, 2 모집 상속 받아서 쓸 수 없나?
  */
 @Getter
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Schedule extends BaseTimeEntity{
@@ -34,11 +37,16 @@ public class Schedule extends BaseTimeEntity{
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "dateTime_id")   // 단방향으로
+    /**
+     * save the transient instance before flushing
+     * 개체가 저장되지 않은 일시적인 인스턴스를 참조합니다. 플러싱하기 전에 임시 인스턴스를 저장합니다.
+     * @OneToMany나 @ManyToOne 사용 시 부모 객체에 추가하는 자식 객체가 아직 db에 저장되지 않아 생긴 에러이다. 즉 영속성 전이를 해야한다.
+     */
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "date_time_id")   // 단방향으로
     private DateTime dateTime;
 
 
@@ -49,7 +57,7 @@ public class Schedule extends BaseTimeEntity{
     @NotNull
     private int participants;
 
-    @OneToMany(mappedBy = "location")
+    @OneToMany(mappedBy = "schedule")
     private List<Location> locations;
 
     @NotNull

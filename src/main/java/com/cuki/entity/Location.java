@@ -1,5 +1,6 @@
 package com.cuki.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,12 +10,14 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "location_id")
     private Long id;
 
     @NotNull

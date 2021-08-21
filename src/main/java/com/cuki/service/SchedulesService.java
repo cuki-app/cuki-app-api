@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -101,7 +100,6 @@ public class SchedulesService {
         final List<MyScheduleResponseDto> mySchedule = getMySchedule();
         List<ScheduleResponseDto> allSchedule = getAllSchedule();
 
-        Collections.sort(mySchedule);
         mySkedAndAllSked.put("mySchedule", mySchedule);
         mySkedAndAllSked.put("allSchedule",allSchedule);
 
@@ -110,23 +108,24 @@ public class SchedulesService {
 
     private List<ScheduleResponseDto> getAllSchedule() {
         final List<Schedule> allSchedules = schedulesRepository.findAll();
-        List<ScheduleResponseDto> schduleRespDto = new ArrayList<>();
+        List<ScheduleResponseDto> scheduleRespDto = new ArrayList<>();
 
         for (Schedule schedule : allSchedules) {
-            schduleRespDto.add(
+            scheduleRespDto.add(
                     ScheduleResponseDto.builder()
                             .id(schedule.getId())
                             .title(schedule.getTitle())
                             .allDay(schedule.getDateTime().isAllDay())
                             .startDateTime(schedule.getDateTime().getStartDateTime())
                             .endDateTime(schedule.getDateTime().getEndDateTime())
+                            .createdDate(schedule.getCreatedDate())
                             .participants(schedule.getParticipants())
                             .place(schedule.getLocation().getPlace())
                             .description(schedule.getDescription())
                             .build()
             );
         }
-        return schduleRespDto;
+        return scheduleRespDto;
     }
 
     private List<MyScheduleResponseDto> getMySchedule() {

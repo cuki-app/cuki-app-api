@@ -39,11 +39,10 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
     @Override
     public int compareTo(MyScheduleResponseDto o) {
 
-        final long days = Duration.between(startDateTime, endDateTime).toDays();
-        final long targetDays = Duration.between(o.getStartDateTime(), o.getEndDateTime()).toDays();
+        final LocalDateTime now = LocalDateTime.now();  // 2021-08-22
+        final long days = Duration.between(now, startDateTime).toDays();
+        final long targetDays = Duration.between(now, o.getStartDateTime()).toDays();
 
-        log.info("days = {}", days);
-        log.info("target days = {}", targetDays);
         return Long.compare(days, targetDays);
     }
 }

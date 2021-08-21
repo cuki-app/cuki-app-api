@@ -56,13 +56,13 @@ public class ScheduleRegistrationRequestDto {
 //                .build();
 //    }
 
-    public Schedule toEntity(DateTime dateTime) {
+    public Schedule toEntity(DateTime dateTime, List<Location> locations) {
         return Schedule.builder()
                 .title(title)
 //                .user(user)
                 .dateTime(dateTime)
                 .participants(participants)
-//                .locations(locations)
+                .locations(locations)
                 .description(description)
                 .build();
     }

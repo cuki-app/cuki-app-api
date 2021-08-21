@@ -37,8 +37,9 @@ public class SchedulesService {
         final DateTime dateTime = getDateTime(requestDto);
 //        final Location locations = getLocations(requestDto);
 
-        final Long id = schedulesRepository.save(requestDto.toEntity(dateTime)).getId();
-        return ApiResponse.ok(id);
+//        final Long id = schedulesRepository.save(requestDto.toEntity(dateTime)).getId();
+//        return ApiResponse.ok(id);
+        return ApiResponse.ok(null);//
     }
 
     private Location getLocations(ScheduleRegistrationRequestDto requestDto) {

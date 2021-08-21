@@ -40,7 +40,7 @@ public class SchedulesService {
     }
 
     @Transactional
-    public ApiResponse<Long> save(ScheduleRegistrationRequestDto requestDto) {
+    public ApiResponse<Long> createSchedule(ScheduleRegistrationRequestDto requestDto) {
         final String currentUsername = SecurityUtil.getCurrentUsername().orElseThrow(
                 () -> new IllegalArgumentException("현재 접속한 유저가 아닙니다.")
         );
@@ -81,7 +81,6 @@ public class SchedulesService {
             System.out.println("startDateTime = " + startDateTime);
             System.out.println("endDateTime = " + endDateTime);
             return DateTime.builder()
-//                    .allDay(true)
                     .startDateTime(startDateTime)
                     .endDateTime(endDateTime)
                     .build();
@@ -96,33 +95,24 @@ public class SchedulesService {
 
 
 
-    public ApiResponse<Map<String, List<?>>> findAll() {
+    public ApiResponse<Map<String, List<?>>> readAllSchedule() {
         Map<String, List<?>> mySkedAndAllSked = new HashMap<>();
-        // 내가 등록한 스케쥴 전부 보여주기
-        final List<Schedule> myScheduleList = schedulesRepository.findAllByUserId(getCurrentUserId());
-        List<MyScheduleResponseDto> myDtoList = new ArrayList<>();
 
-        for (Schedule schedule : myScheduleList) {
-            myDtoList.add(
-                MyScheduleResponseDto.builder()
-                        .id(schedule.getId())
-                        .title(schedule.getTitle())
-                        .allDay(schedule.getDateTime().isAllDay())
-                        .startDateTime(schedule.getDateTime().getStartDateTime())
-                        .endDateTime(schedule.getDateTime().getEndDateTime())
-                        .participants(schedule.getParticipants())
-                        .place(schedule.getLocation().getPlace())
-                        .build()
-            );
-        } // for
-        Collections.sort(myDtoList);
+        final List<MyScheduleResponseDto> mySchedule = getMySchedule();
+        List<ScheduleResponseDto> allSchedule = getAllSchedule();
 
+        mySkedAndAllSked.put("mySchedule", mySchedule);
+        mySkedAndAllSked.put("allSchedule",allSchedule);
 
+        return ApiResponse.ok(mySkedAndAllSked);
+    }
+
+    private List<ScheduleResponseDto> getAllSchedule() {
         final List<Schedule> allSchedules = schedulesRepository.findAll();
-        List<ScheduleResponseDto> allDtoList = new ArrayList<>();
+        List<ScheduleResponseDto> schduleRespDto = new ArrayList<>();
 
         for (Schedule schedule : allSchedules) {
-            allDtoList.add(
+            schduleRespDto.add(
                     ScheduleResponseDto.builder()
                             .id(schedule.getId())
                             .title(schedule.getTitle())
@@ -134,12 +124,30 @@ public class SchedulesService {
                             .description(schedule.getDescription())
                             .build()
             );
+        }
+        return schduleRespDto;
+    }
+
+    private List<MyScheduleResponseDto> getMySchedule() {
+        final List<Schedule> scheduleListById = schedulesRepository.findAllByUserId(getCurrentUserId());
+        List<MyScheduleResponseDto> scheduleRespDtoByUser = new ArrayList<>();
+
+        for (Schedule schedule : scheduleListById) {
+            scheduleRespDtoByUser.add(
+                    MyScheduleResponseDto.builder()
+                            .id(schedule.getId())
+                            .title(schedule.getTitle())
+                            .allDay(schedule.getDateTime().isAllDay())
+                            .startDateTime(schedule.getDateTime().getStartDateTime())
+                            .endDateTime(schedule.getDateTime().getEndDateTime())
+                            .participants(schedule.getParticipants())
+                            .place(schedule.getLocation().getPlace())
+                            .build()
+            );
         } // for
+        Collections.sort(scheduleRespDtoByUser);
 
-        mySkedAndAllSked.put("mySchedule", myDtoList);
-        mySkedAndAllSked.put("all",allDtoList);
-
-        return ApiResponse.ok(mySkedAndAllSked);
+        return scheduleRespDtoByUser;
     }
 
 

@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 public class AllScheduleResponseDto {
 
+    private Long id;
+
     private String title;
 
     private boolean allDay;

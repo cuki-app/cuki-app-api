@@ -1,7 +1,6 @@
 package com.cuki.controller;
 
 import com.cuki.controller.common.ApiResponse;
-import com.cuki.dto.AllScheduleResponseDto;
 import com.cuki.dto.ScheduleRegistrationRequestDto;
 import com.cuki.service.SchedulesService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,11 @@ public class ScheduleController {
     @GetMapping
     public ApiResponse<Map<String, List<?>>> readAll() {
         return schedulesService.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Long> deleteSchedule(@PathVariable Long id) {
+        return schedulesService.deleteSchedule(id);
     }
 
 }

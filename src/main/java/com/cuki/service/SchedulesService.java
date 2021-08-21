@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -103,6 +105,7 @@ public class SchedulesService {
         for (Schedule schedule : myScheduleList) {
             myDtoList.add(
                 MyScheduleResponseDto.builder()
+                        .id(schedule.getId())
                         .title(schedule.getTitle())
                         .allDay(schedule.getDateTime().isAllDay())
                         .startDateTime(schedule.getDateTime().getStartDateTime())
@@ -123,6 +126,7 @@ public class SchedulesService {
             if (schedule.getDateTime().isAllDay()) {    // allDay == true
                 allDtoList.add(
                         AllScheduleResponseDto.builder()
+                                .id(schedule.getId())
                                 .title(schedule.getTitle())
                                 .allDay(schedule.getDateTime().isAllDay())
                                 .startDateTime(schedule.getDateTime().getStartDateTime())
@@ -135,6 +139,7 @@ public class SchedulesService {
             } else {
                 allDtoList.add(
                     AllScheduleResponseDto.builder()
+                                .id(schedule.getId())
                                 .title(schedule.getTitle())
                                 .allDay(schedule.getDateTime().isAllDay())
                                 .startDateTime(schedule.getDateTime().getStartDateTime())
@@ -151,5 +156,20 @@ public class SchedulesService {
         mySkedAndAllSked.put("all",allDtoList);
 
         return ApiResponse.ok(mySkedAndAllSked);
+    }
+
+
+    @Transactional
+    public ApiResponse<Long> deleteSchedule(Long id) {
+        final Schedule schedule = schedulesRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("현존하지 않는 일정 입니다.")
+        );
+        if (schedule.getUser().getId().equals(getCurrentUserId())) {
+            schedulesRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("본인의 일정만 삭제 할 수 있습니다.");
+        }
+
+        return ApiResponse.ok(id);
     }
 }

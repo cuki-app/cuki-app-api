@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @Getter
 public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> {
 
+    private Long id;
+
     private String title;
 
     private boolean allDay;

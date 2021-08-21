@@ -4,11 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  *  1. 날짜 구간 (시작일 ~ 종료일)
@@ -51,6 +47,7 @@ public class Schedule extends BaseTimeEntity{
     /**
      * 1. max 설정
      * 2. 현재 인원 설정 (count)
+     * 3. 현재 상태 설정
      */
     @Column(name = "participants")
     private int participants;

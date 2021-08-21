@@ -1,6 +1,7 @@
 package com.cuki.service;
 
 import com.cuki.controller.common.ApiResponse;
+import com.cuki.dto.DetailedScheduleResponseDto;
 import com.cuki.dto.ScheduleResponseDto;
 import com.cuki.dto.MyScheduleResponseDto;
 import com.cuki.dto.ScheduleRegistrationRequestDto;
@@ -154,5 +155,27 @@ public class SchedulesService {
         }
 
         return ApiResponse.ok(id);
+    }
+
+    public ApiResponse<DetailedScheduleResponseDto> readDetailedSchedule(Long id) {
+        final Schedule schedule = schedulesRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("현존하지 않는 일정 입니다.")
+        );
+        final DetailedScheduleResponseDto detailedSkedDto =
+                    DetailedScheduleResponseDto.builder()
+                        .id(schedule.getId())
+                        .title(schedule.getTitle())
+                        .allDay(schedule.getDateTime().isAllDay())
+                        .startDateTime(schedule.getDateTime().getStartDateTime())
+                        .endDateTime(schedule.getDateTime().getEndDateTime())
+                        .participants(schedule.getParticipants())
+                        .place(schedule.getLocation().getPlace())
+                        .roadNameAddress(schedule.getLocation().getRoadNameAddress())
+                        .latitudeX(schedule.getLocation().getLatitudeX())
+                        .longitudeY(schedule.getLocation().getLongitudeY())
+                        .description(schedule.getDescription())
+                        .build();
+
+        return ApiResponse.ok(detailedSkedDto);
     }
 }

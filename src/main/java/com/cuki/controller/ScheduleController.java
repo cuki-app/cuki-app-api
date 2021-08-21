@@ -1,8 +1,8 @@
 package com.cuki.controller;
 
 import com.cuki.controller.common.ApiResponse;
+import com.cuki.dto.DetailedScheduleResponseDto;
 import com.cuki.dto.ScheduleRegistrationRequestDto;
-import com.cuki.dto.ScheduleResponseDto;
 import com.cuki.service.SchedulesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -40,4 +40,8 @@ public class ScheduleController {
         return schedulesService.deleteSchedule(id);
     }
 
+    @GetMapping("/{id}")
+    public ApiResponse<DetailedScheduleResponseDto> readDetailedSchedule(@PathVariable Long id) {
+        return schedulesService.readDetailedSchedule(id);
+    }
 }

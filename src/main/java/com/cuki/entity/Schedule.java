@@ -45,6 +45,7 @@ public class Schedule extends BaseTimeEntity{
 
 
     /**
+     * 객체 분리
      * 1. max 설정
      * 2. 현재 인원 설정 (count)
      * 3. 현재 상태 설정

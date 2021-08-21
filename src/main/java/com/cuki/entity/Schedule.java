@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -37,7 +38,7 @@ public class Schedule extends BaseTimeEntity{
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+//    @JoinColumn(name = "user_tomato_id")
     private User user;
 
     /**
@@ -46,7 +47,7 @@ public class Schedule extends BaseTimeEntity{
      * @OneToMany나 @ManyToOne 사용 시 부모 객체에 추가하는 자식 객체가 아직 db에 저장되지 않아 생긴 에러이다. 즉 영속성 전이를 해야한다.
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "date_time_id")   // 단방향으로
+//    @JoinColumn(name = "date_time_id")   // 단방향으로
     private DateTime dateTime;
 
 
@@ -57,8 +58,10 @@ public class Schedule extends BaseTimeEntity{
     @NotNull
     private int participants;
 
-    @OneToMany(mappedBy = "schedule")
-    private List<Location> locations;
+//    @OneToMany(mappedBy = "schedule")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "location_id")
+    private Location location;
 
     @NotNull
     @Column(length = 300)

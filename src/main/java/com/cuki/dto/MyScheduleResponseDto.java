@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -31,15 +32,18 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
 
     private String place;
 
-    // 로직 다시 짜야한다.
+    /**
+     * 1. start date 기준으로 정렬
+     * 2. start date ~ end date 차이로 정렬
+     */
     @Override
     public int compareTo(MyScheduleResponseDto o) {
-        // local date 끼리만 연산
-        Duration duration = Duration.between(startDateTime, endDateTime);
-        log.info("seconds = {}", duration.getSeconds());
-        log.info("nano seconds = {}", duration.getNano());
 
-        return duration.getNano();
+        final long days = Duration.between(startDateTime, endDateTime).toDays();
+        final long targetDays = Duration.between(o.getStartDateTime(), o.getEndDateTime()).toDays();
 
+        log.info("days = {}", days);
+        log.info("target days = {}", targetDays);
+        return Long.compare(days, targetDays);
     }
 }

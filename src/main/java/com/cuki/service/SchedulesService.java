@@ -101,6 +101,7 @@ public class SchedulesService {
         final List<MyScheduleResponseDto> mySchedule = getMySchedule();
         List<ScheduleResponseDto> allSchedule = getAllSchedule();
 
+        Collections.sort(mySchedule);
         mySkedAndAllSked.put("mySchedule", mySchedule);
         mySkedAndAllSked.put("allSchedule",allSchedule);
 
@@ -145,7 +146,6 @@ public class SchedulesService {
                             .build()
             );
         } // for
-        Collections.sort(scheduleRespDtoByUser);
 
         return scheduleRespDtoByUser;
     }

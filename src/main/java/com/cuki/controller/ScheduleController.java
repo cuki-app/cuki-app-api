@@ -2,6 +2,7 @@ package com.cuki.controller;
 
 import com.cuki.controller.common.ApiResponse;
 import com.cuki.dto.ScheduleRegistrationRequestDto;
+import com.cuki.dto.ScheduleResponseDto;
 import com.cuki.service.SchedulesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

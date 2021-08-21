@@ -1,7 +1,7 @@
 package com.cuki.service;
 
 import com.cuki.controller.common.ApiResponse;
-import com.cuki.dto.AllScheduleResponseDto;
+import com.cuki.dto.ScheduleResponseDto;
 import com.cuki.dto.MyScheduleResponseDto;
 import com.cuki.dto.ScheduleRegistrationRequestDto;
 import com.cuki.entity.DateTime;
@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -119,37 +118,21 @@ public class SchedulesService {
 
 
         final List<Schedule> allSchedules = schedulesRepository.findAll();
-        List<AllScheduleResponseDto> allDtoList = new ArrayList<>();
-
+        List<ScheduleResponseDto> allDtoList = new ArrayList<>();
 
         for (Schedule schedule : allSchedules) {
-            if (schedule.getDateTime().isAllDay()) {    // allDay == true
-                allDtoList.add(
-                        AllScheduleResponseDto.builder()
-                                .id(schedule.getId())
-                                .title(schedule.getTitle())
-                                .allDay(schedule.getDateTime().isAllDay())
-                                .startDateTime(schedule.getDateTime().getStartDateTime())
-                                .endDateTime(schedule.getDateTime().getEndDateTime())
-                                .participants(schedule.getParticipants())
-                                .place(schedule.getLocation().getPlace())
-                                .description(schedule.getDescription())
-                                .build()
-                );
-            } else {
-                allDtoList.add(
-                    AllScheduleResponseDto.builder()
-                                .id(schedule.getId())
-                                .title(schedule.getTitle())
-                                .allDay(schedule.getDateTime().isAllDay())
-                                .startDateTime(schedule.getDateTime().getStartDateTime())
-                                .endDateTime(schedule.getDateTime().getEndDateTime())
-                                .participants(schedule.getParticipants())
-                                .place(schedule.getLocation().getPlace())
-                                .description(schedule.getDescription())
-                                .build()
-                );
-            }
+            allDtoList.add(
+                    ScheduleResponseDto.builder()
+                            .id(schedule.getId())
+                            .title(schedule.getTitle())
+                            .allDay(schedule.getDateTime().isAllDay())
+                            .startDateTime(schedule.getDateTime().getStartDateTime())
+                            .endDateTime(schedule.getDateTime().getEndDateTime())
+                            .participants(schedule.getParticipants())
+                            .place(schedule.getLocation().getPlace())
+                            .description(schedule.getDescription())
+                            .build()
+            );
         } // for
 
         mySkedAndAllSked.put("mySchedule", myDtoList);

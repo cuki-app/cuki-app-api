@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Getter
-public class AllScheduleResponseDto {
+public class ScheduleResponseDto {
 
     private Long id;
 

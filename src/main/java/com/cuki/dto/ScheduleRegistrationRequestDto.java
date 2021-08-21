@@ -8,34 +8,41 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Builder
 @AllArgsConstructor
 @Getter
 public class ScheduleRegistrationRequestDto {
 
+    @NotNull
     private String title;
 
-//    private DateTime dateTime;
     private boolean allDay;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private LocalDateTime startDateTime;    // 2021.08.20.12:34:30
+    private LocalDateTime startDateTime;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endDateTime;
 
+    @NotNull
     private int participants;
 
-//    private List<Location> locations;
+    @NotNull
     private String place;
+
     private String roadNameAddress;
     private String numberAddress;
+
+    @NotNull
     private int latitudeX;
+
+    @NotNull
     private int longitudeY;
 
+    @NotNull
     private String description;
 
 

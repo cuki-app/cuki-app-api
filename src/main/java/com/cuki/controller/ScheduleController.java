@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 1. 모집글 등록
@@ -28,8 +29,9 @@ public class ScheduleController {
         return schedulesService.save(requestDto);
     }
 
+    // 추가할 것: 최신 순으로 데이터 보여주기
     @GetMapping
-    public ApiResponse<List<AllScheduleResponseDto>> readAll() {
+    public ApiResponse<Map<String, List<?>>> readAll() {
         return schedulesService.findAll();
     }
 

@@ -30,15 +30,13 @@ public class Schedule extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "schedule_id")
+    @Column(name = "id")
     private Long id;
 
-    @NotNull
-    @Column(length = 100)
+    @Column(name= "title", length = 100)
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_tomato_id")
     private User user;
 
     /**
@@ -47,7 +45,6 @@ public class Schedule extends BaseTimeEntity{
      * @OneToMany나 @ManyToOne 사용 시 부모 객체에 추가하는 자식 객체가 아직 db에 저장되지 않아 생긴 에러이다. 즉 영속성 전이를 해야한다.
      */
     @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "date_time_id")   // 단방향으로
     private DateTime dateTime;
 
 
@@ -55,16 +52,14 @@ public class Schedule extends BaseTimeEntity{
      * 1. max 설정
      * 2. 현재 인원 설정 (count)
      */
-    @NotNull
+    @Column(name = "participants")
     private int participants;
 
-//    @OneToMany(mappedBy = "schedule")
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_id")
     private Location location;
 
-    @NotNull
-    @Column(length = 300)
+
+    @Column(name = "description", length = 300)
     private String description;
 
 

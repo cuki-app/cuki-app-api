@@ -17,23 +17,24 @@ public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "location_id")
+    @Column(name = "id")
     private Long id;
 
-    @NotNull
+    @Column(name = "place")
     private String place;
 
+    @Column(name = "road_name_address")
     private String roadNameAddress;
 
+    @Column(name = "number_address")
     private String numberAddress;
 
-    @NotNull
+    @Column(name = "latitude_x")
     private int latitudeX;
 
-    @NotNull
+    @Column(name = "longitude_y")
     private int longitudeY;
 
     @ManyToOne
-    @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 }

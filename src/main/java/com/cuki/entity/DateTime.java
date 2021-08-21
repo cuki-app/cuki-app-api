@@ -19,17 +19,19 @@ public class DateTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "date_time_id")
     @Column(name = "id")
     private Long id;
 
-
+    @Builder.Default
+    @Column(name = "all_day")
     private boolean allDay = true;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private LocalDateTime startDateTime;    // 2021.08.20.12:34
+    @Column(name = "start_date_time")
+    private LocalDateTime startDateTime;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
 
 }

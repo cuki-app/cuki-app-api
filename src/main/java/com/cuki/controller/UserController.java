@@ -1,37 +1,35 @@
 package com.cuki.controller;
 
-import com.cuki.dto.UserDto;
-import com.cuki.entity.User;
+import com.cuki.controller.common.ApiResponse;
+import com.cuki.dto.UserRequestDto;
+import com.cuki.dto.UserResponseDto;
 import com.cuki.service.UserService;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
 public class UserController {
+
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @PostMapping("/users/sign-up")
-    public ResponseEntity<User> signup(@Valid @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.signup(userDto));
+    public ApiResponse<UserResponseDto> signup(@Valid @RequestBody UserRequestDto userRequestDto) {
+        return ApiResponse.ok(userService.signup(userRequestDto));
     }
 
-    @GetMapping("/user")
+    @GetMapping("/users/me")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<User> getMyUserInfo() {
-        return ResponseEntity.ok(userService.getMyUserWithAuthorities().get());
+    public ApiResponse<UserResponseDto> getMyUserInfo() {
+        return ApiResponse.ok(userService.getMyInfo());
     }
 
-    @GetMapping("/user/{username}")
+    @GetMapping("/users/{email}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<User> getUserInfo(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUserWithAuthorities(username).get());
+    public ApiResponse<UserResponseDto> getUserInfo(@PathVariable String email) {
+        return ApiResponse.ok(userService.getUserInfo(email));
     }
 }

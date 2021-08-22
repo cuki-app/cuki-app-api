@@ -1,15 +1,16 @@
 package com.cuki.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-public class AuthResponseDto {
+public class TokenRequestDto {
 
     private String accessToken;
+    @NotBlank
     private String refreshToken;
 
 }

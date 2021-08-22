@@ -26,6 +26,7 @@ jwt:
   secret: dGVzdC10ZXN0dGVzdC10ZXN0LXRlc3R0ZXN0LXRlc3QtdGVzdHRlc3QtdGVzdC10ZXN0dGVzdC10ZXN0LXRlc3R0ZXN0LXRlc3QtdGVzdHRlc3QK
   token-validity-in-seconds: 86400
 
+
 logging:
   level:
     com.cuki: DEBUG

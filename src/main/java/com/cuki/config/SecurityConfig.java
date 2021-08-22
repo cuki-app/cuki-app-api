@@ -41,8 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web
                 .ignoring()
                 .antMatchers(
-                  "/h2-console/**"
-                        ,"/favicon.ico"
+                  "/h2-console/**", "/favicon.ico"
                 );
     }
 
@@ -71,10 +70,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/sign-up").permitAll()
                 .antMatchers("/auth/reissue").permitAll()
                 .antMatchers("/auth").permitAll()
-                .antMatchers("/api/users/sign-up").permitAll() // TODO : 삭제하기
-                .antMatchers("/api/auth").permitAll() // TODO : 삭제하기
                 .anyRequest().authenticated()
 
+                // JwtSecurityConfig 클래스 적용
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));
     }

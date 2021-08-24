@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 /**
  *  1. 날짜 구간 (시작일 ~ 종료일)
@@ -29,6 +31,7 @@ public class Schedule extends BaseTimeEntity{
     @Column(name = "id")
     private Long id;
 
+    @NotNull
     @Column(name= "title", length = 100)
     private String title;
 
@@ -43,13 +46,6 @@ public class Schedule extends BaseTimeEntity{
     @OneToOne(cascade = CascadeType.ALL)
     private DateTime dateTime;
 
-
-    /**
-     * 객체 분리
-     * 1. max 설정
-     * 2. 현재 인원 설정 (count)
-     * 3. 현재 상태 설정
-     */
     @Column(name = "participants")
     private int participants;
 
@@ -61,4 +57,24 @@ public class Schedule extends BaseTimeEntity{
     private String description;
 
 
+    public Schedule(String title, LocalDateTime startDateTime, LocalDateTime endDateTime, int participants, Location place, String description) {
+        checkTitleValidation(title);
+        checkTimeValidation(startDateTime, endDateTime);
+    }
+
+    private void checkTimeValidation(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        if (startDateTime == null || endDateTime == null) {
+            throw new IllegalArgumentException("날짜는 null이 될 수 없습니다.");
+        }
+
+    }
+
+    private void checkTitleValidation(String title) {
+        if (title == null) {
+            throw new IllegalArgumentException("제목은 필수 값입니다. null이 되면 안됩니다.");
+        }
+        if (title.isEmpty()) {
+            throw new IllegalArgumentException("제목은 공백이 될 수 없습니다.");
+        }
+    }
 }

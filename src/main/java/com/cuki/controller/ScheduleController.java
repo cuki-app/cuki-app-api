@@ -28,7 +28,6 @@ public class ScheduleController {
         return schedulesService.createSchedule(requestDto);
     }
 
-    // 추가할 것: 최신 순으로 데이터 보여주기
     @GetMapping
     public ApiResponse<Map<String, List<?>>> readAllSchedule() {
         return schedulesService.readAllSchedule();

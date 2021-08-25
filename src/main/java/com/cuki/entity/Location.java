@@ -37,6 +37,7 @@ public class Location {
     @ManyToOne
     private Schedule schedule;
 
-    public Location(String plcae) {
+    public Location(String place) {
+        this.place = place;
     }
 }

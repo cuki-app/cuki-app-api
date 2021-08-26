@@ -15,10 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ScheduleRegistrationRequestDto {
 
-//    @NotNull
     private String title;
-
-    private boolean allDay;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startDateTime;
@@ -26,26 +23,14 @@ public class ScheduleRegistrationRequestDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endDateTime;
 
-//    @NotNull
     private int participants;
 
-//    @NotNull
     private String place;
 
-    private String roadNameAddress;
-    private String numberAddress;
-
-//    @NotNull
-    private int latitudeX;
-
-//    @NotNull
-    private int longitudeY;
-
-//    @NotNull
     private String description;
 
 
-    public Schedule toEntity(User user, DateTime dateTime, Location location) {
+    public Schedule of(User user, DateTime dateTime, Location location) {
         return Schedule.builder()       // new ScheduleBuilder();
                 .title(title)
                 .user(user)

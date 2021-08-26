@@ -18,8 +18,6 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
 
     private String title;
 
-    private boolean allDay;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startDateTime;
 
@@ -30,10 +28,7 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
 
     private String place;
 
-    /**
-     * 1. start date 기준으로 정렬
-     * 2. start date ~ end date 차이로 정렬
-     */
+
     @Override
     public int compareTo(MyScheduleResponseDto o) {
 

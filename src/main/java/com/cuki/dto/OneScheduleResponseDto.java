@@ -11,13 +11,11 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Getter
-public class DetailedScheduleResponseDto {
+public class OneScheduleResponseDto {
 
     private Long id;
 
     private String title;
-
-    private boolean allDay;
 
     private LocalDateTime startDateTime;
 
@@ -26,12 +24,6 @@ public class DetailedScheduleResponseDto {
     private int participants;
 
     private String place;
-
-    private String roadNameAddress;
-
-    private int latitudeX;
-
-    private int longitudeY;
 
     private String description;
 

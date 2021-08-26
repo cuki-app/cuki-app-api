@@ -5,11 +5,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Location {
@@ -20,22 +19,9 @@ public class Location {
     private Long id;
 
     @Column(name = "place")
+    @NotNull
     private String place;
 
-    @Column(name = "road_name_address")
-    private String roadNameAddress;
-
-    @Column(name = "number_address")
-    private String numberAddress;
-
-    @Column(name = "latitude_x")
-    private int latitudeX;
-
-    @Column(name = "longitude_y")
-    private int longitudeY;
-
-    @ManyToOne
-    private Schedule schedule;
 
     public Location(String place) {
         this.place = place;

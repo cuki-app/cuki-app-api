@@ -1,23 +1,11 @@
 package com.cuki.entity;
 
 import lombok.*;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- *  1. 날짜 구간 (시작일 ~ 종료일)
- *  2. 시간대 설정 (시작 시간 ~ 종료 시간)
- *  2.1 default = 종일
- *  3. 인원
- *  4. 장소 입력 (검색 엔진 + map)
- *  5. 설명
- *  * 1 ~ 5 필수 입력 사항
- *  * timestamp
- *  * 부모 클래스를 만들고 1 개인, 2 모집 상속 받아서 쓸 수 없나?
- */
+@ToString
 @Getter
 @Builder
 @AllArgsConstructor
@@ -30,7 +18,7 @@ public class Schedule extends BaseTimeEntity{
     @Column(name = "id", unique = true)
     private Long id;
 
-//    @NotNull
+    @NotNull
     @Column(name= "title", length = 100)
     private String title;
 
@@ -55,10 +43,7 @@ public class Schedule extends BaseTimeEntity{
     @Column(name = "description", length = 300)
     private String description;
 
-    public Schedule(String title, int participants) {
-        this.title = title;
-        this.participants = participants;
-    }
+
 
 
     public Schedule(String title, LocalDateTime startDateTime, LocalDateTime endDateTime, int participants, Location location, String description) {
@@ -124,16 +109,4 @@ public class Schedule extends BaseTimeEntity{
         }
     }
 
-    @Override
-    public String toString() {
-        return "Schedule{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", user=" + user +
-                ", dateTime=" + dateTime +
-                ", participants=" + participants +
-                ", location=" + location +
-                ", description='" + description + '\'' +
-                '}';
-    }
 }

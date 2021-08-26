@@ -20,10 +20,6 @@ public class DateTime {
     @Column(name = "id")
     private Long id;
 
-    @Builder.Default
-    @Column(name = "all_day")
-    private boolean allDay = true;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
@@ -32,4 +28,9 @@ public class DateTime {
     @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
 
+
+    public DateTime(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+    }
 }

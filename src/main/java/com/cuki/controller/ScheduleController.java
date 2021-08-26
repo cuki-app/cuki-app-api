@@ -1,45 +1,54 @@
 package com.cuki.controller;
 
 import com.cuki.controller.common.ApiResponse;
-import com.cuki.dto.DetailedScheduleResponseDto;
-import com.cuki.dto.ScheduleRegistrationRequestDto;
+import com.cuki.dto.*;
 import com.cuki.service.SchedulesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 
-/**
- * 1. 모집글 등록
- * 2. 모집글 조회
- * 2.1 일정 메인 - 내 일정, 지금 막 들어온 일정
- * 2.2 특정 모집글 상세조회
- * 3. 모집글 삭제
- */
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/schedule")
 public class ScheduleController {
 
     private final SchedulesService schedulesService;
 
-    @PostMapping
-    public ApiResponse<Long> createSchedule(@RequestBody ScheduleRegistrationRequestDto requestDto) {
-        return schedulesService.createSchedule(requestDto);
+    @GetMapping("/")
+    public ApiResponse<MainScheduleResponseDto> getMainSchedule() {
+        return ApiResponse.ok(schedulesService.getMainSchedule());
+        // {
+        //    "timestamp": "2021-08-26T15:03:28.854+00:00",
+        //    "status": 404,
+        //    "error": "Not Found",
+        //    "path": "/schedule"
+        //}
     }
 
-    @GetMapping
-    public ApiResponse<Map<String, List<?>>> readAllSchedule() {
-        return schedulesService.readAllSchedule();
+    @GetMapping("/schedules")
+    public ApiResponse<List<AllScheduleResponseDto>> getAllSchedule() {
+        return ApiResponse.ok(schedulesService.getAllSchedule());
     }
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<Long> deleteSchedule(@PathVariable Long id) {
-        return schedulesService.deleteSchedule(id);
+    @GetMapping("/schedules/mine")
+    public ApiResponse<List<MyScheduleResponseDto>> getMySchedule() {
+        return ApiResponse.ok(schedulesService.getMySchedule());
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse<DetailedScheduleResponseDto> readDetailedSchedule(@PathVariable Long id) {
-        return schedulesService.readDetailedSchedule(id);
+    @GetMapping("/schedules/{id}")
+    public ApiResponse<OneScheduleResponseDto> getOneSchedule(@PathVariable Long id) {
+        final OneScheduleResponseDto oneSchedule = schedulesService.getOneSchedule(id);
+        return ApiResponse.ok(oneSchedule);
+    }
+
+    @PostMapping("/schedules")
+    public ApiResponse<SimpleScheduleResponseDto> createSchedule(@RequestBody ScheduleRegistrationRequestDto requestDto) {
+        final SimpleScheduleResponseDto responseDto = schedulesService.createSchedule(requestDto);
+        return ApiResponse.ok(responseDto);
+    }
+
+    @DeleteMapping("/schedules/{id}")
+    public ApiResponse<SimpleScheduleResponseDto> deleteSchedule(@PathVariable Long id) {
+        return ApiResponse.ok(schedulesService.deleteSchedule(id));
     }
 }

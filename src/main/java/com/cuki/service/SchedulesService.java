@@ -51,8 +51,38 @@ public class SchedulesService {
         final DateTime dateTime = getDateTime(requestDto);
         final Location location = getLocation(requestDto);
 
-        final Long id = schedulesRepository.save(requestDto.toEntity(currentUser, dateTime, location)).getId();
-        return ApiResponse.ok(id);
+        final Schedule schedule = requestDto.toEntity(currentUser, dateTime, location);
+
+        final Schedule schedule3 = Schedule.builder()
+                .user(currentUser)
+                .id(3L)
+                .build();
+
+//        final Schedule scheduleR = requestDto.toEntity(currentUser, dateTime, location);
+
+        System.out.println("before schedule= " + schedule);
+        System.out.println("before schedule5 = " + schedule3);
+//        System.out.println("before scheduleR = " + scheduleR);
+
+        schedulesRepository.save(schedule);     // null
+        schedulesRepository.save(schedule3);    // 3
+
+        System.out.println("schedule3.getId() = " + schedule3.getId());
+//        schedulesRepository.save(scheduleR);    // null
+
+        System.out.println("after schedule= " + schedule);      // 1
+        System.out.println("after schedule3 = " + schedule3);   // 3
+//        System.out.println("after scheduleR = " + scheduleR);   // 3
+
+//        final Optional<Schedule> sk = schedulesRepository.findById(3L);
+        final Schedule findSchedule3 = schedulesRepository.findById(2L).orElseThrow(
+                () -> new IllegalStateException("미안한데, 2번 스케쥴은 찾을 수가 없단다.")
+        );
+        System.out.println("findSchedule3 = " + findSchedule3);
+
+
+//        final Long id = schedulesRepository.save(requestDto.toEntity(currentUser, dateTime, location)).getId();
+        return ApiResponse.ok(1L);
     }
 
     private Location getLocation(ScheduleRegistrationRequestDto requestDto) {

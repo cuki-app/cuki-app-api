@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Builder
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ScheduleRegistrationRequestDto {
 
-    @NotNull
+//    @NotNull
     private String title;
 
     private boolean allDay;
@@ -27,34 +26,34 @@ public class ScheduleRegistrationRequestDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endDateTime;
 
-    @NotNull
+//    @NotNull
     private int participants;
 
-    @NotNull
+//    @NotNull
     private String place;
 
     private String roadNameAddress;
     private String numberAddress;
 
-    @NotNull
+//    @NotNull
     private int latitudeX;
 
-    @NotNull
+//    @NotNull
     private int longitudeY;
 
-    @NotNull
+//    @NotNull
     private String description;
 
 
     public Schedule toEntity(User user, DateTime dateTime, Location location) {
-        return Schedule.builder()
+        return Schedule.builder()       // new ScheduleBuilder();
                 .title(title)
                 .user(user)
                 .dateTime(dateTime)
                 .participants(participants)
                 .location(location)
                 .description(description)
-                .build();
+                .build();   // new Schedule(title, user, dateTime.....description)
     }
 
 }

@@ -1,9 +1,7 @@
 package com.cuki.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -29,10 +27,10 @@ public class Schedule extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", unique = true)
     private Long id;
 
-    @NotNull
+//    @NotNull
     @Column(name= "title", length = 100)
     private String title;
 
@@ -56,6 +54,11 @@ public class Schedule extends BaseTimeEntity{
 
     @Column(name = "description", length = 300)
     private String description;
+
+    public Schedule(String title, int participants) {
+        this.title = title;
+        this.participants = participants;
+    }
 
 
     public Schedule(String title, LocalDateTime startDateTime, LocalDateTime endDateTime, int participants, Location location, String description) {
@@ -119,5 +122,18 @@ public class Schedule extends BaseTimeEntity{
         if (title.replace(" ", "").isEmpty()) {
             throw new IllegalArgumentException("제목은 공백이 될 수 없습니다.");
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Schedule{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", user=" + user +
+                ", dateTime=" + dateTime +
+                ", participants=" + participants +
+                ", location=" + location +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

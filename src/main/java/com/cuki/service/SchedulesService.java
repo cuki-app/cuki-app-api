@@ -1,10 +1,7 @@
 package com.cuki.service;
 
 import com.cuki.dto.*;
-import com.cuki.entity.DateTime;
-import com.cuki.entity.Location;
-import com.cuki.entity.Schedule;
-import com.cuki.entity.User;
+import com.cuki.entity.*;
 import com.cuki.repository.SchedulesRepository;
 import com.cuki.repository.UserRepository;
 import com.cuki.util.SecurityUtil;
@@ -12,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -48,6 +47,12 @@ public class SchedulesService {
 
     public List<AllScheduleResponseDto> getAllSchedule() {
         final List<Schedule> repositoryAll = schedulesRepository.findAll();
+
+        // 최신 순으로 정렬하기
+        repositoryAll.sort(
+                (a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate())
+        );
+
         List<AllScheduleResponseDto> responseDtoList = new ArrayList<>();
 
         for (Schedule schedule : repositoryAll) {
@@ -81,6 +86,10 @@ public class SchedulesService {
                         .place(schedule.getLocation().getPlace())
                         .build()
             );
+        }
+        // compareTo 메서드 작동 안되는 것 확인. 글 작성 순으로 정렬됨.
+        for (MyScheduleResponseDto myScheduleResponseDto : responseDtoList) {
+            System.out.println("myScheduleResponseDto.getStartDateTime() = " + myScheduleResponseDto.getStartDateTime());
         }
         return responseDtoList;
     }

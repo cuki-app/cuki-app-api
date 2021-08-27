@@ -25,25 +25,21 @@ public class Schedule extends BaseTimeEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    /**
-     * save the transient instance before flushing
-     * 개체가 저장되지 않은 일시적인 인스턴스를 참조합니다. 플러싱하기 전에 임시 인스턴스를 저장합니다.
-     * @OneToMany나 @ManyToOne 사용 시 부모 객체에 추가하는 자식 객체가 아직 db에 저장되지 않아 생긴 에러이다. 즉 영속성 전이를 해야한다.
-     */
+    @NotNull
     @OneToOne(cascade = CascadeType.ALL)
     private DateTime dateTime;
 
+    @NotNull
     @Column(name = "participants")
     private int participants;
 
+    @NotNull
     @OneToOne(cascade = CascadeType.ALL)
     private Location location;
 
-
+    @NotNull
     @Column(name = "description", length = 300)
     private String description;
-
-
 
 
     public Schedule(String title, LocalDateTime startDateTime, LocalDateTime endDateTime, int participants, Location location, String description) {

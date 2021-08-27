@@ -18,9 +18,10 @@ public class Location {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "place")
     @NotNull
+    @Column(name = "place")
     private String place;
+
 
 
     public Location(String place) {

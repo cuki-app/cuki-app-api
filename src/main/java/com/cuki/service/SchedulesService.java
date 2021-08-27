@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -22,6 +20,7 @@ public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
 
 
+    // 로그인 완성되면 삭제
     private Long getCurrentUserId() {
         final String currentUsername = SecurityUtil.getCurrentUsername().orElseThrow(
                 () -> new IllegalArgumentException("현재 접속한 유저가 아닙니다.")
@@ -87,10 +86,9 @@ public class SchedulesService {
                         .build()
             );
         }
-        // compareTo 메서드 작동 안되는 것 확인. 글 작성 순으로 정렬됨.
-        for (MyScheduleResponseDto myScheduleResponseDto : responseDtoList) {
-            System.out.println("myScheduleResponseDto.getStartDateTime() = " + myScheduleResponseDto.getStartDateTime());
-        }
+
+        // D-day 임박순으로 정렬하기
+        Collections.sort(responseDtoList);
         return responseDtoList;
     }
 
@@ -122,6 +120,7 @@ public class SchedulesService {
         );
 
         final Schedule newSchedule = registrationRequestDto.of(currentUser, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace()));
+
         final Long id = schedulesRepository.save(newSchedule).getId();
 
         return new SimpleScheduleResponseDto(id);
@@ -139,6 +138,7 @@ public class SchedulesService {
         if (writerId.equals(getCurrentUserId())) {
             schedulesRepository.deleteById(scheduleId);
             // 삭제 후에 스케쥴 아이디 확인하면 나올까?
+            System.out.println("해당 스케쥴 삭제 후 '객체' 확인 = " + schedule.toString());
         } else {
             throw new IllegalArgumentException("게시글 작성자만 삭제 할 수 있습니다.");
         }

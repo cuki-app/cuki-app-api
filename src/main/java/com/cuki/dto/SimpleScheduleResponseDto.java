@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class SimpleScheduleResponseDto {
 
-    Long scheduleId;
+    Long id;
 
-    public SimpleScheduleResponseDto(Long scheduleId) {
-        this.scheduleId = scheduleId;
+    public SimpleScheduleResponseDto(Long id) {
+        this.id = id;
     }
 }

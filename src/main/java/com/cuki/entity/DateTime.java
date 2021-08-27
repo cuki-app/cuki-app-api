@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
@@ -20,10 +21,12 @@ public class DateTime {
     @Column(name = "id")
     private Long id;
 
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
 
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
@@ -33,4 +36,6 @@ public class DateTime {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
     }
+
+
 }

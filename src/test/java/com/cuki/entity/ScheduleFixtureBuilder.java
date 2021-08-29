@@ -10,6 +10,7 @@ public class ScheduleFixtureBuilder {
     private int participants = 2;
     private Location location = new Location("광화문 교보문고");
     private String description = "장소에 대한 세부 설명입니다.";
+    private Member member;
 
     public static ScheduleFixtureBuilder builder() {
         return new ScheduleFixtureBuilder();
@@ -45,13 +46,23 @@ public class ScheduleFixtureBuilder {
         return this;
     }
 
+//    public Schedule build() {
+//        return new Schedule(title,
+//                            startDateTime,
+//                            endDateTime,
+//                            participants,
+//                            location,
+//                            description
+//        );
+//    }
+
     public Schedule build() {
         return new Schedule(title,
-                            startDateTime,
-                            endDateTime,
-                            participants,
-                            location,
-                            description
+
+                new DateTime(startDateTime, endDateTime),
+                participants,
+                location,
+                description
         );
     }
 

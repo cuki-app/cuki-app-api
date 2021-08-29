@@ -20,17 +20,6 @@ public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
 
 
-    // 로그인 완성되면 삭제
-    private Long getCurrentUserId() {
-//        final Long currentUsername = SecurityUtil.getCurrentMemberId();
-//        final Member currentMember = memberRepository.findById(currentUsername).orElseThrow(
-//                () -> new IllegalArgumentException("유저 정보가 없습니다.")
-//        );
-//        return currentMember.getId();
-        return 1L;
-    }
-
-
     public MainScheduleResponseDto getMainSchedule() {
         List<AllScheduleResponseDto> allScheduleList = getAllSchedule();
         List<MyScheduleResponseDto> myScheduleList = getMySchedule();
@@ -40,7 +29,6 @@ public class SchedulesService {
                     .allSchedule(allScheduleList)
                     .build();
     }
-
 
 
     public List<AllScheduleResponseDto> getAllSchedule() {
@@ -70,7 +58,7 @@ public class SchedulesService {
 
 
     public List<MyScheduleResponseDto> getMySchedule() {
-        final List<Schedule> allByUserId = schedulesRepository.findAllByMemberId(getCurrentUserId());
+        final List<Schedule> allByUserId = schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId());
         List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();
 
         for (Schedule schedule : allByUserId) {
@@ -110,14 +98,16 @@ public class SchedulesService {
 
     @Transactional
     public SimpleScheduleResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
-        final Long currentUsername = SecurityUtil.getCurrentMemberId();
-
-        log.info("current username = {}" ,currentUsername);
-        final Member currentMember = memberRepository.findById(currentUsername).orElseThrow(
+        final Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
                 () -> new IllegalArgumentException("유저 정보가 없습니다.")
         );
 
-        final Schedule newSchedule = registrationRequestDto.of(currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace()));
+        registrationRequestDto.validation();
+
+        // 여기서 손대야 해
+        final Schedule newSchedule = registrationRequestDto.of(
+                currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace())
+        );
 
         final Long id = schedulesRepository.save(newSchedule).getId();
 
@@ -133,8 +123,9 @@ public class SchedulesService {
         final Long writerId = schedule.getMember().getId();
         final Long scheduleIdFromRepository = schedule.getId();
 
-        if (writerId.equals(getCurrentUserId())) {
-            schedulesRepository.deleteById(scheduleId);
+        if (writerId.equals(SecurityUtil.getCurrentMemberId())) {
+            schedulesRepository.delete(schedule);
+//            schedulesRepository.deleteById(scheduleId);
             // 삭제 후에 스케쥴 아이디 확인하면 나올까?
             System.out.println("해당 스케쥴 삭제 후 '객체' 확인 = " + schedule.toString());
         } else {

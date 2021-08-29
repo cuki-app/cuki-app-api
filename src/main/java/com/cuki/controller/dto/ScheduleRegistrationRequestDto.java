@@ -30,6 +30,12 @@ public class ScheduleRegistrationRequestDto {
     private String description;
 
 
+    public Schedule validation() {
+        return new Schedule(title, new DateTime(startDateTime, endDateTime), participants, new Location(place), description);
+    }
+
+
+    // entity 생성할 때 유효성 검사 로직 타게 만들기 -> 안됨
     public Schedule of(Member member, DateTime dateTime, Location location) {
         return Schedule.builder()       // new ScheduleBuilder();
                 .title(title)

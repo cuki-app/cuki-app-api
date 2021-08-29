@@ -1,9 +1,11 @@
 package com.cuki.entity;
 
+import com.cuki.controller.dto.ScheduleRegistrationRequestDto;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @ToString
 @Getter
@@ -42,12 +44,15 @@ public class Schedule extends BaseTimeEntity{
     private String description;
 
 
-    public Schedule(String title, LocalDateTime startDateTime, LocalDateTime endDateTime, int participants, Location location, String description) {
+
+    public Schedule(String title, DateTime dateTime, int participants, Location location, String description) {
+        System.out.println("validation하는 Schedule 생성자 호출");
         checkTitleValidation(title);
-        checkTimeValidation(startDateTime, endDateTime);
+        checkTimeValidation(dateTime);
         checkParticipantsValidation(participants);
         checkLocationValidation(location);
         checkDetailValidation(description);
+//        this.member = member;
     }
 
     private void checkDetailValidation(String description) {
@@ -77,7 +82,11 @@ public class Schedule extends BaseTimeEntity{
         }
     }
 
-    private void checkTimeValidation(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+
+    private void checkTimeValidation(DateTime dateTime) {
+        LocalDateTime startDateTime = dateTime.getStartDateTime();
+        LocalDateTime endDateTime = dateTime.getEndDateTime();
+
         if (startDateTime == null || endDateTime == null) {
             throw new IllegalArgumentException("날짜는 null이 될 수 없습니다.");
         }
@@ -95,6 +104,8 @@ public class Schedule extends BaseTimeEntity{
         }
 
     }
+
+
 
     private void checkTitleValidation(String title) {
         if (title == null) {

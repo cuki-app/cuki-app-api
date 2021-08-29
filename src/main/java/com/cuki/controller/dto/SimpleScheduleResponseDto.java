@@ -1,4 +1,4 @@
-package com.cuki.dto;
+package com.cuki.controller.dto;
 
 import lombok.Getter;
 

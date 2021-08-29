@@ -1,4 +1,4 @@
-package com.cuki.dto;
+package com.cuki.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,5 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TokenResponseDto {
 
-    private String token;
+    private String accessToken;
+    private String refreshToken;
+    private Long accessTokenExpiresIn;
+
 }

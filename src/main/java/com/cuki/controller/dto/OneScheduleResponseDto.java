@@ -1,24 +1,24 @@
-package com.cuki.dto;
+package com.cuki.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
+/**
+ * @Getter 안붙이니 response 내려줄 때 500 에러 생긴다.
+ */
 @Builder
 @AllArgsConstructor
 @Getter
-public class AllScheduleResponseDto {
+public class OneScheduleResponseDto {
 
     private Long id;
 
     private String title;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startDateTime;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endDateTime;
 
     private int participants;
@@ -26,5 +26,6 @@ public class AllScheduleResponseDto {
     private String place;
 
     private String description;
+
 
 }

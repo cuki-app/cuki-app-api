@@ -1,9 +1,9 @@
-package com.cuki.dto;
+package com.cuki.controller.dto;
 
 import com.cuki.entity.DateTime;
 import com.cuki.entity.Location;
 import com.cuki.entity.Schedule;
-import com.cuki.entity.User;
+import com.cuki.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,10 +30,10 @@ public class ScheduleRegistrationRequestDto {
     private String description;
 
 
-    public Schedule of(User user, DateTime dateTime, Location location) {
+    public Schedule of(Member member, DateTime dateTime, Location location) {
         return Schedule.builder()       // new ScheduleBuilder();
                 .title(title)
-                .user(user)
+                .member(member)
                 .dateTime(dateTime)
                 .participants(participants)
                 .location(location)

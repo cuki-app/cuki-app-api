@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
-public class User {
+public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +24,7 @@ public class User {
     private String password;
 
     @Size(min = 2, max = 8)
+//    @Column(nullable = false, unique = true)
     @Column(nullable = false)
     private String nickname;
 

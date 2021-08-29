@@ -23,7 +23,7 @@ public class Schedule extends BaseTimeEntity{
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private Member member;
 
     @NotNull
     @OneToOne(cascade = CascadeType.ALL)

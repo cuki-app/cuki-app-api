@@ -1,31 +1,23 @@
-package com.cuki.dto;
+package com.cuki.controller.dto;
 
 import com.cuki.entity.Authority;
-import com.cuki.entity.User;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.cuki.entity.Member;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 @Getter
 @NoArgsConstructor
-public class UserRequestDto {
+public class SignUpRequestDto {
 
     @NotBlank
     private String email;
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotBlank
     private String password;
-
-    @NotBlank
-    @Size(min = 2, max = 8)
     private String nickname;
 
-    public User toUser(PasswordEncoder passwordEncoder) {
-        return User.builder()
+    public Member toMember(PasswordEncoder passwordEncoder) {
+        return Member.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)

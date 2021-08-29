@@ -1,9 +1,9 @@
 package com.cuki.service;
 
-import com.cuki.dto.*;
+import com.cuki.controller.dto.*;
 import com.cuki.entity.*;
 import com.cuki.repository.SchedulesRepository;
-import com.cuki.repository.UserRepository;
+import com.cuki.repository.MemberRepository;
 import com.cuki.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,19 +16,18 @@ import java.util.*;
 @Service
 public class SchedulesService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final SchedulesRepository schedulesRepository;
 
 
     // 로그인 완성되면 삭제
     private Long getCurrentUserId() {
-        final String currentUsername = SecurityUtil.getCurrentUsername().orElseThrow(
-                () -> new IllegalArgumentException("현재 접속한 유저가 아닙니다.")
-        );
-        final User currentUser = userRepository.findOneWithAuthoritiesByUsername(currentUsername).orElseThrow(
-                () -> new IllegalArgumentException("유저 정보가 없습니다.")
-        );
-        return currentUser.getId();
+//        final Long currentUsername = SecurityUtil.getCurrentMemberId();
+//        final Member currentMember = memberRepository.findById(currentUsername).orElseThrow(
+//                () -> new IllegalArgumentException("유저 정보가 없습니다.")
+//        );
+//        return currentMember.getId();
+        return 1L;
     }
 
 
@@ -71,7 +70,7 @@ public class SchedulesService {
 
 
     public List<MyScheduleResponseDto> getMySchedule() {
-        final List<Schedule> allByUserId = schedulesRepository.findAllByUserId(getCurrentUserId());
+        final List<Schedule> allByUserId = schedulesRepository.findAllByMemberId(getCurrentUserId());
         List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();
 
         for (Schedule schedule : allByUserId) {
@@ -111,15 +110,14 @@ public class SchedulesService {
 
     @Transactional
     public SimpleScheduleResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
-        final String currentUsername = SecurityUtil.getCurrentUsername().orElseThrow(
-                () -> new IllegalArgumentException("현재 접속한 유저가 없습니다.")
-        );
+        final Long currentUsername = SecurityUtil.getCurrentMemberId();
+
         log.info("current username = {}" ,currentUsername);
-        final User currentUser = userRepository.findOneWithAuthoritiesByUsername(currentUsername).orElseThrow(
+        final Member currentMember = memberRepository.findById(currentUsername).orElseThrow(
                 () -> new IllegalArgumentException("유저 정보가 없습니다.")
         );
 
-        final Schedule newSchedule = registrationRequestDto.of(currentUser, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace()));
+        final Schedule newSchedule = registrationRequestDto.of(currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace()));
 
         final Long id = schedulesRepository.save(newSchedule).getId();
 
@@ -132,7 +130,7 @@ public class SchedulesService {
                 () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
         );
 
-        final Long writerId = schedule.getUser().getId();
+        final Long writerId = schedule.getMember().getId();
         final Long scheduleIdFromRepository = schedule.getId();
 
         if (writerId.equals(getCurrentUserId())) {

@@ -1,22 +1,17 @@
-package com.cuki.dto;
+package com.cuki.controller.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import javax.validation.constraints.NotBlank;
-
 @Getter
 @NoArgsConstructor
 public class LoginRequestDto {
 
-    @NotBlank
     private String email;
-
-    @NotBlank
     private String password;
 
-    public UsernamePasswordAuthenticationToken toAuthentication() {
+    public UsernamePasswordAuthenticationToken toAuthenticationToken() {
         return new UsernamePasswordAuthenticationToken(email, password);
     }
 }

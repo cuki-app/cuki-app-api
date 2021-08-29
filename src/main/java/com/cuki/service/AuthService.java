@@ -1,18 +1,20 @@
 package com.cuki.service;
 
-import com.cuki.dto.LoginRequestDto;
-import com.cuki.dto.TokenRequestDto;
-import com.cuki.dto.TokenResponseDto;
+import com.cuki.controller.dto.LoginRequestDto;
+import com.cuki.controller.dto.TokenRequestDto;
+import com.cuki.controller.dto.TokenResponseDto;
 import com.cuki.entity.RefreshToken;
 import com.cuki.jwt.TokenProvider;
 import com.cuki.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -24,7 +26,7 @@ public class AuthService {
     @Transactional
     public TokenResponseDto login(LoginRequestDto loginRequestDto) {
         // 1. Login ID(email)/PW 기반으로 AthenticationToken 생성
-        UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthenticationToken();
 
         // 2. 실제 검증이 이루어지는 단계
         // authenticate 메소드가 실행될 때 CustomUserDetailService의 loadUserByUsername 메소드가 실행됨
@@ -35,7 +37,7 @@ public class AuthService {
 
         // 4. RefreshToken 저장
         RefreshToken refreshToken = RefreshToken.builder()
-                .key(authentication.getName())
+                .key(authentication.getName() )
                 .value(tokenResponseDto.getRefreshToken())
                 .build();
 
@@ -52,10 +54,11 @@ public class AuthService {
             throw new RuntimeException("Refresh Token이 유효하지 않습니다.");
         }
 
-        // 2. AccessToken에서 User ID 가져오기
+        // 2. AccessToken에서 Member ID 가져오기
         Authentication authentication = tokenProvider.getAuthentication(tokenRequestDto.getAccessToken());
 
-        // 3. 저장소에서 User ID를 기반으로 Refresh Token 값 가져옴
+        // 3. 저장소에서 Member ID를 기반으로 Refresh Token 값 가져옴
+        log.info("AuthService - authentication.getName() = {}", authentication.getName());
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
 

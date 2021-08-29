@@ -2,7 +2,6 @@ package com.cuki.config;
 
 import com.cuki.jwt.JwtAccessDeniedHandler;
 import com.cuki.jwt.JwtAuthenticationEntryPoint;
-import com.cuki.jwt.JwtSecurityConfig;
 import com.cuki.jwt.TokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -67,9 +66,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/users/sign-up").permitAll()
-                .antMatchers("/auth/reissue").permitAll()
-                .antMatchers("/auth").permitAll()
+                .antMatchers("/members/sign-up").permitAll()
+//                .antMatchers("/auth/reissue").permitAll()
+                .antMatchers("/auth/login").permitAll()
                 .anyRequest().authenticated()
 
                 // JwtSecurityConfig 클래스 적용

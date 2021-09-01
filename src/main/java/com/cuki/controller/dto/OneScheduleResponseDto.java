@@ -23,6 +23,8 @@ public class OneScheduleResponseDto {
 
     private int participants;
 
+    private int count;
+
     private String place;
 
     private String description;

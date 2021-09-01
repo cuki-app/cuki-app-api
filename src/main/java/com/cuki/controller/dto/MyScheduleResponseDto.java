@@ -26,6 +26,8 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
 
     private int participants;
 
+    private int count;
+
     private String place;
 
 

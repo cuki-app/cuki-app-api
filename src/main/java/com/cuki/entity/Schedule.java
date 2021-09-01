@@ -1,11 +1,10 @@
 package com.cuki.entity;
 
-import com.cuki.controller.dto.ScheduleRegistrationRequestDto;
 import lombok.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @ToString
 @Getter
@@ -35,6 +34,9 @@ public class Schedule extends BaseTimeEntity{
     @Column(name = "participants")
     private int participants;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Participation participation;
+
     @NotNull
     @OneToOne(cascade = CascadeType.ALL)
     private Location location;
@@ -52,7 +54,6 @@ public class Schedule extends BaseTimeEntity{
         checkParticipantsValidation(participants);
         checkLocationValidation(location);
         checkDetailValidation(description);
-//        this.member = member;
     }
 
     private void checkDetailValidation(String description) {

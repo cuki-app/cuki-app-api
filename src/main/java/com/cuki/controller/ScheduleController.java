@@ -51,4 +51,9 @@ public class ScheduleController {
     public ApiResponse<SimpleScheduleResponseDto> deleteSchedule(@PathVariable Long id) {
         return ApiResponse.ok(schedulesService.deleteSchedule(id));
     }
+
+    @GetMapping("/schedules/participation/{id}")
+    public ApiResponse<SimpleScheduleResponseDto> joinSchedule(@PathVariable Long id) throws IllegalAccessException {
+        return ApiResponse.ok(schedulesService.joinSchedule(id));
+    }
 }

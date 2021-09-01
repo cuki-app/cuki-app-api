@@ -49,6 +49,7 @@ public class SchedulesService {
                         .startDateTime(schedule.getDateTime().getStartDateTime())
                         .endDateTime(schedule.getDateTime().getEndDateTime())
                         .participants(schedule.getParticipants())
+                        .count(schedule.getParticipation().getCount())
                         .place(schedule.getLocation().getPlace())
                         .description(schedule.getDescription())
                         .build());
@@ -69,6 +70,7 @@ public class SchedulesService {
                         .startDateTime(schedule.getDateTime().getStartDateTime())
                         .endDateTime(schedule.getDateTime().getEndDateTime())
                         .participants(schedule.getParticipants())
+                        .count(schedule.getParticipation().getCount())
                         .place(schedule.getLocation().getPlace())
                         .build()
             );
@@ -91,6 +93,7 @@ public class SchedulesService {
                 .startDateTime(schedule.getDateTime().getStartDateTime())
                 .endDateTime(schedule.getDateTime().getEndDateTime())
                 .participants(schedule.getParticipants())
+                .count(schedule.getParticipation().getCount())
                 .place(schedule.getLocation().getPlace())
                 .description(schedule.getDescription())
                 .build();
@@ -104,9 +107,8 @@ public class SchedulesService {
 
         registrationRequestDto.validation();
 
-        // 여기서 손대야 해
         final Schedule newSchedule = registrationRequestDto.of(
-                currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace())
+                currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Participation(registrationRequestDto.getParticipants()), new Location(registrationRequestDto.getPlace())
         );
 
         final Long id = schedulesRepository.save(newSchedule).getId();
@@ -133,5 +135,35 @@ public class SchedulesService {
         }
 
         return new SimpleScheduleResponseDto(scheduleIdFromRepository);
+    }
+
+    /**
+     * 모집 글을 게시한 본인이 참여하는 경우는 제외시킬 것
+     * 중복 참여의 경우 제외시킬 것
+     * 참여 하기를 두 번 요청한 경우 = 취소 or api 개별로
+     */
+    @Transactional
+    public SimpleScheduleResponseDto joinSchedule(Long scheduleId) throws IllegalAccessException {
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 게시글 입니다.")
+        );
+
+        final Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
+                () -> new IllegalArgumentException("유저 정보가 없습니다.")
+        );  // 로그인 유저 == 참여하기 요청한 유저
+
+
+        final Participation participation = schedule.getParticipation();
+        int currentCount = participation.getCount();    // 기본 값 0
+        final List<Member> members = participation.getMembers();
+
+        if (participation.getCount() < participation.getNumberOfParticipants()) {
+            currentCount++;
+            members.add(member);
+        } else {
+            throw new IllegalAccessException("참여 모집이 마감되었습니다.");
+        }
+        participation.update(currentCount, members);
+        return new SimpleScheduleResponseDto(schedule.getId());
     }
 }

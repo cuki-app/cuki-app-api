@@ -20,7 +20,11 @@ public class EmailService {
     private final JavaMailSender mailSender;
     public static String verificationCode;
 
-    private MimeMessage createMessage(String to) throws Exception {
+    private MimeMessage createMessage(VerificationCodeRequestDto verificationCodeRequestDto) throws Exception {
+
+        String to = verificationCodeRequestDto.getEmail();
+        String purpose = verificationCodeRequestDto.getPurpose().toString();
+
         // 인증번호 생성
         verificationCode = createVerificationCode();
 
@@ -31,16 +35,13 @@ public class EmailService {
         message.addRecipients(Message.RecipientType.TO, to); // 보내는 대상
         message.setSubject("[cuki] 인증번호를 확인해주세요.");  // 제목
 
-        String msg = "";
-        msg += "<img width=\"150\" height=\"100\" style=\"margin: 0px 0px 32px 0px; padding: 0px 30px 0px 30px;\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Cookie_stack.jpg/1920px-Cookie_stack.jpg\" alt=\"\" loading=\"lazy\">";
-        msg += "<h1 style=\"font-size: 30px; padding: 0px 30px 0px 30px;\">이메일 주소 확인</h1>";
-        msg += "<p style=\"font-size: 17px; padding: 0px 30px 0px 30px;\">아래 인증 코드를 쿠키앱에서 입력하십시오.</p>";
-        msg += "<div style=\"padding: 0px 30px 0px 30px; margin: 32px 0px 40px 0px;\"><table style=\"border-collapse: collapse; border: 0px; background-color: F4F4F4'; height: 70px; table-layout: fixed; word-wrap: break-word; border-radius: 6px;\"><tbody><tr><td style=\"text-align: center; verical-align: middle; font-size: 30px;\">";
-        msg += verificationCode;
-        msg += "</td></tr></tbody></table></div>";
-        msg += "<a href=\"https://cuki.io\" style=\"text-decoration: none; color: #434245;\" rel=\"noreferrer noopener\" target=\"_blank\">cuki app, Inc</a>";
+        // purpose 값에 해당하는 내용 생성
+        String html = null;
+        if (purpose.equals("SIGN_UP")) html = createHtmlForSignUp();
+        else if (purpose.equals("LOGIN")) html = createHtmlForLogin();
+        else throw new RuntimeException("purpose can't be null");
 
-        message.setText(msg, "utf-8", "html");  // 내용
+        message.setText(html, "utf-8", "html");  // 내용
         message.setFrom(new InternetAddress("verycona@gmail.com", "cuki")); // 보내는 사람
 
         return message;
@@ -58,13 +59,51 @@ public class EmailService {
     }
 
     public void sendVerificationCode(VerificationCodeRequestDto verificationCodeRequestDto) throws Exception {
-        MimeMessage message = createMessage(verificationCodeRequestDto.getEmail());
+        MimeMessage message = createMessage(verificationCodeRequestDto);
         try {
             mailSender.send(message);
         } catch (MailException e){
             e.printStackTrace();
             throw new IllegalArgumentException();
         }
+    }
+
+    private String createHtmlForLogin() {
+        String html = "";
+        html += "<div align='center' style='margin:50px;'>";
+        html += "<h1>로그인 안내</h1>";
+        html += "<br>";
+        html += "<p>아래 인증 코드를 입력하시면 로그인이 완료됩니다. 감사합니다.</p>";
+        html += "<br>";
+        html+= "<div align='center' style='border:1px solid black; font-family:verdana';>";
+        html+= "<h3 style='color:darkgreen;'>로그인 코드</h3>";
+        html+= "<div style='font-size:130%'>";
+        html+= "CODE : <strong>";
+        html+= verificationCode;
+        html+= "</strong><div><br/> ";
+        html += "<a href='https://cuki.io' target='_blank'>cuki 홈페이지 바로가기</a>";
+        html+= "</div>";
+
+        return html;
+    }
+
+    private String createHtmlForSignUp() {
+        String html = "";
+        html += "<div align='center' style='margin:50px;'>";
+        html += "<h1>가입 안내</h1>";
+        html += "<br>";
+        html += "<p>아래 인증 코드를 입력하시면 회원가입이 완료됩니다. 감사합니다.</p>";
+        html += "<br>";
+        html+= "<div align='center' style='border:1px solid black; font-family:verdana';>";
+        html+= "<h3 style='color:darkgreen;'>회원가입 코드</h3>";
+        html+= "<div style='font-size:130%'>";
+        html+= "CODE : <strong>";
+        html+= verificationCode;
+        html+= "</strong><div><br/> ";
+        html += "<a href='https://cuki.io' target='_blank'>cuki 홈페이지 바로가기</a>";
+        html+= "</div>";
+
+        return html;
     }
 
 }

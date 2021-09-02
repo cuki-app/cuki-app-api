@@ -58,7 +58,7 @@ public class EmailService {
         return verificationCode.toString();
     }
 
-    public void sendVerificationCode(VerificationCodeRequestDto verificationCodeRequestDto) throws Exception {
+    public void sendMessage(VerificationCodeRequestDto verificationCodeRequestDto) throws Exception {
         MimeMessage message = createMessage(verificationCodeRequestDto);
         try {
             mailSender.send(message);

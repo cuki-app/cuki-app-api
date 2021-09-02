@@ -18,7 +18,7 @@ public class EmailController {
     // 이메일 인증 코드 보내기
     @PostMapping("/email")
     public ApiResponse<Boolean> sendVerificationCode(@RequestBody VerificationCodeRequestDto verificationCodeRequestDto) throws Exception {
-        emailService.sendVerificationCode(verificationCodeRequestDto);
+        emailService.sendMessage(verificationCodeRequestDto);
         return ApiResponse.ok(true);
     }
 

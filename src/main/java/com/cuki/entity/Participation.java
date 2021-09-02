@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -23,16 +24,25 @@ public class Participation {
     private int count;
 
     // 테스트 -> OneToMany, manyToOne 으로 변경할 것
-    @ManyToMany
-    private List<Member> members;
+//    @ManyToMany
+//    private List<Member> members;
+
+    @OneToMany(mappedBy = "participation")
+    private List<MemberParticipation> memberParticipations = new ArrayList<>();
 
 
     public Participation(int numberOfParticipants) {
         this.numberOfParticipants = numberOfParticipants;
     }
 
-    public void update(int currentCount, List<Member> members) {
+
+    public void update(int currentCount, List<MemberParticipation> memberParticipations) {
         this.count = currentCount;
-        this.members = members;
+        this.memberParticipations = memberParticipations;
     }
+
+//    public void update(int currentCount, List<Member> members) {
+//        this.count = currentCount;
+//        this.members = members;
+//    }
 }

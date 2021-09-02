@@ -27,23 +27,15 @@ public class ScheduleRegistrationRequestDto {
     private String description;
 
 
-    // 쓸데 없이 객체 생성해서 사용하지는 않고 validation 으로만 씀
-    public Schedule validation() {
-        return new Schedule(title, new DateTime(startDateTime, endDateTime), participants, new Location(place), description);
-    }
-
-
-    // entity 생성할 때 유효성 검사 로직 타게 만들기 -> 안됨
     public Schedule of(Member member, DateTime dateTime, Participation participation, Location location) {
-        return Schedule.builder()       // new ScheduleBuilder();
+        return Schedule.builder()
                 .title(title)
                 .member(member)
                 .dateTime(dateTime)
-                .participants(participants)
                 .participation(participation)
                 .location(location)
                 .description(description)
-                .build();   // new Schedule(title, user, dateTime.....description)
+                .build();
     }
 
 }

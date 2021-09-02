@@ -30,9 +30,9 @@ public class Schedule extends BaseTimeEntity{
     @OneToOne(cascade = CascadeType.ALL)
     private DateTime dateTime;
 
-    @NotNull
-    @Column(name = "participants")
-    private int participants;
+//    @NotNull
+//    @Column(name = "participants")
+//    private int participants;   //
 
     @OneToOne(cascade = CascadeType.ALL)
     private Participation participation;
@@ -47,11 +47,12 @@ public class Schedule extends BaseTimeEntity{
 
 
 
-    public Schedule(String title, DateTime dateTime, int participants, Location location, String description) {
+    public Schedule(String title, Member member, DateTime dateTime, Participation participation, Location location, String description) {
         System.out.println("validation하는 Schedule 생성자 호출");
         checkTitleValidation(title);
+        this.member = member;
         checkTimeValidation(dateTime);
-        checkParticipantsValidation(participants);
+        checkParticipantsValidation(participation);
         checkLocationValidation(location);
         checkDetailValidation(description);
     }
@@ -66,6 +67,7 @@ public class Schedule extends BaseTimeEntity{
         if (description.length() > 300) {
             throw new IllegalArgumentException("세부 설명은 300자를 초과하면 안됩니다.");
         }
+        this.description = description;
     }
 
     private void checkLocationValidation(Location location) {
@@ -75,12 +77,14 @@ public class Schedule extends BaseTimeEntity{
         if (location.getPlace().replace(" ", "").isEmpty()) {
             throw new IllegalArgumentException("위치가 공백 이거나 빈문자열이어서는 안됩니다.");
         }
+        this.location = location;
     }
 
-    private void checkParticipantsValidation(int participants) {
-        if (participants < 2) {
+    private void checkParticipantsValidation(Participation participation) {
+        if (participation.getNumberOfParticipants() < 2) {
             throw new IllegalArgumentException("참가인원은 2명 이상이어야 합니다.");
         }
+        this.participation = participation;
     }
 
 
@@ -104,6 +108,8 @@ public class Schedule extends BaseTimeEntity{
             throw new IllegalArgumentException("종료일은 시작일보다 과거가 될 수 없습니다.");
         }
 
+        this.dateTime = dateTime;
+
     }
 
 
@@ -115,6 +121,7 @@ public class Schedule extends BaseTimeEntity{
         if (title.replace(" ", "").isEmpty()) {
             throw new IllegalArgumentException("제목은 공백이 될 수 없습니다.");
         }
+        this.title = title;
     }
 
 }

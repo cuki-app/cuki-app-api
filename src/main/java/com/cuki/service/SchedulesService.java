@@ -48,7 +48,7 @@ public class SchedulesService {
                         .title(schedule.getTitle())
                         .startDateTime(schedule.getDateTime().getStartDateTime())
                         .endDateTime(schedule.getDateTime().getEndDateTime())
-                        .participants(schedule.getParticipants())
+                        .participants(schedule.getParticipation().getNumberOfParticipants())
                         .count(schedule.getParticipation().getCount())
                         .place(schedule.getLocation().getPlace())
                         .description(schedule.getDescription())
@@ -69,7 +69,7 @@ public class SchedulesService {
                         .title(schedule.getTitle())
                         .startDateTime(schedule.getDateTime().getStartDateTime())
                         .endDateTime(schedule.getDateTime().getEndDateTime())
-                        .participants(schedule.getParticipants())
+                        .participants(schedule.getParticipation().getNumberOfParticipants())
                         .count(schedule.getParticipation().getCount())
                         .place(schedule.getLocation().getPlace())
                         .build()
@@ -92,7 +92,7 @@ public class SchedulesService {
                 .title(schedule.getTitle())
                 .startDateTime(schedule.getDateTime().getStartDateTime())
                 .endDateTime(schedule.getDateTime().getEndDateTime())
-                .participants(schedule.getParticipants())
+                .participants(schedule.getParticipation().getNumberOfParticipants())
                 .count(schedule.getParticipation().getCount())
                 .place(schedule.getLocation().getPlace())
                 .description(schedule.getDescription())
@@ -105,11 +105,18 @@ public class SchedulesService {
                 () -> new IllegalArgumentException("유저 정보가 없습니다.")
         );
 
-        registrationRequestDto.validation();
+//        registrationRequestDto.validation();
+//        log.info("유효성 검사 하기 전 스케쥴 타이틀 = {}", registrationRequestDto.getTitle());    // title 이 잘 나옴
+//        Schedule schedule = new Schedule(registrationRequestDto.getTitle(), currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()),
+//                new Participation(registrationRequestDto.getParticipants()), new Location(registrationRequestDto.getPlace()),
+//                registrationRequestDto.getDescription());
+//        log.info("엔티티 직접 생성 = {}", schedule.getTitle());    // null
 
         final Schedule newSchedule = registrationRequestDto.of(
                 currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Participation(registrationRequestDto.getParticipants()), new Location(registrationRequestDto.getPlace())
         );
+
+//        log.info("유효성 검사 끝난 스케쥴 타이틀 = {}", newSchedule.getTitle()); // null
 
         final Long id = schedulesRepository.save(newSchedule).getId();
 
@@ -127,8 +134,6 @@ public class SchedulesService {
 
         if (writerId.equals(SecurityUtil.getCurrentMemberId())) {
             schedulesRepository.delete(schedule);
-//            schedulesRepository.deleteById(scheduleId);
-            // 삭제 후에 스케쥴 아이디 확인하면 나올까?
             System.out.println("해당 스케쥴 삭제 후 '객체' 확인 = " + schedule.toString());
         } else {
             throw new IllegalArgumentException("게시글 작성자만 삭제 할 수 있습니다.");
@@ -138,7 +143,7 @@ public class SchedulesService {
     }
 
     /**
-     * 모집 글을 게시한 본인이 참여하는 경우는 제외시킬 것
+     * 모집 글을 게시한 본인이 참여하는 경우는 제외시킬 것 (o)
      * 중복 참여의 경우 제외시킬 것
      * 참여 하기를 두 번 요청한 경우 = 취소 or api 개별로
      */
@@ -152,18 +157,24 @@ public class SchedulesService {
                 () -> new IllegalArgumentException("유저 정보가 없습니다.")
         );  // 로그인 유저 == 참여하기 요청한 유저
 
-
         final Participation participation = schedule.getParticipation();
         int currentCount = participation.getCount();    // 기본 값 0
-        final List<Member> members = participation.getMembers();
+        List<MemberParticipation> memberParticipations = participation.getMemberParticipations();
 
-        if (participation.getCount() < participation.getNumberOfParticipants()) {
-            currentCount++;
-            members.add(member);
+        if (!schedule.getMember().getId().equals(member.getId())) { // 본인이 올린 게시글이 아닐 경우에만
+            if (participation.getCount() < participation.getNumberOfParticipants()) {   // 0 < 2명
+                currentCount++; // 1명
+                memberParticipations.add(new MemberParticipation(member, participation));
+
+                participation.update(currentCount, memberParticipations);
+                return new SimpleScheduleResponseDto(schedule.getId());
+
+            } else {
+                throw new IllegalAccessException("참여 모집이 마감되었습니다.");
+            }
         } else {
-            throw new IllegalAccessException("참여 모집이 마감되었습니다.");
+            throw new IllegalAccessException("게시글 작성자는 본인의 모집 일정에 참여하기 기능을 사용할 수 없습니다.");
         }
-        participation.update(currentCount, members);
-        return new SimpleScheduleResponseDto(schedule.getId());
+
     }
 }

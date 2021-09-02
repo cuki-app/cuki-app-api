@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,4 +36,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Authority authority;
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberParticipation> memberParticipations = new ArrayList<>();
 }

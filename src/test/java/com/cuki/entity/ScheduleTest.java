@@ -94,7 +94,7 @@ class ScheduleTest {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> ScheduleFixtureBuilder.builder()
-                        .participants(1)
+                        .participation(new Participation(1))
                         .build()
         );
     }

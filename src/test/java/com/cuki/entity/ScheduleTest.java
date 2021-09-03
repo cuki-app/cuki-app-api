@@ -11,6 +11,7 @@ class ScheduleTest {
     /**
      * action: 필수 정보는 모두 존재해야 한다 (제목, 날짜, 인원, 위치, 세부설명)
      * data : 제목, 날짜, 인원, 위치, 세부설명
+     * to do: 멤버, 현재 모집 인원
      */
 
     @Test
@@ -94,7 +95,7 @@ class ScheduleTest {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> ScheduleFixtureBuilder.builder()
-                        .participation(new Participation(1))
+                        .fixedNumberOfPeople(1)
                         .build()
         );
     }

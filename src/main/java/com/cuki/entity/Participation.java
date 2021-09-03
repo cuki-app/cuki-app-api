@@ -4,9 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -17,32 +14,18 @@ public class Participation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    private int numberOfParticipants;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;      // kelly = 13
 
-    @NotNull
-    private int count;
-
-    // 테스트 -> OneToMany, manyToOne 으로 변경할 것
-//    @ManyToMany
-//    private List<Member> members;
-
-    @OneToMany(mappedBy = "participation")
-    private List<MemberParticipation> memberParticipations = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;  // 2번 게시글에 참여
 
 
-    public Participation(int numberOfParticipants) {
-        this.numberOfParticipants = numberOfParticipants;
+    public Participation(Member member, Schedule schedule) {
+        this.member = member;
+        this.schedule = schedule;
     }
 
-
-    public void update(int currentCount, List<MemberParticipation> memberParticipations) {
-        this.count = currentCount;
-        this.memberParticipations = memberParticipations;
-    }
-
-//    public void update(int currentCount, List<Member> members) {
-//        this.count = currentCount;
-//        this.members = members;
-//    }
 }

@@ -2,11 +2,8 @@ package com.cuki.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -37,6 +34,4 @@ public class Member {
     @Column(nullable = false)
     private Authority authority;
 
-    @OneToMany(mappedBy = "member")
-    private List<MemberParticipation> memberParticipations = new ArrayList<>();
 }

@@ -24,9 +24,9 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endDateTime;
 
-    private int participants;
+    private int fixedNumberOfPeople;
 
-    private int count;
+    private int currentNumberOfPeople;
 
     private String place;
 
@@ -37,8 +37,6 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
         final LocalDateTime now = LocalDateTime.now();  // 2021-08-22
         final long dDays = Duration.between(now, getStartDateTime()).toDays();
         final long targetDdays = Duration.between(now, o.getStartDateTime()).toDays();
-//        final long dDays = Duration.between(now, startDateTime).toDays();   // 3
-//        final long targetDdays = Duration.between(now, o.getStartDateTime()).toDays();  // 13
 
         return Long.compare(dDays, targetDdays);
     }

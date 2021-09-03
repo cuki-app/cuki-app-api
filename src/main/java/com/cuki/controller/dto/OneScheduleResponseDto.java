@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import java.time.LocalDateTime;
 
-/**
- * @Getter 안붙이니 response 내려줄 때 500 에러 생긴다.
- */
+
 @Builder
 @AllArgsConstructor
 @Getter
@@ -21,9 +19,9 @@ public class OneScheduleResponseDto {
 
     private LocalDateTime endDateTime;
 
-    private int participants;
+    private int fixedNumberOfPeople;
 
-    private int count;
+    private int currentNumberOfPeople;
 
     private String place;
 

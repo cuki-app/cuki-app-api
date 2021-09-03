@@ -21,9 +21,9 @@ public class AllScheduleResponseDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endDateTime;
 
-    private int participants;
+    private int fixedNumberOfPeople;    // 3명
 
-    private int count;
+    private int currentNumberOfPeople;  // 1명 -> 2명 -> 3명
 
     private String place;
 

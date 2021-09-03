@@ -1,15 +1,12 @@
 package com.cuki.entity;
 
 import lombok.*;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @ToString
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Schedule extends BaseTimeEntity{
@@ -30,12 +27,12 @@ public class Schedule extends BaseTimeEntity{
     @OneToOne(cascade = CascadeType.ALL)
     private DateTime dateTime;
 
-//    @NotNull
-//    @Column(name = "participants")
-//    private int participants;   //
+    @NotNull
+    private int fixedNumberOfPeople;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Participation participation;
+    @NotNull
+    private int currentNumberOfPeople;
+
 
     @NotNull
     @OneToOne(cascade = CascadeType.ALL)
@@ -46,15 +43,28 @@ public class Schedule extends BaseTimeEntity{
     private String description;
 
 
-
-    public Schedule(String title, Member member, DateTime dateTime, Participation participation, Location location, String description) {
+    @Builder
+    public Schedule(String title, Member member, DateTime dateTime,
+                    int fixedNumberOfPeople, int currentNumberOfPeople,
+                    Location location, String description) {
         System.out.println("validation하는 Schedule 생성자 호출");
         checkTitleValidation(title);
-        this.member = member;
         checkTimeValidation(dateTime);
-        checkParticipantsValidation(participation);
+
         checkLocationValidation(location);
         checkDetailValidation(description);
+        // 하.............. 이게 뭐야
+        this.title = title;
+        this.member = member;
+        this.dateTime = dateTime;
+        this.fixedNumberOfPeople = fixedNumberOfPeople;
+        this.currentNumberOfPeople = currentNumberOfPeople;
+        this.location = location;
+        this.description = description;
+    }
+
+    public void update(int currentNumberOfPeople) {
+        this.currentNumberOfPeople = currentNumberOfPeople;
     }
 
     private void checkDetailValidation(String description) {
@@ -67,7 +77,6 @@ public class Schedule extends BaseTimeEntity{
         if (description.length() > 300) {
             throw new IllegalArgumentException("세부 설명은 300자를 초과하면 안됩니다.");
         }
-        this.description = description;
     }
 
     private void checkLocationValidation(Location location) {
@@ -77,14 +86,13 @@ public class Schedule extends BaseTimeEntity{
         if (location.getPlace().replace(" ", "").isEmpty()) {
             throw new IllegalArgumentException("위치가 공백 이거나 빈문자열이어서는 안됩니다.");
         }
-        this.location = location;
     }
 
     private void checkParticipantsValidation(Participation participation) {
-        if (participation.getNumberOfParticipants() < 2) {
-            throw new IllegalArgumentException("참가인원은 2명 이상이어야 합니다.");
-        }
-        this.participation = participation;
+//        if (participation.getNumberOfParticipants() < 2) {
+//            throw new IllegalArgumentException("참가인원은 2명 이상이어야 합니다.");
+//        }
+//        this.participation = participation;
     }
 
 
@@ -108,8 +116,6 @@ public class Schedule extends BaseTimeEntity{
             throw new IllegalArgumentException("종료일은 시작일보다 과거가 될 수 없습니다.");
         }
 
-        this.dateTime = dateTime;
-
     }
 
 
@@ -121,7 +127,6 @@ public class Schedule extends BaseTimeEntity{
         if (title.replace(" ", "").isEmpty()) {
             throw new IllegalArgumentException("제목은 공백이 될 수 없습니다.");
         }
-        this.title = title;
     }
 
 }

@@ -44,15 +44,15 @@ public class SchedulesService {
         for (Schedule schedule : repositoryAll) {
             responseDtoList.add(
                     AllScheduleResponseDto.builder()
-                        .id(schedule.getId())
-                        .title(schedule.getTitle())
-                        .startDateTime(schedule.getDateTime().getStartDateTime())
-                        .endDateTime(schedule.getDateTime().getEndDateTime())
-                        .participants(schedule.getParticipation().getNumberOfParticipants())
-                        .count(schedule.getParticipation().getCount())
-                        .place(schedule.getLocation().getPlace())
-                        .description(schedule.getDescription())
-                        .build());
+                            .id(schedule.getId())
+                            .title(schedule.getTitle())
+                            .startDateTime(schedule.getDateTime().getStartDateTime())
+                            .endDateTime(schedule.getDateTime().getEndDateTime())
+                            .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
+                            .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
+                            .place(schedule.getLocation().getPlace())
+                            .description(schedule.getDescription())
+                            .build());
         }
         return responseDtoList;
     }
@@ -65,14 +65,14 @@ public class SchedulesService {
         for (Schedule schedule : allByUserId) {
             responseDtoList.add(
                     MyScheduleResponseDto.builder()
-                        .id(schedule.getId())
-                        .title(schedule.getTitle())
-                        .startDateTime(schedule.getDateTime().getStartDateTime())
-                        .endDateTime(schedule.getDateTime().getEndDateTime())
-                        .participants(schedule.getParticipation().getNumberOfParticipants())
-                        .count(schedule.getParticipation().getCount())
-                        .place(schedule.getLocation().getPlace())
-                        .build()
+                            .id(schedule.getId())
+                            .title(schedule.getTitle())
+                            .startDateTime(schedule.getDateTime().getStartDateTime())
+                            .endDateTime(schedule.getDateTime().getEndDateTime())
+                            .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
+                            .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
+                            .place(schedule.getLocation().getPlace())
+                            .build()
             );
         }
 
@@ -92,8 +92,8 @@ public class SchedulesService {
                 .title(schedule.getTitle())
                 .startDateTime(schedule.getDateTime().getStartDateTime())
                 .endDateTime(schedule.getDateTime().getEndDateTime())
-                .participants(schedule.getParticipation().getNumberOfParticipants())
-                .count(schedule.getParticipation().getCount())
+                .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
+                .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
                 .place(schedule.getLocation().getPlace())
                 .description(schedule.getDescription())
                 .build();
@@ -105,18 +105,9 @@ public class SchedulesService {
                 () -> new IllegalArgumentException("유저 정보가 없습니다.")
         );
 
-//        registrationRequestDto.validation();
-//        log.info("유효성 검사 하기 전 스케쥴 타이틀 = {}", registrationRequestDto.getTitle());    // title 이 잘 나옴
-//        Schedule schedule = new Schedule(registrationRequestDto.getTitle(), currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()),
-//                new Participation(registrationRequestDto.getParticipants()), new Location(registrationRequestDto.getPlace()),
-//                registrationRequestDto.getDescription());
-//        log.info("엔티티 직접 생성 = {}", schedule.getTitle());    // null
-
-        final Schedule newSchedule = registrationRequestDto.of(
-                currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Participation(registrationRequestDto.getParticipants()), new Location(registrationRequestDto.getPlace())
+        final Schedule newSchedule =
+                registrationRequestDto.of(currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace())
         );
-
-//        log.info("유효성 검사 끝난 스케쥴 타이틀 = {}", newSchedule.getTitle()); // null
 
         final Long id = schedulesRepository.save(newSchedule).getId();
 
@@ -157,20 +148,17 @@ public class SchedulesService {
                 () -> new IllegalArgumentException("유저 정보가 없습니다.")
         );  // 로그인 유저 == 참여하기 요청한 유저
 
-        final Participation participation = schedule.getParticipation();
-        int currentCount = participation.getCount();    // 기본 값 0
-        List<MemberParticipation> memberParticipations = participation.getMemberParticipations();
+        final int fixedNumberOfPeople = schedule.getFixedNumberOfPeople();
+        int currentNumberOfPeople = schedule.getCurrentNumberOfPeople();
 
-        if (!schedule.getMember().getId().equals(member.getId())) { // 본인이 올린 게시글이 아닐 경우에만
-            if (participation.getCount() < participation.getNumberOfParticipants()) {   // 0 < 2명
-                currentCount++; // 1명
-                memberParticipations.add(new MemberParticipation(member, participation));
-
-                participation.update(currentCount, memberParticipations);
+        if (!schedule.getMember().getId().equals(member.getId())) {     // 게시글 작성자 != 참여 원하는 자
+            if (currentNumberOfPeople < fixedNumberOfPeople) {  // 1 < 2
+                currentNumberOfPeople++;
+                new Participation(member, schedule);    // 참여명단에 등록
+                schedule.update(currentNumberOfPeople);
                 return new SimpleScheduleResponseDto(schedule.getId());
-
             } else {
-                throw new IllegalAccessException("참여 모집이 마감되었습니다.");
+                throw new IllegalAccessException("모집이 마감되었습니다.");
             }
         } else {
             throw new IllegalAccessException("게시글 작성자는 본인의 모집 일정에 참여하기 기능을 사용할 수 없습니다.");

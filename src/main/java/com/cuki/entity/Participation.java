@@ -16,11 +16,13 @@ public class Participation {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private Member member;      // kelly = 13
+    private Member member;      // kelly = 13 | kelly = 13
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
-    private Schedule schedule;  // 2번 게시글에 참여
+    private Schedule schedule;  // schedule id = 2 | schedule id = 6
+
+    private String reasonForParticipation;
 
 
     public Participation(Member member, Schedule schedule) {
@@ -28,4 +30,9 @@ public class Participation {
         this.schedule = schedule;
     }
 
+    public Participation(Member member, Schedule schedule, String reasonForParticipation) {
+        this.member = member;
+        this.schedule = schedule;
+        this.reasonForParticipation = reasonForParticipation;
+    }
 }

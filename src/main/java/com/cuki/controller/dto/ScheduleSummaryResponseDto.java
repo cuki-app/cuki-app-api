@@ -1,15 +1,14 @@
 package com.cuki.controller.dto;
 
-import lombok.AllArgsConstructor;
+import com.cuki.entity.Location;
 import lombok.Builder;
 import lombok.Getter;
+
 import java.time.LocalDateTime;
 
-
 @Builder
-@AllArgsConstructor
 @Getter
-public class OneScheduleResponseDto {
+public class ScheduleSummaryResponseDto {
 
     private Long scheduleId;
 
@@ -25,9 +24,5 @@ public class OneScheduleResponseDto {
 
     private int currentNumberOfPeople;
 
-    private String details;
-
     private int numberOfPeopleWaiting;
-
-
 }

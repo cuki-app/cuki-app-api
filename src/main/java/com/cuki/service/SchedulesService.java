@@ -20,17 +20,34 @@ public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
 
 
-    public MainScheduleResponseDto getMainSchedule() {
-        List<AllScheduleResponseDto> allScheduleList = getAllSchedule();
-        List<MyScheduleResponseDto> myScheduleList = getMySchedule();
+    // 메인에서 나의 일정까지 보여주는 부분은 없어지게 될 가능성 있음
+    // deprecated
+//    public MainScheduleResponseDto getMainSchedule() {
+//        List<AllScheduleResponseDto> allScheduleList = getAllSchedule();
+//        List<MyScheduleResponseDto> myScheduleList = getMySchedule();
+//
+//        return MainScheduleResponseDto.builder()
+//                    .mySchedule(myScheduleList)
+//                    .allSchedule(allScheduleList)
+//                    .build();
+//    }
 
-        return MainScheduleResponseDto.builder()
-                    .mySchedule(myScheduleList)
-                    .allSchedule(allScheduleList)
-                    .build();
+    @Transactional
+    public SimpleScheduleResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
+        final Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
+                () -> new IllegalArgumentException("유저 정보가 없습니다.")
+        );
+
+        final Schedule newSchedule =
+                registrationRequestDto.of(currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace())
+                );
+
+        final Long id = schedulesRepository.save(newSchedule).getId();
+
+        return new SimpleScheduleResponseDto(id);
     }
 
-
+    // 메인   // getter test
     public List<AllScheduleResponseDto> getAllSchedule() {
         final List<Schedule> repositoryAll = schedulesRepository.findAll();
 
@@ -44,17 +61,54 @@ public class SchedulesService {
         for (Schedule schedule : repositoryAll) {
             responseDtoList.add(
                     AllScheduleResponseDto.builder()
-                            .id(schedule.getId())
+                            .scheduleId(schedule.getId())
                             .title(schedule.getTitle())
+                            .place(schedule.getLocation().getPlace())
                             .startDateTime(schedule.getDateTime().getStartDateTime())
                             .endDateTime(schedule.getDateTime().getEndDateTime())
                             .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
                             .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
-                            .place(schedule.getLocation().getPlace())
-                            .description(schedule.getDescription())
                             .build());
         }
         return responseDtoList;
+    }
+
+    // 일정 상세 조회
+    public OneScheduleResponseDto getOneSchedule(Long scheduleId) {
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
+        );
+
+        return OneScheduleResponseDto.builder()
+                .scheduleId(schedule.getId())
+                .title(schedule.getTitle())
+                .startDateTime(schedule.getDateTime().getStartDateTime())
+                .endDateTime(schedule.getDateTime().getEndDateTime())
+                .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
+                .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
+                .place(schedule.getLocation().getPlace())
+                .details(schedule.getDetails())
+                .numberOfPeopleWaiting(schedule.getNumberOfPeopleWaiting())
+                .build();
+    }
+
+
+    // 일정 요약 정보 보여주기
+    public ScheduleSummaryResponseDto getScheduleSummary(Long scheduleId) {
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
+        );
+
+        return ScheduleSummaryResponseDto.builder()
+                .scheduleId(schedule.getId())
+                .title(schedule.getTitle())
+                .place(schedule.getLocation().getPlace())
+                .startDateTime(schedule.getDateTime().getStartDateTime())
+                .endDateTime(schedule.getDateTime().getEndDateTime())
+                .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
+                .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
+                .numberOfPeopleWaiting(schedule.getNumberOfPeopleWaiting())
+                .build();
     }
 
 
@@ -81,38 +135,6 @@ public class SchedulesService {
         return responseDtoList;
     }
 
-
-    public OneScheduleResponseDto getOneSchedule(Long scheduleId) {
-        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
-        );
-
-        return OneScheduleResponseDto.builder()
-                .id(schedule.getId())
-                .title(schedule.getTitle())
-                .startDateTime(schedule.getDateTime().getStartDateTime())
-                .endDateTime(schedule.getDateTime().getEndDateTime())
-                .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
-                .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
-                .place(schedule.getLocation().getPlace())
-                .description(schedule.getDescription())
-                .build();
-    }
-
-    @Transactional
-    public SimpleScheduleResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
-        final Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
-                () -> new IllegalArgumentException("유저 정보가 없습니다.")
-        );
-
-        final Schedule newSchedule =
-                registrationRequestDto.of(currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace())
-        );
-
-        final Long id = schedulesRepository.save(newSchedule).getId();
-
-        return new SimpleScheduleResponseDto(id);
-    }
 
     @Transactional
     public SimpleScheduleResponseDto deleteSchedule(Long scheduleId) {
@@ -150,6 +172,7 @@ public class SchedulesService {
 
         final int fixedNumberOfPeople = schedule.getFixedNumberOfPeople();
         int currentNumberOfPeople = schedule.getCurrentNumberOfPeople();
+
 
         if (!schedule.getMember().getId().equals(member.getId())) {     // 게시글 작성자 != 참여 원하는 자
             if (currentNumberOfPeople < fixedNumberOfPeople) {  // 1 < 2

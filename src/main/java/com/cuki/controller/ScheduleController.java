@@ -14,20 +14,30 @@ public class ScheduleController {
 
     private final SchedulesService schedulesService;
 
-    @GetMapping("/")
-    public ApiResponse<MainScheduleResponseDto> getMainSchedule() {
-        return ApiResponse.ok(schedulesService.getMainSchedule());
-        // {
-        //    "timestamp": "2021-08-26T15:03:28.854+00:00",
-        //    "status": 404,
-        //    "error": "Not Found",
-        //    "path": "/schedule"
-        //}
+//    @GetMapping("/")
+//    public ApiResponse<MainScheduleResponseDto> getMainSchedule() {
+//        return ApiResponse.ok(schedulesService.getMainSchedule());
+//    }
+
+    @PostMapping("/schedules")
+    public ApiResponse<SimpleScheduleResponseDto> createSchedule(@RequestBody ScheduleRegistrationRequestDto requestDto) {
+        return ApiResponse.ok(schedulesService.createSchedule(requestDto));
     }
 
-    @GetMapping("/schedules")
+    @GetMapping("/")
     public ApiResponse<List<AllScheduleResponseDto>> getAllSchedule() {
         return ApiResponse.ok(schedulesService.getAllSchedule());
+    }
+
+    @GetMapping("/schedules/{scheduleId}")
+    public ApiResponse<OneScheduleResponseDto> getOneSchedule(@PathVariable Long scheduleId) {
+        final OneScheduleResponseDto oneSchedule = schedulesService.getOneSchedule(scheduleId);
+        return ApiResponse.ok(oneSchedule);
+    }
+
+    @GetMapping("/schedules/summary/{scheduleId}")
+    public ApiResponse<ScheduleSummaryResponseDto> getScheduleSummary(@PathVariable Long scheduleId) {
+        return ApiResponse.ok(schedulesService.getScheduleSummary(scheduleId));
     }
 
     @GetMapping("/schedules/mine")
@@ -35,25 +45,13 @@ public class ScheduleController {
         return ApiResponse.ok(schedulesService.getMySchedule());
     }
 
-    @GetMapping("/schedules/{id}")
-    public ApiResponse<OneScheduleResponseDto> getOneSchedule(@PathVariable Long id) {
-        final OneScheduleResponseDto oneSchedule = schedulesService.getOneSchedule(id);
-        return ApiResponse.ok(oneSchedule);
-    }
-
-    @PostMapping("/schedules")
-    public ApiResponse<SimpleScheduleResponseDto> createSchedule(@RequestBody ScheduleRegistrationRequestDto requestDto) {
-        final SimpleScheduleResponseDto responseDto = schedulesService.createSchedule(requestDto);
-        return ApiResponse.ok(responseDto);
-    }
-
     @DeleteMapping("/schedules/{id}")
     public ApiResponse<SimpleScheduleResponseDto> deleteSchedule(@PathVariable Long id) {
         return ApiResponse.ok(schedulesService.deleteSchedule(id));
     }
 
-    @GetMapping("/schedules/participation/{id}")
-    public ApiResponse<SimpleScheduleResponseDto> joinSchedule(@PathVariable Long id) throws IllegalAccessException {
-        return ApiResponse.ok(schedulesService.joinSchedule(id));
+    @GetMapping("/schedules/participation/{scheduleId}")
+    public ApiResponse<SimpleScheduleResponseDto> joinSchedule(@PathVariable Long scheduleId) throws IllegalAccessException {
+        return ApiResponse.ok(schedulesService.joinSchedule(scheduleId));
     }
 }

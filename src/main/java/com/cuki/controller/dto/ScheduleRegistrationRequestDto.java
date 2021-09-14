@@ -24,7 +24,7 @@ public class ScheduleRegistrationRequestDto {
 
     private String place;
 
-    private String description;
+    private String details;
 
 
     public Schedule of(Member member, DateTime dateTime, Location location) {
@@ -35,7 +35,7 @@ public class ScheduleRegistrationRequestDto {
                 .fixedNumberOfPeople(fixedNumberOfPeople)
                 .currentNumberOfPeople(1)
                 .location(location)
-                .description(description)
+                .details(details)
                 .build();
     }
 

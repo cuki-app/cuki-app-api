@@ -4,6 +4,8 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @ToString
 @Getter
@@ -20,8 +22,9 @@ public class Schedule extends BaseTimeEntity{
     @Column(name= "title", length = 100)
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member member;
+    @NotNull
+    @OneToOne(cascade = CascadeType.ALL)
+    private Location location;
 
     @NotNull
     @OneToOne(cascade = CascadeType.ALL)
@@ -33,26 +36,31 @@ public class Schedule extends BaseTimeEntity{
     @NotNull
     private int currentNumberOfPeople;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
 
     @NotNull
-    @OneToOne(cascade = CascadeType.ALL)
-    private Location location;
+    @Column(name = "details", length = 300)
+    private String details;
 
-    @NotNull
-    @Column(name = "description", length = 300)
-    private String description;
+    private int numberOfPeopleWaiting;
+
+
+//    @OneToMany(mappedBy = "participation")  // ???? 과연 지금 필요한 것인가?
+//    private List<Participation> participationList = new ArrayList<>();
+
 
 
     @Builder
     public Schedule(String title, Member member, DateTime dateTime,
                     int fixedNumberOfPeople, int currentNumberOfPeople,
-                    Location location, String description) {
+                    Location location, String details) {
         System.out.println("validation하는 Schedule 생성자 호출");
         checkTitleValidation(title);
         checkTimeValidation(dateTime);
 
         checkLocationValidation(location);
-        checkDetailValidation(description);
+        checkDetailValidation(details);
         // 하.............. 이게 뭐야
         this.title = title;
         this.member = member;
@@ -60,7 +68,7 @@ public class Schedule extends BaseTimeEntity{
         this.fixedNumberOfPeople = fixedNumberOfPeople;
         this.currentNumberOfPeople = currentNumberOfPeople;
         this.location = location;
-        this.description = description;
+        this.details = details;
     }
 
     public void update(int currentNumberOfPeople) {

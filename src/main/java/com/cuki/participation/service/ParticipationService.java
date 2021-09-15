@@ -1,13 +1,13 @@
-package com.cuki.service;
+package com.cuki.participation.service;
 
-import com.cuki.controller.PermissionResult;
-import com.cuki.controller.dto.*;
+import com.cuki.participation.domain.PermissionResult;
 import com.cuki.entity.Member;
-import com.cuki.entity.Participation;
-import com.cuki.entity.Schedule;
+import com.cuki.participation.domain.Participation;
+import com.cuki.participation.dto.*;
+import com.cuki.schedule.domain.Schedule;
 import com.cuki.repository.MemberRepository;
-import com.cuki.repository.ParticipationRepository;
-import com.cuki.repository.SchedulesRepository;
+import com.cuki.participation.repository.ParticipationRepository;
+import com.cuki.schedule.repository.SchedulesRepository;
 import com.cuki.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

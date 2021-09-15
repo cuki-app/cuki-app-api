@@ -1,8 +1,8 @@
-package com.cuki.controller;
+package com.cuki.schedule.controller;
 
 import com.cuki.controller.common.ApiResponse;
-import com.cuki.controller.dto.*;
-import com.cuki.service.SchedulesService;
+import com.cuki.schedule.dto.*;
+import com.cuki.schedule.service.SchedulesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;

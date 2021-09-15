@@ -1,6 +1,5 @@
-package com.cuki.controller.dto;
+package com.cuki.participation.dto;
 
-import com.cuki.entity.Location;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -1,19 +1,19 @@
-package com.cuki.entity;
+package com.cuki.schedule.domain;
 
+import com.cuki.entity.*;
+import com.cuki.participation.domain.Participation;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @ToString
 @Getter
 @NoArgsConstructor
 @Entity
-public class Schedule extends BaseTimeEntity{
+public class Schedule extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

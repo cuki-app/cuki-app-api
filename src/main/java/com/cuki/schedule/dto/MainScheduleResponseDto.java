@@ -1,4 +1,4 @@
-package com.cuki.controller.dto;
+package com.cuki.schedule.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

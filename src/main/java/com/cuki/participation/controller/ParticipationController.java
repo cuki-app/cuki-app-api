@@ -1,9 +1,9 @@
-package com.cuki.controller;
+package com.cuki.participation.controller;
 
 
 import com.cuki.controller.common.ApiResponse;
-import com.cuki.controller.dto.*;
-import com.cuki.service.ParticipationService;
+import com.cuki.participation.dto.*;
+import com.cuki.participation.service.ParticipationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

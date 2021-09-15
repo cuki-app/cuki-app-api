@@ -1,8 +1,10 @@
-package com.cuki.entity;
+package com.cuki.participation.domain;
 
+import com.cuki.entity.Member;
+import com.cuki.schedule.domain.Schedule;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+
 import javax.persistence.*;
 
 @NoArgsConstructor

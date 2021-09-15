@@ -1,9 +1,12 @@
-package com.cuki.service;
+package com.cuki.schedule.service;
 
-import com.cuki.controller.dto.*;
 import com.cuki.entity.*;
-import com.cuki.repository.SchedulesRepository;
+import com.cuki.schedule.repository.SchedulesRepository;
 import com.cuki.repository.MemberRepository;
+import com.cuki.schedule.domain.DateTime;
+import com.cuki.schedule.domain.Location;
+import com.cuki.schedule.domain.Schedule;
+import com.cuki.schedule.dto.*;
 import com.cuki.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

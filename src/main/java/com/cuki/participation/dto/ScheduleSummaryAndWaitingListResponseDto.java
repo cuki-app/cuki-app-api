@@ -1,7 +1,5 @@
-package com.cuki.controller.dto;
+package com.cuki.participation.dto;
 
-import com.cuki.entity.Member;
-import com.cuki.entity.Schedule;
 import lombok.Getter;
 import java.util.Set;
 

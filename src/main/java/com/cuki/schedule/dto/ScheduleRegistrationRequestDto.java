@@ -1,6 +1,9 @@
-package com.cuki.controller.dto;
+package com.cuki.schedule.dto;
 
 import com.cuki.entity.*;
+import com.cuki.schedule.domain.DateTime;
+import com.cuki.schedule.domain.Location;
+import com.cuki.schedule.domain.Schedule;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

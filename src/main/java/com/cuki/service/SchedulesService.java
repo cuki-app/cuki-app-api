@@ -20,18 +20,6 @@ public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
 
 
-    // 메인에서 나의 일정까지 보여주는 부분은 없어지게 될 가능성 있음
-    // deprecated
-//    public MainScheduleResponseDto getMainSchedule() {
-//        List<AllScheduleResponseDto> allScheduleList = getAllSchedule();
-//        List<MyScheduleResponseDto> myScheduleList = getMySchedule();
-//
-//        return MainScheduleResponseDto.builder()
-//                    .mySchedule(myScheduleList)
-//                    .allSchedule(allScheduleList)
-//                    .build();
-//    }
-
     @Transactional
     public SimpleScheduleResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
         final Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
@@ -93,25 +81,7 @@ public class SchedulesService {
     }
 
 
-    // 일정 요약 정보 보여주기
-    public ScheduleSummaryResponseDto getScheduleSummary(Long scheduleId) {
-        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
-        );
-
-        return ScheduleSummaryResponseDto.builder()
-                .scheduleId(schedule.getId())
-                .title(schedule.getTitle())
-                .place(schedule.getLocation().getPlace())
-                .startDateTime(schedule.getDateTime().getStartDateTime())
-                .endDateTime(schedule.getDateTime().getEndDateTime())
-                .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
-                .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
-                .numberOfPeopleWaiting(schedule.getNumberOfPeopleWaiting())
-                .build();
-    }
-
-
+    // 내가 등록한 모집 일정 전체 보여주기
     public List<MyScheduleResponseDto> getMySchedule() {
         final List<Schedule> allByUserId = schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId());
         List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();
@@ -119,13 +89,10 @@ public class SchedulesService {
         for (Schedule schedule : allByUserId) {
             responseDtoList.add(
                     MyScheduleResponseDto.builder()
-                            .id(schedule.getId())
+                            .scheduleId(schedule.getId())
                             .title(schedule.getTitle())
                             .startDateTime(schedule.getDateTime().getStartDateTime())
                             .endDateTime(schedule.getDateTime().getEndDateTime())
-                            .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
-                            .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
-                            .place(schedule.getLocation().getPlace())
                             .build()
             );
         }
@@ -155,37 +122,4 @@ public class SchedulesService {
         return new SimpleScheduleResponseDto(scheduleIdFromRepository);
     }
 
-    /**
-     * 모집 글을 게시한 본인이 참여하는 경우는 제외시킬 것 (o)
-     * 중복 참여의 경우 제외시킬 것
-     * 참여 하기를 두 번 요청한 경우 = 취소 or api 개별로
-     */
-    @Transactional
-    public SimpleScheduleResponseDto joinSchedule(Long scheduleId) throws IllegalAccessException {
-        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 게시글 입니다.")
-        );
-
-        final Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
-                () -> new IllegalArgumentException("유저 정보가 없습니다.")
-        );  // 로그인 유저 == 참여하기 요청한 유저
-
-        final int fixedNumberOfPeople = schedule.getFixedNumberOfPeople();
-        int currentNumberOfPeople = schedule.getCurrentNumberOfPeople();
-
-
-        if (!schedule.getMember().getId().equals(member.getId())) {     // 게시글 작성자 != 참여 원하는 자
-            if (currentNumberOfPeople < fixedNumberOfPeople) {  // 1 < 2
-                currentNumberOfPeople++;
-                new Participation(member, schedule);    // 참여명단에 등록
-                schedule.update(currentNumberOfPeople);
-                return new SimpleScheduleResponseDto(schedule.getId());
-            } else {
-                throw new IllegalAccessException("모집이 마감되었습니다.");
-            }
-        } else {
-            throw new IllegalAccessException("게시글 작성자는 본인의 모집 일정에 참여하기 기능을 사용할 수 없습니다.");
-        }
-
-    }
 }

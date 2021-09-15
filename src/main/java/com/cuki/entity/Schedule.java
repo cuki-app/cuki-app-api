@@ -5,7 +5,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @ToString
 @Getter
@@ -46,8 +48,8 @@ public class Schedule extends BaseTimeEntity{
     private int numberOfPeopleWaiting;
 
 
-//    @OneToMany(mappedBy = "participation")  // ???? 과연 지금 필요한 것인가?
-//    private List<Participation> participationList = new ArrayList<>();
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)  // ???? 과연 지금 필요한 것인가?
+    private Set<Participation> participation = new HashSet<>();
 
 
 
@@ -74,6 +76,15 @@ public class Schedule extends BaseTimeEntity{
     public void update(int currentNumberOfPeople) {
         this.currentNumberOfPeople = currentNumberOfPeople;
     }
+
+    public void updateCurrentNumberOfPeople() {
+        this.currentNumberOfPeople++;
+    }
+
+    public void updateNumberOfPeopleWaiting() {
+        this.numberOfPeopleWaiting++;
+    }
+
 
     private void checkDetailValidation(String description) {
         if (description == null) {

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -14,21 +13,13 @@ import java.time.LocalDateTime;
 @Getter
 public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> {
 
-    private Long id;
+    private Long scheduleId;
 
     private String title;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startDateTime;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endDateTime;
-
-    private int fixedNumberOfPeople;
-
-    private int currentNumberOfPeople;
-
-    private String place;
 
 
     @Override

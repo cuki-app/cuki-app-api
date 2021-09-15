@@ -2,7 +2,7 @@ package com.cuki.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import lombok.ToString;
 import javax.persistence.*;
 
 @NoArgsConstructor
@@ -12,6 +12,7 @@ public class Participation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique = true)
     private Long id;
 
     @ManyToOne
@@ -24,6 +25,9 @@ public class Participation {
 
     private String reasonForParticipation;
 
+    // default = false
+    private boolean result;
+
 
     public Participation(Member member, Schedule schedule) {
         this.member = member;
@@ -34,5 +38,9 @@ public class Participation {
         this.member = member;
         this.schedule = schedule;
         this.reasonForParticipation = reasonForParticipation;
+    }
+
+    public void updateResult(boolean answer) {
+        result = answer;
     }
 }

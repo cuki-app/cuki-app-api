@@ -6,6 +6,7 @@ import com.cuki.entity.RefreshToken;
 import com.cuki.jwt.TokenProvider;
 import com.cuki.repository.MemberRepository;
 import com.cuki.repository.RefreshTokenRepository;
+import com.cuki.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -102,6 +103,7 @@ public class AuthService {
         return tokenResponseDto;
     }
 
+    // 토큰 재발급
     @Transactional
     public TokenResponseDto reissue(TokenRequestDto tokenRequestDto) {
         // 1. RefreshToken 검증
@@ -130,5 +132,17 @@ public class AuthService {
         refreshTokenRepository.save(newRefreshToken);
 
         return tokenResponseDto;
+    }
+
+    // 로그아웃 - 리프레쉬 토큰 값 변경
+    @Transactional
+    public Boolean logout() {
+        RefreshToken refreshToken = refreshTokenRepository.findByKey(String.valueOf(SecurityUtil.getCurrentMemberId()))
+                        .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
+
+        refreshToken.updateValue("logged out");
+        refreshTokenRepository.save(refreshToken);
+
+        return true;
     }
 }

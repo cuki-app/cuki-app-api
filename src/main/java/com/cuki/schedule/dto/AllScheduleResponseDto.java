@@ -1,4 +1,4 @@
-package com.cuki.controller.dto;
+package com.cuki.schedule.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,20 +11,20 @@ import java.time.LocalDateTime;
 @Getter
 public class AllScheduleResponseDto {
 
-    private Long id;
+    private final Long scheduleId;
 
     private String title;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private LocalDateTime startDateTime;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private LocalDateTime endDateTime;
-
-    private int participants;
-
     private String place;
 
-    private String description;
+//    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")     // test
+    private LocalDateTime startDateTime;
+
+//    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime endDateTime;
+
+    private int fixedNumberOfPeople;    // 3명
+
+    private int currentNumberOfPeople;  // 1명 -> 2명 -> 3명
 
 }

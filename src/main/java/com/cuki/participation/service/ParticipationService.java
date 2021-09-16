@@ -11,6 +11,8 @@ import com.cuki.schedule.repository.SchedulesRepository;
 import com.cuki.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
@@ -97,6 +99,7 @@ public class ParticipationService {
     }
 
 
+    // srp ?
     public boolean isNotOverFixedNumber(Schedule schedule) {
         if (schedule.getCurrentNumberOfPeople() < schedule.getFixedNumberOfPeople()) {
             return true;

@@ -73,9 +73,6 @@ public class Schedule extends BaseTimeEntity {
         this.details = details;
     }
 
-    public void update(int currentNumberOfPeople) {
-        this.currentNumberOfPeople = currentNumberOfPeople;
-    }
 
     public void updateCurrentNumberOfPeople() {
         this.currentNumberOfPeople++;
@@ -83,6 +80,13 @@ public class Schedule extends BaseTimeEntity {
 
     public void updateNumberOfPeopleWaiting() {
         this.numberOfPeopleWaiting++;
+    }
+
+    public boolean isNotOverFixedNumber() {
+        if (currentNumberOfPeople < fixedNumberOfPeople) {
+            return true;
+        }
+        return false;
     }
 
 

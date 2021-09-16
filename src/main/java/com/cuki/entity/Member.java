@@ -3,6 +3,7 @@ package com.cuki.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +19,7 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Email
     @Column(unique = true)
     private String email;
 
@@ -25,8 +27,8 @@ public class Member {
     private String password;
 
     @Size(min = 2, max = 8)
-//    @Column(nullable = false, unique = true)
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
+//    @Column(nullable = false)
     private String nickname;
 
     @Column(nullable = false)

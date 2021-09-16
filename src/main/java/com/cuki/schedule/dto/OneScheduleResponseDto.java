@@ -1,31 +1,33 @@
-package com.cuki.controller.dto;
+package com.cuki.schedule.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import java.time.LocalDateTime;
 
-/**
- * @Getter 안붙이니 response 내려줄 때 500 에러 생긴다.
- */
+
 @Builder
 @AllArgsConstructor
 @Getter
 public class OneScheduleResponseDto {
 
-    private Long id;
+    private Long scheduleId;
 
     private String title;
+
+    private String place;
 
     private LocalDateTime startDateTime;
 
     private LocalDateTime endDateTime;
 
-    private int participants;
+    private int fixedNumberOfPeople;
 
-    private String place;
+    private int currentNumberOfPeople;
 
-    private String description;
+    private String details;
+
+    private int numberOfPeopleWaiting;
 
 
 }

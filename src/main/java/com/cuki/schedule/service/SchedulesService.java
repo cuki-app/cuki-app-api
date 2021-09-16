@@ -10,8 +10,14 @@ import com.cuki.schedule.dto.*;
 import com.cuki.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -22,6 +28,43 @@ public class SchedulesService {
     private final MemberRepository memberRepository;
     private final SchedulesRepository schedulesRepository;
 
+
+    public Page<Schedule> getAllSchedulesUsingPaging(Pageable pageable) {
+        return schedulesRepository.findAll(pageable);
+    }
+
+
+    public Page<Schedule> getScheduleByQueryMethod(Pageable pageable) {
+
+        final Page<Schedule> allByMemberNickname = schedulesRepository.findAllByMemberNickname("무적토마토", pageable);
+
+        for (Schedule schedule : allByMemberNickname) {
+            log.info("닉네임으로 찾은 스케쥴 - 닉네임= {}", schedule.getMember().getNickname());
+            log.info("닉네임으로 찾은 스케쥴 - 스케쥴 아이디 = {}", schedule.getId());
+        }
+
+        return schedulesRepository.findAllByMemberNickname("무적토마토", pageable);
+    }
+
+    // page test
+    public void initializing() {
+        // 왜 를 생각해볼 것
+//        final Member member = Member.builder()
+//                .nickname("테스트 사용자")
+//                .build();
+
+        for (int i = 0; i < 30; i++) {
+            Schedule schedule = Schedule.builder()
+                    .title("북카페 모임 " + (i+1))
+                    .dateTime(new DateTime(LocalDateTime.of(2021, 9, 21, 21, 32), LocalDateTime.of(2021, 10, 13, 21, 30)))
+                    .fixedNumberOfPeople(3)
+                    .currentNumberOfPeople(1)
+                    .location(new Location("합정 교보문고"))
+                    .details("더미 데이터 " + (i+1))
+                    .build();
+            schedulesRepository.save(schedule);
+        }
+    }
 
     @Transactional
     public SimpleScheduleResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
@@ -124,5 +167,4 @@ public class SchedulesService {
 
         return new SimpleScheduleResponseDto(scheduleIdFromRepository);
     }
-
 }

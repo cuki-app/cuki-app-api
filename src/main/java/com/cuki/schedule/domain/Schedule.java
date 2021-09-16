@@ -48,7 +48,7 @@ public class Schedule extends BaseTimeEntity {
     private int numberOfPeopleWaiting;
 
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)  // ???? 과연 지금 필요한 것인가?
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Participation> participation = new HashSet<>();
 
 

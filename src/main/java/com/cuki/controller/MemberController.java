@@ -18,11 +18,6 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/sign-up")
-    public ApiResponse<MemberInfoResponseDto> signup(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
-        return ApiResponse.ok(memberService.signup(signUpRequestDto));
-    }
-
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ApiResponse<MemberInfoResponseDto> getMyInfo() {

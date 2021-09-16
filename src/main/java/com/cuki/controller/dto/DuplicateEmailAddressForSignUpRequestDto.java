@@ -3,8 +3,8 @@ package com.cuki.controller.dto;
 import lombok.Getter;
 
 @Getter
-public class VerifyVerificationCodeRequestDto {
+public class DuplicateEmailAddressForSignUpRequestDto {
+
     private String email;
-    private String verificationCode;
 
 }

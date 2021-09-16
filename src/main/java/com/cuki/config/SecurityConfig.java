@@ -66,12 +66,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
+                .antMatchers("/members/sign-up/email").permitAll()
                 .antMatchers("/members/sign-up").permitAll()
-//                .antMatchers("/auth/reissue").permitAll()
+                .antMatchers("/auth/login/email").permitAll()
                 .antMatchers("/auth/login").permitAll()
-
-                .antMatchers("/email").permitAll()  // 정리
-                .antMatchers("/verifyCode").permitAll() // 정리
                 .anyRequest().authenticated()
 
                 // JwtSecurityConfig 클래스 적용

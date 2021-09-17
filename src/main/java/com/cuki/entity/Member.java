@@ -5,8 +5,6 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -28,7 +26,6 @@ public class Member {
 
     @Size(min = 2, max = 8)
     @Column(nullable = false, unique = true)
-//    @Column(nullable = false)
     private String nickname;
 
     @Column(nullable = false)
@@ -37,8 +34,5 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Authority authority;
-
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-//    private Set<Participation> participationList = new HashSet<>();
 
 }

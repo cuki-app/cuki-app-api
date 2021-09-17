@@ -51,8 +51,14 @@ public class AuthService {
         // 1. 인증코드 검증
         emailService.verifyCode(signUpRequestDto.getEmail(), signUpRequestDto.getVerificationCode());
 
-        // 2. 멤버 객체 저장
-        Member member = signUpRequestDto.toMember(passwordEncoder);
+        // 2. 닉네임 랜덤 생성
+        String nickname = Member.CreateRandomNickname();
+        while (memberRepository.existsByNickname(nickname)){
+            nickname = Member.CreateRandomNickname();
+        }
+
+        // 3. 멤버 객체 저장
+        Member member = signUpRequestDto.toMember(passwordEncoder, nickname);
 
         return MemberInfoResponseDto.of(memberRepository.save(member));
     }

@@ -10,10 +10,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SignUpRequestDto {
 
     private String email;
-    private String nickname;
     private String verificationCode;
 
-    public Member toMember(PasswordEncoder passwordEncoder) {
+    public Member toMember(PasswordEncoder passwordEncoder, String nickname) {
         return Member.builder()
                 .email(email)
                 .password(passwordEncoder.encode("1234"))

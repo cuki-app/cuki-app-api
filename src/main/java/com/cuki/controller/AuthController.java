@@ -43,4 +43,10 @@ public class AuthController {
     public ApiResponse<TokenResponseDto> reissue(@RequestBody TokenRequestDto tokenRequestDto) {
         return ApiResponse.ok(authService.reissue(tokenRequestDto));
     }
+
+    // 로그아웃
+    @PostMapping("/auth/logout")
+    public ApiResponse<Boolean> logout() {
+        return ApiResponse.ok(authService.logout());
+    }
 }

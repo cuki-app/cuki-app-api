@@ -13,7 +13,7 @@ import javax.persistence.Id;
 public class RefreshToken {
 
     @Id
-    private String key;
+    private Long key;
     private String value;
 
     public RefreshToken updateValue(String refreshToken) {

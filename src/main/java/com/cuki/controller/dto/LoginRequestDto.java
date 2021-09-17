@@ -9,9 +9,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 public class LoginRequestDto {
 
     private String email;
-    private String password;
+    private String verificationCode;
 
     public UsernamePasswordAuthenticationToken toAuthenticationToken() {
-        return new UsernamePasswordAuthenticationToken(email, password);
+        return new UsernamePasswordAuthenticationToken(email, "1234");
     }
 }

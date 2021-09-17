@@ -1,16 +1,17 @@
 package com.cuki.service;
 
-import com.cuki.controller.dto.LoginRequestDto;
-import com.cuki.controller.dto.TokenRequestDto;
-import com.cuki.controller.dto.TokenResponseDto;
+import com.cuki.controller.dto.*;
+import com.cuki.entity.Member;
 import com.cuki.entity.RefreshToken;
 import com.cuki.jwt.TokenProvider;
+import com.cuki.repository.MemberRepository;
 import com.cuki.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,29 +22,83 @@ public class AuthService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
+    private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final EmailService emailService;
+
+
+    // 회원가입 1단계 - 메일주소 중복확인 및 인증코드 전송
+    public Boolean duplicateEmailAddressForSignUp(DuplicateEmailAddressForSignUpRequestDto duplicateEmailAddressForSignUpRequestDto) throws Exception {
+        String email = duplicateEmailAddressForSignUpRequestDto.getEmail();
+
+        // 1. 메일주소 중복확인
+        if (memberRepository.existsByEmail(email)) {
+            throw new RuntimeException("이미 가입되어 있는 유저입니다.");
+        }
+
+        // 2. 해당 메일주소로 인증코드 전송
+        emailService.sendMessageForSignUp(email);
+
+        return true;
+    }
+
+    // 회원가입 최종
+    @Transactional
+    public MemberInfoResponseDto signup(SignUpRequestDto signUpRequestDto) {
+        // 1. 인증코드 검증
+        emailService.verifyCode(signUpRequestDto.getEmail(), signUpRequestDto.getVerificationCode());
+
+        // 2. 멤버 객체 저장
+        Member member = signUpRequestDto.toMember(passwordEncoder);
+
+        return MemberInfoResponseDto.of(memberRepository.save(member));
+    }
+
+    // 로그인 1단계 - 메일주소 존재 여부 및 인증코드 전송
+    public Boolean existEmailAddress(ExistEmailAddressForLoginRequestDto existEmailAddressForLoginRequestDto) throws Exception {
+        String email = existEmailAddressForLoginRequestDto.getEmail();
+
+        // 1. 메일주소 존재 여부
+        if (!memberRepository.existsByEmail(email)) {
+            throw new RuntimeException("존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.");
+        }
+
+        // 2. 해당 메일주소로 인증코드 전송
+        emailService.sendMessageForLogin(email);
+
+        return true;
+    }
+
+
+    // 로그인 최종
     @Transactional
     public TokenResponseDto login(LoginRequestDto loginRequestDto) {
-        // 1. Login ID(email)/PW 기반으로 AthenticationToken 생성
+        // 1. 인증코드 검증
+        emailService.verifyCode(loginRequestDto.getEmail(), loginRequestDto.getVerificationCode());
+
+        // 2. Login ID(email)/PW 기반으로 AthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthenticationToken();
 
-        // 2. 실제 검증이 이루어지는 단계
+        // 3. 실제 검증이 이루어지는 단계
         // authenticate 메소드가 실행될 때 CustomUserDetailService의 loadUserByUsername 메소드가 실행됨
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        // 3. 인증 정보를 기반으로 AccessToken과 RefreshToken 생성
+        // 4. 인증 정보를 기반으로 AccessToken과 RefreshToken 생성
         TokenResponseDto tokenResponseDto = tokenProvider.createToken(authentication);
 
-        // 4. RefreshToken 저장
+        log.info("리프레쉬토큰 저장 시 authentication.getName() : " + authentication.getName());
+
+        // 5. RefreshToken 저장
         RefreshToken refreshToken = RefreshToken.builder()
-                .key(authentication.getName() )
+                .key(authentication.getName())
                 .value(tokenResponseDto.getRefreshToken())
                 .build();
 
         refreshTokenRepository.save(refreshToken);
 
-        // 5. 토큰 발급
+        // 6. 토큰 발급
         return tokenResponseDto;
     }
 

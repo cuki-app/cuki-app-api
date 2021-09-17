@@ -19,8 +19,6 @@ import java.util.stream.IntStream;
 @SpringBootTest
 public class ScheduleDataTest {
 
-//    Logger log = (Logger) LoggerFactory.getLogger(ScheduleDataTest.class);
-
     @Autowired
     SchedulesRepository schedulesRepository;
 
@@ -50,7 +48,7 @@ public class ScheduleDataTest {
     @Test
     public void getPage() {
 
-        Pageable page = PageRequest.of(3, 4);
+        Pageable page = PageRequest.of(0, 4);
         // page 0: schedule no.1 ~ no.4
         // page 1: schedule no.5 ~ no.8
         // page 2: schedule no.9 ~ no.12
@@ -59,8 +57,6 @@ public class ScheduleDataTest {
         final Page<Schedule> result = schedulesRepository.findAll(page);
 
         result.forEach(s -> {
-//            log.info("title : {}", s.getTitle());
-//            log.info("details : {}", s.getDetails());
             System.out.println("제목 : " + s.getTitle());
             System.out.println("내용 : " + s.getDetails());
         });

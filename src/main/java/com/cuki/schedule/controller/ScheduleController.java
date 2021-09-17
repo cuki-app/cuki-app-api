@@ -1,8 +1,6 @@
 package com.cuki.schedule.controller;
 
 import com.cuki.controller.common.ApiResponse;
-import com.cuki.schedule.domain.DateTime;
-import com.cuki.schedule.domain.Location;
 import com.cuki.schedule.domain.Schedule;
 import com.cuki.schedule.dto.*;
 import com.cuki.schedule.service.SchedulesService;
@@ -11,9 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -41,8 +37,15 @@ public class ScheduleController {
 
     // 쿼리 파라미터로 정보 받기
     @GetMapping("/schedules/page/queryParameter")
-    public ApiResponse<Page<Schedule>> getScheduleByQueryMethod(@RequestParam int page, @RequestParam int size) {
+    public ApiResponse<Page<Schedule>> getScheduleByQueryParameter(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
+        Page<Schedule> all = schedulesService.getAllSchedulesUsingPaging(pageable);
+        return ApiResponse.ok(all);
+    }
+
+    // spring web mvc 로 더 간단하게
+    @GetMapping("/schedules/page/mvc")
+    public ApiResponse<Page<Schedule>> getScheduleByQueryMethod(Pageable pageable) {
         Page<Schedule> all = schedulesService.getAllSchedulesUsingPaging(pageable);
         return ApiResponse.ok(all);
     }

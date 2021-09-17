@@ -25,7 +25,7 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
     @Override
     public int compareTo(MyScheduleResponseDto o) {
 
-        final LocalDateTime now = LocalDateTime.now();  // 2021-08-22
+        final LocalDateTime now = LocalDateTime.now();
         final long dDays = Duration.between(now, getStartDateTime()).toDays();
         final long targetDdays = Duration.between(now, o.getStartDateTime()).toDays();
 

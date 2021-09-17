@@ -83,10 +83,7 @@ public class Schedule extends BaseTimeEntity {
     }
 
     public boolean isNotOverFixedNumber() {
-        if (currentNumberOfPeople < fixedNumberOfPeople) {
-            return true;
-        }
-        return false;
+        return currentNumberOfPeople < fixedNumberOfPeople;
     }
 
 

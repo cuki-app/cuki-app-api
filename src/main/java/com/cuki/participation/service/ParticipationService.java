@@ -8,16 +8,17 @@ import com.cuki.schedule.domain.Schedule;
 import com.cuki.repository.MemberRepository;
 import com.cuki.participation.repository.ParticipationRepository;
 import com.cuki.schedule.repository.SchedulesRepository;
+import com.cuki.schedule.utils.WriterVerification;
 import com.cuki.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 
 @Slf4j
@@ -54,6 +55,7 @@ public class ParticipationService {
      * @param requestDto
      * @return
      */
+    @Transactional
     public ParticipationSimpleResponseDto createParticipation(ApplyParticipationRequestDto requestDto) throws IllegalAccessException {
         final Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
                 () -> new IllegalArgumentException("유저 정보가 없습니다.")
@@ -63,8 +65,34 @@ public class ParticipationService {
                 () -> new IllegalArgumentException("일정이 존재하지 않습니다.")
         );
 
-        if (!schedule.getMember().getId().equals(member.getId())) {
-            if (isNotOverFixedNumber(schedule)) {
+        // 중복 참여 금지
+        if (isDuplicateParticipation(member, schedule)) {
+            throw new IllegalAccessException("중복 참여는 불가능합니다.");
+        }
+
+
+//       if (!schedule.getMember().getId().equals(member.getId())) {
+//            if (isNotOverFixedNumber(schedule)) {
+//                schedule.updateNumberOfPeopleWaiting();
+//                final Participation participation = new Participation(member, schedule, requestDto.getReasonForParticipation());
+//                log.info("participation 의 result default 값 = {}", participation.isResult());
+//                participationRepository.save(participation);
+//
+//                return ParticipationSimpleResponseDto.builder()
+//                        .scheduleId(schedule.getId())
+//                        .participationId(participation.getId())
+//                        .build();
+//
+//            } else {
+//                throw new IllegalAccessException("모집이 마감되었습니다.");
+//            }
+//        } else {
+//            throw new IllegalAccessException("게시글 작성자는 본인의 모집 일정에 참여하기 기능을 사용할 수 없습니다.");
+//        }
+
+        // 작성자이면 안되고, 모집 인원 초과가 아니어야 한다.
+        if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
+            if (schedule.isNotOverFixedNumber()) {
                 schedule.updateNumberOfPeopleWaiting();
                 final Participation participation = new Participation(member, schedule, requestDto.getReasonForParticipation());
                 log.info("participation 의 result default 값 = {}", participation.isResult());
@@ -74,7 +102,6 @@ public class ParticipationService {
                         .scheduleId(schedule.getId())
                         .participationId(participation.getId())
                         .build();
-
             } else {
                 throw new IllegalAccessException("모집이 마감되었습니다.");
             }
@@ -85,14 +112,20 @@ public class ParticipationService {
     }
 
 
-    // 참여 대기 확인하기
+    // 참여 대기 확인하기 (작성자만)
     public ScheduleSummaryAndWaitingListResponseDto getWaitingList(Long scheduleId) {
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(() -> new IllegalArgumentException("일정이 존재하지 않습니다."));
         Set<WaitingInfoResponseDto> members = new HashSet<>();
 
-        final List<Participation> participationList = participationRepository.findByScheduleId(scheduleId);
+        if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
+            final List<Participation> participationList = participationRepository.findByScheduleId(scheduleId);
 
-        for (Participation participation : participationList) {
-            members.add(new WaitingInfoResponseDto(participation.getId(), participation.getMember().getNickname()));
+            for (Participation participation : participationList) {
+                members.add(new WaitingInfoResponseDto(participation.getId(), participation.getMember().getNickname()));
+            }
+
+        } else {
+            throw new IllegalArgumentException("게시글 작성자만 볼 수 있는 정보입니다.");
         }
 
         return new ScheduleSummaryAndWaitingListResponseDto(getScheduleSummary(scheduleId), members);
@@ -108,15 +141,21 @@ public class ParticipationService {
     }
 
 
-    public WaitingDetailsInfoResponseDto getWaitingDetailsInfo(Long participationId) {
+    // 참여 대기자 정보 보기 (작성자만)
+    public WaitingDetailsInfoResponseDto getWaitingDetailsInfo(Long participationId) throws IllegalAccessException {
         Participation participation = participationRepository.findById(participationId).orElseThrow(
                 () -> new IllegalArgumentException("참여 정보가 존재하지 않습니다.")
         );
 
-        return new WaitingDetailsInfoResponseDto(participation.getId(), participation.getMember().getNickname(), participation.getReasonForParticipation());
+        if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), participation.getSchedule().getMember().getId())) {
+            return new WaitingDetailsInfoResponseDto(participation.getId(), participation.getMember().getNickname(), participation.getReasonForParticipation());
+        } else {
+            throw new IllegalAccessException("참여 대기자의 정보는 게시글 작성자만 볼 수 있습니다.");
+        }
+
     }
 
-
+    // 여기서부터
     @Transactional
     public PermissionResponseDto decidePermission(PermissionRequestDto permissionRequestDto) {
         final Participation participation = participationRepository.findById(permissionRequestDto.getParticipationId()).orElseThrow(
@@ -138,5 +177,9 @@ public class ParticipationService {
         }
 
        return new PermissionResponseDto(participation.getId(), PermissionResult.REJECT);
+    }
+
+    private boolean isDuplicateParticipation(Member member, Schedule schedule) {
+        return participationRepository.findByMemberAndSchedule(member, schedule).isPresent();
     }
 }

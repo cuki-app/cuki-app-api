@@ -56,7 +56,7 @@ public class ScheduleController {
     }
 
     @PostMapping("/schedules")
-    public ApiResponse<SimpleScheduleResponseDto> createSchedule(@RequestBody ScheduleRegistrationRequestDto requestDto) {
+    public ApiResponse<IdResponseDto> createSchedule(@RequestBody ScheduleRegistrationRequestDto requestDto) {
         return ApiResponse.ok(schedulesService.createSchedule(requestDto));
     }
 
@@ -78,7 +78,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/schedules/{id}")
-    public ApiResponse<SimpleScheduleResponseDto> deleteSchedule(@PathVariable Long id) {
+    public ApiResponse<IdResponseDto> deleteSchedule(@PathVariable Long id) {
         return ApiResponse.ok(schedulesService.deleteSchedule(id));
     }
 

@@ -7,17 +7,15 @@ import com.cuki.schedule.domain.DateTime;
 import com.cuki.schedule.domain.Location;
 import com.cuki.schedule.domain.Schedule;
 import com.cuki.schedule.dto.*;
+import com.cuki.schedule.utils.WriterVerification;
 import com.cuki.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -30,6 +28,9 @@ public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
 
 
+    /**
+     * 페이징 처리 -> 따로 레포 팔 것.
+     */
     public Page<Schedule> getAllSchedulesUsingPaging(Pageable pageable) {
         return schedulesRepository.findAll(pageable);
     }
@@ -67,33 +68,32 @@ public class SchedulesService {
         }
     }
 
+
     @Transactional
-    public SimpleScheduleResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
+    public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
         final Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
                 () -> new IllegalArgumentException("유저 정보가 없습니다.")
         );
 
-        final Schedule newSchedule =
+        final Schedule schedule =
                 registrationRequestDto.of(currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace())
                 );
 
-        final Long id = schedulesRepository.save(newSchedule).getId();
-
-        return new SimpleScheduleResponseDto(id);
+        return new IdResponseDto(schedulesRepository.save(schedule).getId());
     }
 
-    // 메인   // getter test
+    // main
     public List<AllScheduleResponseDto> getAllSchedule() {
-        final List<Schedule> repositoryAll = schedulesRepository.findAll();
+        final List<Schedule> allSchedule = schedulesRepository.findAll();
 
-        // 최신 순으로 정렬하기
-        repositoryAll.sort(
+        // 최신 순으로 정렬하기  -> dto 에서 다시 작업
+        allSchedule.sort(
                 (a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate())
         );
 
         List<AllScheduleResponseDto> responseDtoList = new ArrayList<>();
 
-        for (Schedule schedule : repositoryAll) {
+        for (Schedule schedule : allSchedule) {
             responseDtoList.add(
                     AllScheduleResponseDto.builder()
                             .scheduleId(schedule.getId())
@@ -130,10 +130,10 @@ public class SchedulesService {
 
     // 내가 등록한 모집 일정 전체 보여주기
     public List<MyScheduleResponseDto> getMySchedule() {
-        final List<Schedule> allByUserId = schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId());
-        List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();
+        final List<Schedule> allMySchedule = schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId());
 
-        for (Schedule schedule : allByUserId) {
+        List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();
+        for (Schedule schedule : allMySchedule) {
             responseDtoList.add(
                     MyScheduleResponseDto.builder()
                             .scheduleId(schedule.getId())
@@ -151,21 +151,17 @@ public class SchedulesService {
 
 
     @Transactional
-    public SimpleScheduleResponseDto deleteSchedule(Long scheduleId) {
+    public IdResponseDto deleteSchedule(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
         );
 
-        final Long writerId = schedule.getMember().getId();
-        final Long scheduleIdFromRepository = schedule.getId();
-
-        if (writerId.equals(SecurityUtil.getCurrentMemberId())) {
+        if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
             schedulesRepository.delete(schedule);
-            System.out.println("해당 스케쥴 삭제 후 '객체' 확인 = " + schedule.toString());
         } else {
-            throw new IllegalArgumentException("게시글 작성자만 삭제 할 수 있습니다.");
+            throw new IllegalArgumentException("게시글 작성자만 삭제할 수 있습니다.");
         }
 
-        return new SimpleScheduleResponseDto(scheduleIdFromRepository);
+        return new IdResponseDto(schedule.getId());
     }
 }

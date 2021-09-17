@@ -31,7 +31,7 @@ public class ParticipationController {
     }
 
     @GetMapping("/info/{participationId}")
-    public ApiResponse<WaitingDetailsInfoResponseDto> getWaitingDetailsInfo(@PathVariable Long participationId) {
+    public ApiResponse<WaitingDetailsInfoResponseDto> getWaitingDetailsInfo(@PathVariable Long participationId) throws IllegalAccessException {
         return ApiResponse.ok(participationService.getWaitingDetailsInfo(participationId));
     }
 

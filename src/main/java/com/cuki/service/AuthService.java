@@ -6,6 +6,7 @@ import com.cuki.entity.RefreshToken;
 import com.cuki.jwt.TokenProvider;
 import com.cuki.repository.MemberRepository;
 import com.cuki.repository.RefreshTokenRepository;
+import com.cuki.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,8 +51,14 @@ public class AuthService {
         // 1. 인증코드 검증
         emailService.verifyCode(signUpRequestDto.getEmail(), signUpRequestDto.getVerificationCode());
 
-        // 2. 멤버 객체 저장
-        Member member = signUpRequestDto.toMember(passwordEncoder);
+        // 2. 닉네임 랜덤 생성
+        String nickname = Member.CreateRandomNickname();
+        while (memberRepository.existsByNickname(nickname)){
+            nickname = Member.CreateRandomNickname();
+        }
+
+        // 3. 멤버 객체 저장
+        Member member = signUpRequestDto.toMember(passwordEncoder, nickname);
 
         return MemberInfoResponseDto.of(memberRepository.save(member));
     }
@@ -92,7 +99,7 @@ public class AuthService {
 
         // 5. RefreshToken 저장
         RefreshToken refreshToken = RefreshToken.builder()
-                .key(authentication.getName())
+                .key(Long.valueOf(authentication.getName()))
                 .value(tokenResponseDto.getRefreshToken())
                 .build();
 
@@ -102,6 +109,7 @@ public class AuthService {
         return tokenResponseDto;
     }
 
+    // 토큰 재발급
     @Transactional
     public TokenResponseDto reissue(TokenRequestDto tokenRequestDto) {
         // 1. RefreshToken 검증
@@ -114,7 +122,7 @@ public class AuthService {
 
         // 3. 저장소에서 Member ID를 기반으로 Refresh Token 값 가져옴
         log.info("AuthService - authentication.getName() = {}", authentication.getName());
-        RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
+        RefreshToken refreshToken = refreshTokenRepository.findByKey(Long.valueOf(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
 
         // 4. Refresh Token 일치하는지 검사
@@ -130,5 +138,12 @@ public class AuthService {
         refreshTokenRepository.save(newRefreshToken);
 
         return tokenResponseDto;
+    }
+
+    // 로그아웃 - 리프레쉬 토큰 값 변경
+    @Transactional
+    public Boolean logout() {
+        refreshTokenRepository.deleteById(SecurityUtil.getCurrentMemberId());
+        return true;
     }
 }

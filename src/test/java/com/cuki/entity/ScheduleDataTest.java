@@ -1,13 +1,12 @@
 package com.cuki.entity;
 
-import com.cuki.repository.MemberRepository;
-import com.cuki.schedule.domain.DateTime;
-import com.cuki.schedule.domain.Location;
-import com.cuki.schedule.domain.Schedule;
-import com.cuki.schedule.repository.SchedulesRepository;
+import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.repository.MemberRepository;
+import com.cuki.domain.schedule.domain.DateTime;
+import com.cuki.domain.schedule.domain.Location;
+import com.cuki.domain.schedule.domain.Schedule;
+import com.cuki.domain.schedule.repository.SchedulesRepository;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;

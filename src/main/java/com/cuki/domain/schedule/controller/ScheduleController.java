@@ -1,15 +1,9 @@
 package com.cuki.domain.schedule.controller;
 
-<<<<<<< HEAD:src/main/java/com/cuki/schedule/controller/ScheduleController.java
-import com.cuki.controller.common.ApiResponse;
-import com.cuki.schedule.domain.Schedule;
-import com.cuki.schedule.dto.*;
-import com.cuki.schedule.service.SchedulesService;
-=======
+import com.cuki.domain.schedule.domain.Schedule;
+import com.cuki.domain.schedule.service.SchedulesService;
 import com.cuki.global.common.response.ApiResponse;
 import com.cuki.domain.schedule.dto.*;
-import com.cuki.domain.schedule.service.SchedulesService;
->>>>>>> 0e5c631fe1bfe81b7f2cdb764ea9d5b757e48cd1:src/main/java/com/cuki/domain/schedule/controller/ScheduleController.java
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

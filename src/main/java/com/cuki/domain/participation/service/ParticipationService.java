@@ -1,19 +1,6 @@
-<<<<<<< HEAD:src/main/java/com/cuki/participation/service/ParticipationService.java
-package com.cuki.participation.service;
-
-import com.cuki.participation.domain.PermissionResult;
-import com.cuki.entity.Member;
-import com.cuki.participation.domain.Participation;
-import com.cuki.participation.dto.*;
-import com.cuki.schedule.domain.Schedule;
-import com.cuki.repository.MemberRepository;
-import com.cuki.participation.repository.ParticipationRepository;
-import com.cuki.schedule.repository.SchedulesRepository;
-import com.cuki.domain.schedule.utils.WriterVerification;
-import com.cuki.util.SecurityUtil;
-=======
 package com.cuki.domain.participation.service;
 
+import com.cuki.domain.schedule.utils.WriterVerification;
 import com.cuki.domain.participation.domain.PermissionResult;
 import com.cuki.domain.member.domain.Member;
 import com.cuki.domain.participation.domain.Participation;
@@ -23,7 +10,6 @@ import com.cuki.domain.member.repository.MemberRepository;
 import com.cuki.domain.participation.repository.ParticipationRepository;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
 import com.cuki.global.util.SecurityUtil;
->>>>>>> 0e5c631fe1bfe81b7f2cdb764ea9d5b757e48cd1:src/main/java/com/cuki/domain/participation/service/ParticipationService.java
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

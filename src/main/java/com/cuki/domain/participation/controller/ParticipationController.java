@@ -36,7 +36,7 @@ public class ParticipationController {
     }
 
     @PostMapping("/permission")
-    public ApiResponse<PermissionResponseDto> decidePermission(@RequestBody PermissionRequestDto permissionRequestDto) {
+    public ApiResponse<PermissionResponseDto> decidePermission(@RequestBody PermissionRequestDto permissionRequestDto) throws IllegalAccessException {
         return ApiResponse.ok(participationService.decidePermission(permissionRequestDto));
     }
 }

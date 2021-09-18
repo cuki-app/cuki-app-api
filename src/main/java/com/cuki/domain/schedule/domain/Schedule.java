@@ -3,6 +3,7 @@ package com.cuki.domain.schedule.domain;
 import com.cuki.domain.member.domain.Member;
 import com.cuki.domain.model.BaseTimeEntity;
 import com.cuki.domain.participation.domain.Participation;
+import com.cuki.domain.participation.domain.PermissionResult;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -79,8 +80,12 @@ public class Schedule extends BaseTimeEntity {
         this.currentNumberOfPeople++;
     }
 
-    public void updateNumberOfPeopleWaiting() {
-        this.numberOfPeopleWaiting++;
+    public void updateNumberOfPeopleWaiting(PermissionResult result) {
+        if (result.equals(PermissionResult.NONE)) {
+            this.numberOfPeopleWaiting++;
+        } else {
+            this.numberOfPeopleWaiting--;
+        }
     }
 
     public boolean isNotOverFixedNumber() {

@@ -18,7 +18,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
+/**
+ * 해야할 것:
+ * 1. 작성자가 '참여마감' 버튼 누른 경우
+ * 2. 확정 유저 명단
+ */
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -71,10 +75,10 @@ public class ParticipationService {
         // 작성자이면 안되고, 모집 인원 초과가 아니어야 한다.
         if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
             if (schedule.isNotOverFixedNumber()) {
-                schedule.updateNumberOfPeopleWaiting();
                 final Participation participation = new Participation(member, schedule, requestDto.getReasonForParticipation());
-                log.info("participation 의 result default 값 = {}", participation.isResult());
                 participationRepository.save(participation);
+
+                schedule.updateNumberOfPeopleWaiting(PermissionResult.NONE);
 
                 return ParticipationSimpleResponseDto.builder()
                         .scheduleId(schedule.getId())
@@ -111,15 +115,6 @@ public class ParticipationService {
     }
 
 
-    // srp ?
-    public boolean isNotOverFixedNumber(Schedule schedule) {
-        if (schedule.getCurrentNumberOfPeople() < schedule.getFixedNumberOfPeople()) {
-            return true;
-        }
-        return false;
-    }
-
-
     // 참여 대기자 정보 보기 (작성자만)
     public WaitingDetailsInfoResponseDto getWaitingDetailsInfo(Long participationId) throws IllegalAccessException {
         Participation participation = participationRepository.findById(participationId).orElseThrow(
@@ -134,28 +129,31 @@ public class ParticipationService {
 
     }
 
-    // 여기서부터
+
     @Transactional
-    public PermissionResponseDto decidePermission(PermissionRequestDto permissionRequestDto) {
+    public PermissionResponseDto decidePermission(PermissionRequestDto permissionRequestDto) throws IllegalAccessException {
         final Participation participation = participationRepository.findById(permissionRequestDto.getParticipationId()).orElseThrow(
                 () -> new IllegalArgumentException("참여 정보가 존재하지 않습니다.")
         );
         final Schedule schedule = participation.getSchedule();
 
-        if (isNotOverFixedNumber(schedule)) {   // 모집인원 초과하면 REJECT 로 응답 감.
-            if (permissionRequestDto.isAnswer()) {
-                log.info("permission = true 로직 시작");
-                schedule.updateCurrentNumberOfPeople();
-                log.info("currentNumberOfPeople = {}", schedule.getCurrentNumberOfPeople());
-
-                participation.updateResult(permissionRequestDto.isAnswer());
-                log.info("participation result = {}", participation.isResult());
-
-                return new PermissionResponseDto(participation.getId(), PermissionResult.ACCEPT);
-            }
+        if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
+            throw new IllegalAccessException("해당 기능은 작성자만 이용할 수 있습니다.");
         }
 
-       return new PermissionResponseDto(participation.getId(), PermissionResult.REJECT);
+        if (schedule.isNotOverFixedNumber() && participation.getResult().equals(PermissionResult.NONE)) {
+            if (permissionRequestDto.isAnswer()) {
+                participation.updateResult(PermissionResult.ACCEPT);
+                schedule.updateCurrentNumberOfPeople();
+                schedule.updateNumberOfPeopleWaiting(PermissionResult.ACCEPT);
+                return new PermissionResponseDto(participation.getId(), PermissionResult.ACCEPT);
+            }
+            // false
+            participation.updateResult(PermissionResult.REJECT);
+            schedule.updateNumberOfPeopleWaiting(PermissionResult.REJECT);
+            return new PermissionResponseDto(participation.getId(), PermissionResult.REJECT);
+        }
+        throw new IllegalAccessException("모집인원 초과 || 참여 신청 결정은 한 번만 할 수 있습니다.");
     }
 
     private boolean isDuplicateParticipation(Member member, Schedule schedule) {

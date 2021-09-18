@@ -27,22 +27,16 @@ public class Participation {
 
     private String reasonForParticipation;
 
-    // default = false
-    private boolean result;
-
-
-    public Participation(Member member, Schedule schedule) {
-        this.member = member;
-        this.schedule = schedule;
-    }
+    private PermissionResult result;
 
     public Participation(Member member, Schedule schedule, String reasonForParticipation) {
         this.member = member;
         this.schedule = schedule;
         this.reasonForParticipation = reasonForParticipation;
+        this.result = PermissionResult.NONE;
     }
 
-    public void updateResult(boolean answer) {
-        result = answer;
+    public void updateResult(PermissionResult result) {
+        this.result = result;
     }
 }

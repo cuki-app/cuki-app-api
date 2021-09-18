@@ -20,6 +20,11 @@ spring:
         format_sql: true
         show_sql: true
 
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+
 jwt:
   header: Authorization
   #echo 'test-testtest-test-testtest-test-testtest-test-testtest-test-testtest-test-testtest'|base64

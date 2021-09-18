@@ -3,6 +3,7 @@ package com.cuki.domain.schedule.domain;
 import com.cuki.domain.member.domain.Member;
 import com.cuki.domain.model.BaseTimeEntity;
 import com.cuki.domain.participation.domain.Participation;
+import com.cuki.domain.participation.domain.PermissionResult;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -49,7 +50,7 @@ public class Schedule extends BaseTimeEntity {
     private int numberOfPeopleWaiting;
 
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)  // ???? 과연 지금 필요한 것인가?
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Participation> participation = new HashSet<>();
 
 
@@ -79,15 +80,16 @@ public class Schedule extends BaseTimeEntity {
         this.currentNumberOfPeople++;
     }
 
-    public void updateNumberOfPeopleWaiting() {
-        this.numberOfPeopleWaiting++;
+    public void updateNumberOfPeopleWaiting(PermissionResult result) {
+        if (result.equals(PermissionResult.NONE)) {
+            this.numberOfPeopleWaiting++;
+        } else {
+            this.numberOfPeopleWaiting--;
+        }
     }
 
     public boolean isNotOverFixedNumber() {
-        if (currentNumberOfPeople < fixedNumberOfPeople) {
-            return true;
-        }
-        return false;
+        return currentNumberOfPeople < fixedNumberOfPeople;
     }
 
 

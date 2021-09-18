@@ -3,7 +3,6 @@ package com.cuki.domain.schedule.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
 import java.time.LocalDateTime;
 
 @Builder
@@ -17,14 +16,12 @@ public class AllScheduleResponseDto {
 
     private String place;
 
-//    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")     // test
     private LocalDateTime startDateTime;
 
-//    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endDateTime;
 
-    private int fixedNumberOfPeople;    // 3명
+    private int fixedNumberOfPeople;
 
-    private int currentNumberOfPeople;  // 1명 -> 2명 -> 3명
+    private int currentNumberOfPeople;
 
 }

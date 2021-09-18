@@ -1,5 +1,6 @@
 package com.cuki.domain.participation.service;
 
+import com.cuki.domain.schedule.utils.WriterVerification;
 import com.cuki.domain.participation.domain.PermissionResult;
 import com.cuki.domain.member.domain.Member;
 import com.cuki.domain.participation.domain.Participation;
@@ -17,7 +18,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
+/**
+ * 해야할 것:
+ * 1. 작성자가 '참여마감' 버튼 누른 경우
+ * 2. 확정 유저 명단
+ */
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -52,6 +57,7 @@ public class ParticipationService {
      * @param requestDto
      * @return
      */
+    @Transactional
     public ParticipationSimpleResponseDto createParticipation(ApplyParticipationRequestDto requestDto) throws IllegalAccessException {
         final Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
                 () -> new IllegalArgumentException("유저 정보가 없습니다.")
@@ -61,21 +67,27 @@ public class ParticipationService {
                 () -> new IllegalArgumentException("일정이 존재하지 않습니다.")
         );
 
-        if (!schedule.getMember().getId().equals(member.getId())) {
-            if (isNotOverFixedNumber(schedule)) {
-                schedule.updateNumberOfPeopleWaiting();
+        // 중복 참여 금지
+        if (isDuplicateParticipation(member, schedule)) {
+            throw new IllegalAccessException("중복 참여는 불가능합니다.");
+        }
+
+        // 작성자이면 안되고, 모집 인원 초과가 아니어야 한다.
+        if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
+            if (schedule.isNotOverFixedNumber()) {
                 final Participation participation = new Participation(member, schedule, requestDto.getReasonForParticipation());
-                log.info("participation 의 result default 값 = {}", participation.isResult());
                 participationRepository.save(participation);
+
+                schedule.updateNumberOfPeopleWaiting(PermissionResult.NONE);
 
                 return ParticipationSimpleResponseDto.builder()
                         .scheduleId(schedule.getId())
                         .participationId(participation.getId())
                         .build();
-
             } else {
                 throw new IllegalAccessException("모집이 마감되었습니다.");
             }
+
         } else {
             throw new IllegalAccessException("게시글 작성자는 본인의 모집 일정에 참여하기 기능을 사용할 수 없습니다.");
         }
@@ -83,58 +95,68 @@ public class ParticipationService {
     }
 
 
-    // 참여 대기 확인하기
+    // 참여 대기 확인하기 (작성자만)
     public ScheduleSummaryAndWaitingListResponseDto getWaitingList(Long scheduleId) {
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(() -> new IllegalArgumentException("일정이 존재하지 않습니다."));
         Set<WaitingInfoResponseDto> members = new HashSet<>();
 
-        final List<Participation> participationList = participationRepository.findByScheduleId(scheduleId);
+        if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
+            final List<Participation> participationList = participationRepository.findByScheduleId(scheduleId);
 
-        for (Participation participation : participationList) {
-            members.add(new WaitingInfoResponseDto(participation.getId(), participation.getMember().getNickname()));
+            for (Participation participation : participationList) {
+                members.add(new WaitingInfoResponseDto(participation.getId(), participation.getMember().getNickname()));
+            }
+
+        } else {
+            throw new IllegalArgumentException("게시글 작성자만 볼 수 있는 정보입니다.");
         }
 
         return new ScheduleSummaryAndWaitingListResponseDto(getScheduleSummary(scheduleId), members);
     }
 
 
-    // srp ?
-    public boolean isNotOverFixedNumber(Schedule schedule) {
-        if (schedule.getCurrentNumberOfPeople() < schedule.getFixedNumberOfPeople()) {
-            return true;
-        }
-        return false;
-    }
-
-
-    public WaitingDetailsInfoResponseDto getWaitingDetailsInfo(Long participationId) {
+    // 참여 대기자 정보 보기 (작성자만)
+    public WaitingDetailsInfoResponseDto getWaitingDetailsInfo(Long participationId) throws IllegalAccessException {
         Participation participation = participationRepository.findById(participationId).orElseThrow(
                 () -> new IllegalArgumentException("참여 정보가 존재하지 않습니다.")
         );
 
-        return new WaitingDetailsInfoResponseDto(participation.getId(), participation.getMember().getNickname(), participation.getReasonForParticipation());
+        if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), participation.getSchedule().getMember().getId())) {
+            return new WaitingDetailsInfoResponseDto(participation.getId(), participation.getMember().getNickname(), participation.getReasonForParticipation());
+        } else {
+            throw new IllegalAccessException("참여 대기자의 정보는 게시글 작성자만 볼 수 있습니다.");
+        }
+
     }
 
 
     @Transactional
-    public PermissionResponseDto decidePermission(PermissionRequestDto permissionRequestDto) {
+    public PermissionResponseDto decidePermission(PermissionRequestDto permissionRequestDto) throws IllegalAccessException {
         final Participation participation = participationRepository.findById(permissionRequestDto.getParticipationId()).orElseThrow(
                 () -> new IllegalArgumentException("참여 정보가 존재하지 않습니다.")
         );
         final Schedule schedule = participation.getSchedule();
 
-        if (isNotOverFixedNumber(schedule)) {   // 모집인원 초과하면 REJECT 로 응답 감.
-            if (permissionRequestDto.isAnswer()) {
-                log.info("permission = true 로직 시작");
-                schedule.updateCurrentNumberOfPeople();
-                log.info("currentNumberOfPeople = {}", schedule.getCurrentNumberOfPeople());
-
-                participation.updateResult(permissionRequestDto.isAnswer());
-                log.info("participation result = {}", participation.isResult());
-
-                return new PermissionResponseDto(participation.getId(), PermissionResult.ACCEPT);
-            }
+        if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
+            throw new IllegalAccessException("해당 기능은 작성자만 이용할 수 있습니다.");
         }
 
-       return new PermissionResponseDto(participation.getId(), PermissionResult.REJECT);
+        if (schedule.isNotOverFixedNumber() && participation.getResult().equals(PermissionResult.NONE)) {
+            if (permissionRequestDto.isAnswer()) {
+                participation.updateResult(PermissionResult.ACCEPT);
+                schedule.updateCurrentNumberOfPeople();
+                schedule.updateNumberOfPeopleWaiting(PermissionResult.ACCEPT);
+                return new PermissionResponseDto(participation.getId(), PermissionResult.ACCEPT);
+            }
+            // false
+            participation.updateResult(PermissionResult.REJECT);
+            schedule.updateNumberOfPeopleWaiting(PermissionResult.REJECT);
+            return new PermissionResponseDto(participation.getId(), PermissionResult.REJECT);
+        }
+        throw new IllegalAccessException("모집인원 초과 || 참여 신청 결정은 한 번만 할 수 있습니다.");
+    }
+
+    private boolean isDuplicateParticipation(Member member, Schedule schedule) {
+        return participationRepository.findByMemberAndSchedule(member, schedule).isPresent();
     }
 }

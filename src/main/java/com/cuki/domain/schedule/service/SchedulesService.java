@@ -1,5 +1,6 @@
 package com.cuki.domain.schedule.service;
 
+import com.cuki.domain.schedule.utils.WriterVerification;
 import com.cuki.domain.member.domain.Member;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
 import com.cuki.domain.member.repository.MemberRepository;
@@ -10,8 +11,12 @@ import com.cuki.domain.schedule.dto.*;
 import com.cuki.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -23,33 +28,72 @@ public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
 
 
+    /**
+     * 페이징 처리 -> 따로 레포 팔 것.
+     */
+    public Page<Schedule> getAllSchedulesUsingPaging(Pageable pageable) {
+        return schedulesRepository.findAll(pageable);
+    }
+
+
+    public Page<Schedule> getScheduleByQueryMethod(Pageable pageable) {
+
+        final Page<Schedule> allByMemberNickname = schedulesRepository.findAllByMemberNickname("무적토마토", pageable);
+
+        for (Schedule schedule : allByMemberNickname) {
+            log.info("닉네임으로 찾은 스케쥴 - 닉네임= {}", schedule.getMember().getNickname());
+            log.info("닉네임으로 찾은 스케쥴 - 스케쥴 아이디 = {}", schedule.getId());
+        }
+
+        return schedulesRepository.findAllByMemberNickname("무적토마토", pageable);
+    }
+
+    // page test
+    public void initializing() {
+        // 왜 를 생각해볼 것
+//        final Member member = Member.builder()
+//                .nickname("테스트 사용자")
+//                .build();
+
+        for (int i = 0; i < 30; i++) {
+            Schedule schedule = Schedule.builder()
+                    .title("북카페 모임 " + (i+1))
+                    .dateTime(new DateTime(LocalDateTime.of(2021, 9, 21, 21, 32), LocalDateTime.of(2021, 10, 13, 21, 30)))
+                    .fixedNumberOfPeople(3)
+                    .currentNumberOfPeople(1)
+                    .location(new Location("합정 교보문고"))
+                    .details("더미 데이터 " + (i+1))
+                    .build();
+            schedulesRepository.save(schedule);
+        }
+    }
+
+
     @Transactional
-    public SimpleScheduleResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
+    public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
         final Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
                 () -> new IllegalArgumentException("유저 정보가 없습니다.")
         );
 
-        final Schedule newSchedule =
+        final Schedule schedule =
                 registrationRequestDto.of(currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace())
                 );
 
-        final Long id = schedulesRepository.save(newSchedule).getId();
-
-        return new SimpleScheduleResponseDto(id);
+        return new IdResponseDto(schedulesRepository.save(schedule).getId());
     }
 
-    // 메인   // getter test
+    // main
     public List<AllScheduleResponseDto> getAllSchedule() {
-        final List<Schedule> repositoryAll = schedulesRepository.findAll();
+        final List<Schedule> allSchedule = schedulesRepository.findAll();
 
-        // 최신 순으로 정렬하기
-        repositoryAll.sort(
+        // 최신 순으로 정렬하기  -> dto 에서 다시 작업
+        allSchedule.sort(
                 (a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate())
         );
 
         List<AllScheduleResponseDto> responseDtoList = new ArrayList<>();
 
-        for (Schedule schedule : repositoryAll) {
+        for (Schedule schedule : allSchedule) {
             responseDtoList.add(
                     AllScheduleResponseDto.builder()
                             .scheduleId(schedule.getId())
@@ -85,11 +129,15 @@ public class SchedulesService {
 
 
     // 내가 등록한 모집 일정 전체 보여주기
-    public List<MyScheduleResponseDto> getMySchedule() {
-        final List<Schedule> allByUserId = schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId());
-        List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();
+    public List<MyScheduleResponseDto> getMySchedule(Long memberId) {
+        if (!SecurityUtil.getCurrentMemberId().equals(memberId)) {
+            throw new IllegalArgumentException("요청한 데이터와 로그인한 회원 데이터가 일치하지 않습니다.");
+        }
 
-        for (Schedule schedule : allByUserId) {
+        final List<Schedule> allMySchedule = schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId());
+
+        List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();
+        for (Schedule schedule : allMySchedule) {
             responseDtoList.add(
                     MyScheduleResponseDto.builder()
                             .scheduleId(schedule.getId())
@@ -107,22 +155,17 @@ public class SchedulesService {
 
 
     @Transactional
-    public SimpleScheduleResponseDto deleteSchedule(Long scheduleId) {
+    public IdResponseDto deleteSchedule(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
         );
 
-        final Long writerId = schedule.getMember().getId();
-        final Long scheduleIdFromRepository = schedule.getId();
-
-        if (writerId.equals(SecurityUtil.getCurrentMemberId())) {
+        if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
             schedulesRepository.delete(schedule);
-            System.out.println("해당 스케쥴 삭제 후 '객체' 확인 = " + schedule.toString());
         } else {
-            throw new IllegalArgumentException("게시글 작성자만 삭제 할 수 있습니다.");
+            throw new IllegalArgumentException("게시글 작성자만 삭제할 수 있습니다.");
         }
 
-        return new SimpleScheduleResponseDto(scheduleIdFromRepository);
+        return new IdResponseDto(schedule.getId());
     }
-
 }

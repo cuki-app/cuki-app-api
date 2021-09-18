@@ -72,9 +72,9 @@ public class ScheduleController {
     }
 
 
-    @GetMapping("/schedules/mine")
-    public ApiResponse<List<MyScheduleResponseDto>> getMySchedule() {
-        return ApiResponse.ok(schedulesService.getMySchedule());
+    @GetMapping("/schedules/members/{memberId}")
+    public ApiResponse<List<MyScheduleResponseDto>> getMySchedule(@PathVariable Long memberId) {
+        return ApiResponse.ok(schedulesService.getMySchedule(memberId));
     }
 
     @DeleteMapping("/schedules/{id}")

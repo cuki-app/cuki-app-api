@@ -70,26 +70,6 @@ public class ParticipationService {
             throw new IllegalAccessException("중복 참여는 불가능합니다.");
         }
 
-
-//       if (!schedule.getMember().getId().equals(member.getId())) {
-//            if (isNotOverFixedNumber(schedule)) {
-//                schedule.updateNumberOfPeopleWaiting();
-//                final Participation participation = new Participation(member, schedule, requestDto.getReasonForParticipation());
-//                log.info("participation 의 result default 값 = {}", participation.isResult());
-//                participationRepository.save(participation);
-//
-//                return ParticipationSimpleResponseDto.builder()
-//                        .scheduleId(schedule.getId())
-//                        .participationId(participation.getId())
-//                        .build();
-//
-//            } else {
-//                throw new IllegalAccessException("모집이 마감되었습니다.");
-//            }
-//        } else {
-//            throw new IllegalAccessException("게시글 작성자는 본인의 모집 일정에 참여하기 기능을 사용할 수 없습니다.");
-//        }
-
         // 작성자이면 안되고, 모집 인원 초과가 아니어야 한다.
         if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
             if (schedule.isNotOverFixedNumber()) {
@@ -105,6 +85,7 @@ public class ParticipationService {
             } else {
                 throw new IllegalAccessException("모집이 마감되었습니다.");
             }
+
         } else {
             throw new IllegalAccessException("게시글 작성자는 본인의 모집 일정에 참여하기 기능을 사용할 수 없습니다.");
         }

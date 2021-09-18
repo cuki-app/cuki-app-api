@@ -129,7 +129,11 @@ public class SchedulesService {
 
 
     // 내가 등록한 모집 일정 전체 보여주기
-    public List<MyScheduleResponseDto> getMySchedule() {
+    public List<MyScheduleResponseDto> getMySchedule(Long memberId) {
+        if (!SecurityUtil.getCurrentMemberId().equals(memberId)) {
+            throw new IllegalArgumentException("요청한 데이터와 로그인한 회원 데이터가 일치하지 않습니다.");
+        }
+
         final List<Schedule> allMySchedule = schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId());
 
         List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();

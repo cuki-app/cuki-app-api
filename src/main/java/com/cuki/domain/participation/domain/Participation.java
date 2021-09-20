@@ -1,6 +1,6 @@
 package com.cuki.domain.participation.domain;
 
-import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.schedule.domain.Schedule;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,6 @@
 package com.cuki.domain.schedule.domain;
 
-import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.model.BaseTimeEntity;
 import com.cuki.domain.participation.domain.Participation;
 import com.cuki.domain.participation.domain.PermissionResult;

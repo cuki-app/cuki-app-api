@@ -1,6 +1,6 @@
 package com.cuki.domain.participation.repository;
 
-import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.participation.domain.Participation;
 import com.cuki.domain.schedule.domain.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;

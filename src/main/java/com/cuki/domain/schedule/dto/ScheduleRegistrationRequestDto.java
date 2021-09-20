@@ -1,6 +1,6 @@
 package com.cuki.domain.schedule.dto;
 
-import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.schedule.domain.DateTime;
 import com.cuki.domain.schedule.domain.Location;
 import com.cuki.domain.schedule.domain.Schedule;

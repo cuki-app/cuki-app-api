@@ -2,7 +2,7 @@ package com.cuki.global.config;
 
 import com.cuki.global.error.JwtAccessDeniedHandler;
 import com.cuki.global.error.JwtAuthenticationEntryPoint;
-import com.cuki.domain.member.domain.jwt.TokenProvider;
+import com.cuki.domain.member.entity.jwt.TokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

@@ -1,6 +1,6 @@
 package com.cuki.entity;
 
-import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.member.repository.MemberRepository;
 import com.cuki.domain.schedule.domain.DateTime;
 import com.cuki.domain.schedule.domain.Location;

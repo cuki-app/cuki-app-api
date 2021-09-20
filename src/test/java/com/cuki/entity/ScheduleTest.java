@@ -1,6 +1,6 @@
 package com.cuki.entity;
 
-import com.cuki.domain.schedule.domain.Location;
+import com.cuki.domain.schedule.entity.Location;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

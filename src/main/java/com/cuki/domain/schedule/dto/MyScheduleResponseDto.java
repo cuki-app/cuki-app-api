@@ -1,5 +1,6 @@
 package com.cuki.domain.schedule.dto;
 
+import com.cuki.domain.schedule.entity.ScheduleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,8 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
     private LocalDateTime startDateTime;
 
     private LocalDateTime endDateTime;
+
+    private ScheduleStatus status;
 
 
     @Override

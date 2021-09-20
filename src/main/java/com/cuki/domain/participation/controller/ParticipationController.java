@@ -35,8 +35,8 @@ public class ParticipationController {
         return ApiResponse.ok(participationService.getWaitingDetailsInfo(participationId));
     }
 
-    @PostMapping("/permission")
-    public ApiResponse<PermissionResponseDto> decidePermission(@RequestBody PermissionRequestDto permissionRequestDto) throws IllegalAccessException {
-        return ApiResponse.ok(participationService.decidePermission(permissionRequestDto));
+    @PutMapping("/permission")
+    public ApiResponse<PermissionResponseDto> updatePermission(@RequestBody PermissionRequestDto permissionRequestDto) throws IllegalAccessException {
+        return ApiResponse.ok(participationService.updatePermission(permissionRequestDto));
     }
 }

@@ -1,5 +1,6 @@
 package com.cuki.domain.participation.dto;
 
+import com.cuki.domain.schedule.entity.ScheduleStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,4 +25,6 @@ public class ScheduleSummaryResponseDto {
     private int currentNumberOfPeople;
 
     private int numberOfPeopleWaiting;
+
+    private ScheduleStatus status;
 }

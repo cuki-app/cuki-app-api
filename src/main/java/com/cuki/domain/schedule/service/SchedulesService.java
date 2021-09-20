@@ -1,12 +1,13 @@
 package com.cuki.domain.schedule.service;
 
+import com.cuki.domain.schedule.entity.ScheduleStatus;
 import com.cuki.domain.schedule.utils.WriterVerification;
 import com.cuki.domain.member.domain.Member;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
 import com.cuki.domain.member.repository.MemberRepository;
-import com.cuki.domain.schedule.domain.DateTime;
-import com.cuki.domain.schedule.domain.Location;
-import com.cuki.domain.schedule.domain.Schedule;
+import com.cuki.domain.schedule.entity.DateTime;
+import com.cuki.domain.schedule.entity.Location;
+import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.dto.*;
 import com.cuki.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -103,6 +103,7 @@ public class SchedulesService {
                             .endDateTime(schedule.getDateTime().getEndDateTime())
                             .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
                             .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
+                            .status(schedule.getStatus())
                             .build());
         }
         return responseDtoList;
@@ -124,6 +125,7 @@ public class SchedulesService {
                 .place(schedule.getLocation().getPlace())
                 .details(schedule.getDetails())
                 .numberOfPeopleWaiting(schedule.getNumberOfPeopleWaiting())
+                .status(schedule.getStatus())
                 .build();
     }
 
@@ -144,6 +146,7 @@ public class SchedulesService {
                             .title(schedule.getTitle())
                             .startDateTime(schedule.getDateTime().getStartDateTime())
                             .endDateTime(schedule.getDateTime().getEndDateTime())
+                            .status(schedule.getStatus())
                             .build()
             );
         }
@@ -167,5 +170,16 @@ public class SchedulesService {
         }
 
         return new IdResponseDto(schedule.getId());
+    }
+
+    // effective java
+    @Transactional
+    public IdAndStatusResponseDto updateStatus(UpdateStatusRequestDto statusRequestDto) {
+        final Schedule schedule = schedulesRepository.findById(statusRequestDto.getScheduleId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 스케쥴 입니다."));
+        if (schedule.getStatus().equals(ScheduleStatus.DONE)) {
+            throw new IllegalArgumentException("이미 신청 마감 처리 되었습니다.");
+        }
+        schedule.updateStatus();
+        return IdAndStatusResponseDto.of(schedule);
     }
 }

@@ -1,6 +1,6 @@
 package com.cuki.domain.participation.dto;
 
-import com.cuki.domain.participation.domain.PermissionResult;
+import com.cuki.domain.participation.entity.PermissionResult;
 import lombok.Getter;
 
 @Getter

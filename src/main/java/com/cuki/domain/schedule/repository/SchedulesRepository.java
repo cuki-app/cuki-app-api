@@ -3,7 +3,7 @@ package com.cuki.domain.schedule.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import com.cuki.domain.schedule.domain.Schedule;
+import com.cuki.domain.schedule.entity.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

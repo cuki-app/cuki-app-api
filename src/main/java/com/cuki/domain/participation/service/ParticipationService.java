@@ -1,11 +1,11 @@
 package com.cuki.domain.participation.service;
 
 import com.cuki.domain.schedule.utils.WriterVerification;
-import com.cuki.domain.participation.domain.PermissionResult;
+import com.cuki.domain.participation.entity.PermissionResult;
 import com.cuki.domain.member.domain.Member;
-import com.cuki.domain.participation.domain.Participation;
+import com.cuki.domain.participation.entity.Participation;
 import com.cuki.domain.participation.dto.*;
-import com.cuki.domain.schedule.domain.Schedule;
+import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.member.repository.MemberRepository;
 import com.cuki.domain.participation.repository.ParticipationRepository;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
@@ -20,8 +20,10 @@ import java.util.Set;
 
 /**
  * 해야할 것:
- * 1. 작성자가 '참여마감' 버튼 누른 경우
- * 2. 확정 유저 명단
+ * 1. 작성자가 '참여마감' 버튼 누른 경우 -> DONE
+ * 2. 정원이 차면 자동으로 마감
+ * 3. 종료 날짜가 되면 자동으로 마감
+ * 4. 확정 유저 명단
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -48,6 +50,7 @@ public class ParticipationService {
                 .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
                 .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
                 .numberOfPeopleWaiting(schedule.getNumberOfPeopleWaiting())
+                .status(schedule.getStatus())
                 .build();
     }
 
@@ -72,7 +75,7 @@ public class ParticipationService {
             throw new IllegalAccessException("중복 참여는 불가능합니다.");
         }
 
-        // 작성자이면 안되고, 모집 인원 초과가 아니어야 한다.
+        // 작성자이면 안되고, 모집 인원 초과가 아니어야 한다. -> '모집 마감' 상태가 아니어야 한다.
         if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
             if (schedule.isNotOverFixedNumber()) {
                 final Participation participation = new Participation(member, schedule, requestDto.getReasonForParticipation());
@@ -131,7 +134,7 @@ public class ParticipationService {
 
 
     @Transactional
-    public PermissionResponseDto decidePermission(PermissionRequestDto permissionRequestDto) throws IllegalAccessException {
+    public PermissionResponseDto updatePermission(PermissionRequestDto permissionRequestDto) throws IllegalAccessException {
         final Participation participation = participationRepository.findById(permissionRequestDto.getParticipationId()).orElseThrow(
                 () -> new IllegalArgumentException("참여 정보가 존재하지 않습니다.")
         );

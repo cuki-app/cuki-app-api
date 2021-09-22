@@ -7,6 +7,8 @@ import com.cuki.domain.participation.service.ParticipationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -25,8 +27,8 @@ public class ParticipationController {
         return ApiResponse.ok(participationService.createParticipation(requestDto));
     }
 
-    @GetMapping("/check/{scheduleId}")
-    public ApiResponse<ScheduleSummaryAndWaitingListResponseDto> getWaitingList(@PathVariable Long scheduleId) {
+    @GetMapping("/list/check/none/{scheduleId}")
+    public ApiResponse<Set<WaitingInfoResponseDto>> getWaitingList(@PathVariable Long scheduleId) {
         return ApiResponse.ok(participationService.getWaitingList(scheduleId));
     }
 
@@ -38,5 +40,10 @@ public class ParticipationController {
     @PutMapping("/permission")
     public ApiResponse<PermissionResponseDto> updatePermission(@RequestBody PermissionRequestDto permissionRequestDto) throws IllegalAccessException {
         return ApiResponse.ok(participationService.updatePermission(permissionRequestDto));
+    }
+
+    @GetMapping("/list/check/{scheduleId}")
+    public ApiResponse<Set<ParticipantInfoResponseDto>> getParticipantList(@PathVariable Long scheduleId) {
+        return ApiResponse.ok(participationService.getParticipantList(scheduleId));
     }
 }

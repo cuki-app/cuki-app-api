@@ -82,6 +82,9 @@ public class Schedule extends BaseTimeEntity {
 
     public void updateCurrentNumberOfPeople() {
         this.currentNumberOfPeople++;
+        if (currentNumberOfPeople == fixedNumberOfPeople) {
+            updateStatus();
+        }
     }
 
     public void updateNumberOfPeopleWaiting(PermissionResult result) {

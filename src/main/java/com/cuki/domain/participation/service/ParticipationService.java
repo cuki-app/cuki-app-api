@@ -1,5 +1,6 @@
 package com.cuki.domain.participation.service;
 
+import com.cuki.domain.schedule.entity.ScheduleStatus;
 import com.cuki.domain.schedule.utils.WriterVerification;
 import com.cuki.domain.participation.entity.PermissionResult;
 import com.cuki.domain.member.domain.Member;
@@ -21,9 +22,11 @@ import java.util.Set;
 /**
  * 해야할 것:
  * 1. 작성자가 '참여마감' 버튼 누른 경우 -> DONE
- * 2. 정원이 차면 자동으로 마감
- * 3. 종료 날짜가 되면 자동으로 마감
- * 4. 확정 유저 명단
+ * 2. 정원이 차면 자동으로 마감 -> DONE
+ * 3. 종료 날짜가 되면 자동으로 마감 -> DONE
+ * 4. 확정 유저 명단 -> DONE
+ * 5. 참여 마감 -> 참여 신청 보내기 막기 -> DONE
+ * 6. 참여 마감 -> 참여 신청 허가 | 거절  안되게 -> DONE
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -54,12 +57,7 @@ public class ParticipationService {
                 .build();
     }
 
-    /**
-     * 1. 멀티스레드 -> 동기화 문제 어떻게 할 것인지?
-     * 2. 변경 가능성 있는 로직 -> 정책 변경: 인원이 모집 되지 않아도 작성자가 신청 마감 시킬 수 있다.
-     * @param requestDto
-     * @return
-     */
+    // 마감된 모집 일정에 참여 신청 할 수 없게
     @Transactional
     public ParticipationSimpleResponseDto createParticipation(ApplyParticipationRequestDto requestDto) throws IllegalAccessException {
         final Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
@@ -70,10 +68,8 @@ public class ParticipationService {
                 () -> new IllegalArgumentException("일정이 존재하지 않습니다.")
         );
 
-        // 중복 참여 금지
-        if (isDuplicateParticipation(member, schedule)) {
-            throw new IllegalAccessException("중복 참여는 불가능합니다.");
-        }
+        isDuplicateParticipation(member, schedule);
+        isAlreadyCompleted(schedule);
 
         // 작성자이면 안되고, 모집 인원 초과가 아니어야 한다. -> '모집 마감' 상태가 아니어야 한다.
         if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
@@ -99,22 +95,22 @@ public class ParticipationService {
 
 
     // 참여 대기 확인하기 (작성자만)
-    public ScheduleSummaryAndWaitingListResponseDto getWaitingList(Long scheduleId) {
+    public Set<WaitingInfoResponseDto> getWaitingList(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(() -> new IllegalArgumentException("일정이 존재하지 않습니다."));
         Set<WaitingInfoResponseDto> members = new HashSet<>();
 
         if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
-            final List<Participation> participationList = participationRepository.findByScheduleId(scheduleId);
+            final List<Participation> participationList = participationRepository.findByScheduleId(scheduleId); // set 기준 ?
 
             for (Participation participation : participationList) {
-                members.add(new WaitingInfoResponseDto(participation.getId(), participation.getMember().getNickname()));
+                members.add(WaitingInfoResponseDto.of(participation));
             }
 
         } else {
             throw new IllegalArgumentException("게시글 작성자만 볼 수 있는 정보입니다.");
         }
 
-        return new ScheduleSummaryAndWaitingListResponseDto(getScheduleSummary(scheduleId), members);
+        return members;
     }
 
 
@@ -140,6 +136,8 @@ public class ParticipationService {
         );
         final Schedule schedule = participation.getSchedule();
 
+        isAlreadyCompleted(schedule);
+
         if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
             throw new IllegalAccessException("해당 기능은 작성자만 이용할 수 있습니다.");
         }
@@ -159,7 +157,24 @@ public class ParticipationService {
         throw new IllegalAccessException("모집인원 초과 || 참여 신청 결정은 한 번만 할 수 있습니다.");
     }
 
-    private boolean isDuplicateParticipation(Member member, Schedule schedule) {
-        return participationRepository.findByMemberAndSchedule(member, schedule).isPresent();
+    public Set<ParticipantInfoResponseDto> getParticipantList(Long scheduleId) {
+        Set<ParticipantInfoResponseDto> members = new HashSet<>();
+        final Set<Participation> participationByAccept = participationRepository.findByScheduleIdAndResult(scheduleId, PermissionResult.ACCEPT);
+        for (Participation participation : participationByAccept) {
+            members.add(ParticipantInfoResponseDto.of(participation));
+        }
+        return  members;
+    }
+
+    private void isDuplicateParticipation(Member member, Schedule schedule) {   // participation
+        if (participationRepository.findByMemberAndSchedule(member, schedule).isPresent()) {
+            throw new IllegalArgumentException("중복 참여는 불가능 합니다.");
+        }
+    }
+
+    private void isAlreadyCompleted(Schedule schedule) {    // status - in Schedule
+        if (schedule.getStatus().equals(ScheduleStatus.DONE)) {
+            throw new IllegalArgumentException("이미 모집이 마감된 스케쥴 입니다.");
+        }
     }
 }

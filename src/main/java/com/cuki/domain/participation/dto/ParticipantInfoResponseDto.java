@@ -4,16 +4,13 @@ import com.cuki.domain.participation.entity.Participation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
-public class WaitingInfoResponseDto {
-
+@Getter
+public class ParticipantInfoResponseDto {
     private Long participationId;
-
     private String nickname;
 
-    public static WaitingInfoResponseDto of(Participation participation) {
-        return new WaitingInfoResponseDto(participation.getId(), participation.getMember().getNickname());
+    public static ParticipantInfoResponseDto of(Participation participation) {
+        return new ParticipantInfoResponseDto(participation.getId(), participation.getMember().getNickname());
     }
-
 }

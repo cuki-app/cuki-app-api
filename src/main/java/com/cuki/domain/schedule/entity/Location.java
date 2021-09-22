@@ -1,4 +1,4 @@
-package com.cuki.domain.schedule.domain;
+package com.cuki.domain.schedule.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

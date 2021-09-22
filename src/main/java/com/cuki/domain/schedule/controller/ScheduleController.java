@@ -1,6 +1,6 @@
 package com.cuki.domain.schedule.controller;
 
-import com.cuki.domain.schedule.domain.Schedule;
+import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.service.SchedulesService;
 import com.cuki.global.common.response.ApiResponse;
 import com.cuki.domain.schedule.dto.*;
@@ -80,6 +80,11 @@ public class ScheduleController {
     @DeleteMapping("/schedules/{id}")
     public ApiResponse<IdResponseDto> deleteSchedule(@PathVariable Long id) {
         return ApiResponse.ok(schedulesService.deleteSchedule(id));
+    }
+
+    @PutMapping("/schedules/status")
+    public ApiResponse<IdAndStatusResponseDto> updateStatus(@RequestBody UpdateStatusRequestDto statusRequestDto) {
+        return ApiResponse.ok(schedulesService.updateStatus(statusRequestDto));
     }
 
 }

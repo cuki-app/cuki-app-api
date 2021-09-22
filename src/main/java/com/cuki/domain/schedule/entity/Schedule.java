@@ -1,9 +1,9 @@
-package com.cuki.domain.schedule.domain;
+package com.cuki.domain.schedule.entity;
 
 import com.cuki.domain.member.domain.Member;
 import com.cuki.domain.model.BaseTimeEntity;
-import com.cuki.domain.participation.domain.Participation;
-import com.cuki.domain.participation.domain.PermissionResult;
+import com.cuki.domain.participation.entity.Participation;
+import com.cuki.domain.participation.entity.PermissionResult;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@Builder
+@AllArgsConstructor
 @ToString
 @Getter
 @NoArgsConstructor
@@ -49,6 +51,8 @@ public class Schedule extends BaseTimeEntity {
 
     private int numberOfPeopleWaiting;
 
+    @Enumerated(EnumType.STRING)
+    private ScheduleStatus status;
 
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Participation> participation = new HashSet<>();
@@ -78,6 +82,9 @@ public class Schedule extends BaseTimeEntity {
 
     public void updateCurrentNumberOfPeople() {
         this.currentNumberOfPeople++;
+        if (currentNumberOfPeople == fixedNumberOfPeople) {
+            updateStatus();
+        }
     }
 
     public void updateNumberOfPeopleWaiting(PermissionResult result) {
@@ -92,6 +99,9 @@ public class Schedule extends BaseTimeEntity {
         return currentNumberOfPeople < fixedNumberOfPeople;
     }
 
+    public void updateStatus() {
+        this.status = ScheduleStatus.DONE;
+    }
 
     private void checkDetailValidation(String description) {
         if (description == null) {

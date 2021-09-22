@@ -1,7 +1,7 @@
-package com.cuki.domain.participation.domain;
+package com.cuki.domain.participation.entity;
 
 import com.cuki.domain.member.domain.Member;
-import com.cuki.domain.schedule.domain.Schedule;
+import com.cuki.domain.schedule.entity.Schedule;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,7 +27,9 @@ public class Participation {
 
     private String reasonForParticipation;
 
+
     private PermissionResult result;
+
 
     public Participation(Member member, Schedule schedule, String reasonForParticipation) {
         this.member = member;

@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
@@ -53,7 +55,7 @@ public class ScheduleDataTest {
         // page 2: schedule no.9 ~ no.12
         // page 3: schedule no.13
 
-        final Page<Schedule> result = schedulesRepository.findAll(page);
+        final Slice<Schedule> result = schedulesRepository.findAll(page);
 
         result.forEach(s -> {
             System.out.println("제목 : " + s.getTitle());

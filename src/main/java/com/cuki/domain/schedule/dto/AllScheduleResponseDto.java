@@ -15,6 +15,8 @@ public class AllScheduleResponseDto {
 
     private String title;
 
+    private String nickname;
+
     private String place;
 
     private LocalDateTime startDateTime;

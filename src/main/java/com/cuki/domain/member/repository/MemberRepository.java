@@ -1,6 +1,6 @@
 package com.cuki.domain.member.repository;
 
-import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -3,7 +3,7 @@ package com.cuki.domain.participation.service;
 import com.cuki.domain.schedule.entity.ScheduleStatus;
 import com.cuki.domain.schedule.utils.WriterVerification;
 import com.cuki.domain.participation.entity.PermissionResult;
-import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.participation.entity.Participation;
 import com.cuki.domain.participation.dto.*;
 import com.cuki.domain.schedule.entity.Schedule;

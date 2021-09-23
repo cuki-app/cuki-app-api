@@ -2,7 +2,7 @@ package com.cuki.domain.schedule.service;
 
 import com.cuki.domain.schedule.entity.ScheduleStatus;
 import com.cuki.domain.schedule.utils.WriterVerification;
-import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
 import com.cuki.domain.member.repository.MemberRepository;
 import com.cuki.domain.schedule.entity.DateTime;

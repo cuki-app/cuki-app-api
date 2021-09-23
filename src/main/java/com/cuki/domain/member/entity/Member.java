@@ -1,4 +1,4 @@
-package com.cuki.domain.member.domain;
+package com.cuki.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;

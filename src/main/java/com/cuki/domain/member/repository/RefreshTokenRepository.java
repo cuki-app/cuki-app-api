@@ -1,6 +1,6 @@
 package com.cuki.domain.member.repository;
 
-import com.cuki.domain.member.domain.RefreshToken;
+import com.cuki.domain.member.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

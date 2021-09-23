@@ -1,7 +1,7 @@
 package com.cuki.domain.member.dto;
 
-import com.cuki.domain.member.domain.Authority;
-import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.entity.Authority;
+import com.cuki.domain.member.entity.Member;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 

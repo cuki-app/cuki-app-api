@@ -1,9 +1,9 @@
 package com.cuki.domain.member.service;
 
-import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.member.dto.*;
-import com.cuki.domain.member.domain.RefreshToken;
-import com.cuki.domain.member.domain.jwt.TokenProvider;
+import com.cuki.domain.member.entity.RefreshToken;
+import com.cuki.domain.member.entity.jwt.TokenProvider;
 import com.cuki.domain.member.repository.MemberRepository;
 import com.cuki.domain.member.repository.RefreshTokenRepository;
 import com.cuki.infra.email.EmailService;

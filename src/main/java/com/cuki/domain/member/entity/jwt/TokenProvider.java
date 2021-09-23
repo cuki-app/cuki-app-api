@@ -1,4 +1,4 @@
-package com.cuki.domain.member.domain.jwt;
+package com.cuki.domain.member.entity.jwt;
 
 import com.cuki.domain.member.dto.TokenResponseDto;
 import io.jsonwebtoken.*;

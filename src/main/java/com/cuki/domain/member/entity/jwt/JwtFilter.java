@@ -1,4 +1,4 @@
-package com.cuki.domain.member.domain.jwt;
+package com.cuki.domain.member.entity.jwt;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

@@ -1,9 +1,10 @@
 package com.cuki.domain.schedule.dto;
 
 import com.cuki.domain.member.entity.Member;
-import com.cuki.domain.schedule.domain.DateTime;
-import com.cuki.domain.schedule.domain.Location;
-import com.cuki.domain.schedule.domain.Schedule;
+import com.cuki.domain.schedule.entity.DateTime;
+import com.cuki.domain.schedule.entity.Location;
+import com.cuki.domain.schedule.entity.Schedule;
+import com.cuki.domain.schedule.entity.ScheduleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +40,7 @@ public class ScheduleRegistrationRequestDto {
                 .currentNumberOfPeople(1)
                 .location(location)
                 .details(details)
+                .status(ScheduleStatus.IN_PROGRESS)
                 .build();
     }
 

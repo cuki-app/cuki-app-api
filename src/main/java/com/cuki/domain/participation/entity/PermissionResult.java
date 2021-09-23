@@ -1,4 +1,4 @@
-package com.cuki.domain.participation.domain;
+package com.cuki.domain.participation.entity;
 
 public enum PermissionResult {
 

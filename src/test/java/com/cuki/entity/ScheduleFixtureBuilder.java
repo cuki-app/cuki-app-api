@@ -1,9 +1,16 @@
 package com.cuki.entity;
 
+<<<<<<< HEAD
 import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.schedule.domain.DateTime;
 import com.cuki.domain.schedule.domain.Location;
 import com.cuki.domain.schedule.domain.Schedule;
+=======
+import com.cuki.domain.member.domain.Member;
+import com.cuki.domain.schedule.entity.DateTime;
+import com.cuki.domain.schedule.entity.Location;
+import com.cuki.domain.schedule.entity.Schedule;
+>>>>>>> 6f02bde31d87f0f449b8ed90262a27719394f234
 
 import java.time.LocalDateTime;
 

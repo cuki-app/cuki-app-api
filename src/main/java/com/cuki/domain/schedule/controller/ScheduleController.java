@@ -1,6 +1,6 @@
 package com.cuki.domain.schedule.controller;
 
-import com.cuki.domain.schedule.domain.Schedule;
+import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.service.SchedulesService;
 import com.cuki.global.common.response.ApiResponse;
 import com.cuki.domain.schedule.dto.*;
@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -21,9 +22,9 @@ public class ScheduleController {
 
     // 페이징
     @GetMapping("/schedules/page")
-    public ApiResponse<Page<Schedule>> getAllSchedulesUsingPaging() {
+    public ApiResponse<Slice<Schedule>> getAllSchedulesUsingPaging() {
         Pageable pageable = PageRequest.of(0, 8);
-        Page<Schedule> all = schedulesService.getAllSchedulesUsingPaging(pageable);
+        Slice<Schedule> all = schedulesService.getAllSchedulesUsingPaging(pageable);
         return ApiResponse.ok(all);
     }
 
@@ -45,8 +46,8 @@ public class ScheduleController {
 
     // spring web mvc 로 더 간단하게
     @GetMapping("/schedules/page/mvc")
-    public ApiResponse<Page<Schedule>> getScheduleByQueryMethod(Pageable pageable) {
-        Page<Schedule> all = schedulesService.getAllSchedulesUsingPaging(pageable);
+    public ApiResponse<AllScheduleWithSliceResponseDto> getScheduleByQueryMethod(Pageable pageable) {
+        final AllScheduleWithSliceResponseDto all = schedulesService.getAllSchedulesWithSlice(pageable);
         return ApiResponse.ok(all);
     }
 
@@ -80,6 +81,11 @@ public class ScheduleController {
     @DeleteMapping("/schedules/{id}")
     public ApiResponse<IdResponseDto> deleteSchedule(@PathVariable Long id) {
         return ApiResponse.ok(schedulesService.deleteSchedule(id));
+    }
+
+    @PutMapping("/schedules/status")
+    public ApiResponse<IdAndStatusResponseDto> updateStatus(@RequestBody UpdateStatusRequestDto statusRequestDto) {
+        return ApiResponse.ok(schedulesService.updateStatus(statusRequestDto));
     }
 
 }

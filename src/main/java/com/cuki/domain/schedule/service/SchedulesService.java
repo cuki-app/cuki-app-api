@@ -14,8 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.stereotype.Component;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -35,6 +34,31 @@ public class SchedulesService {
      */
     public Page<Schedule> getAllSchedulesUsingPaging(Pageable pageable) {
         return schedulesRepository.findAll(pageable);
+    }
+
+    public AllScheduleWithSliceResponseDto getAllSchedulesWithSlice(Pageable pageable) {
+        final Slice<Schedule> schedulesWithSlice = schedulesRepository.findBy(pageable);
+
+        List<AllScheduleResponseDto> responseDtoList = new ArrayList<>();
+
+        for (Schedule schedule : schedulesWithSlice) {
+            responseDtoList.add(
+                    AllScheduleResponseDto.builder()
+                            .scheduleId(schedule.getId())
+                            .title(schedule.getTitle())
+//                            .nickname(schedule.getMember().getNickname())
+                            .place(schedule.getLocation().getPlace())
+                            .startDateTime(schedule.getDateTime().getStartDateTime())
+                            .endDateTime(schedule.getDateTime().getEndDateTime())
+                            .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
+                            .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
+                            .status(schedule.getStatus())
+                            .build());
+        }
+
+
+        return AllScheduleWithSliceResponseDto.of(responseDtoList, schedulesWithSlice.hasNext());
+
     }
 
 

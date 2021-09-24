@@ -18,7 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -79,11 +82,11 @@ public class SchedulesService {
 
 
 
-    // start line
+
     @Transactional
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
         final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId()).map(registrationRequestDto::toEntity)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저 입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
     }
@@ -110,31 +113,22 @@ public class SchedulesService {
 
     // 내가 등록한 모집 일정 전체 보여주기
     public List<MyScheduleResponseDto> getMySchedule(Long memberId) {
+        log.info("start time = {}", LocalDateTime.now());
         if (!SecurityUtil.getCurrentMemberId().equals(memberId)) {
             throw new IllegalArgumentException("현재 로그인한 회원과 데이터를 요청한 회원의 정보가 일치하지 않습니다.");
         }
 
-        final List<Schedule> allMySchedule = schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId());
-
         List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();
-        for (Schedule schedule : allMySchedule) {
-            responseDtoList.add(
-                    MyScheduleResponseDto.builder()
-                            .scheduleId(schedule.getId())
-                            .title(schedule.getTitle())
-                            .startDateTime(schedule.getDateTime().getStartDateTime())
-                            .endDateTime(schedule.getDateTime().getEndDateTime())
-                            .status(schedule.getStatus())
-                            .build()
-            );
-        }
 
-        // D-day 임박순으로 정렬하기
-        Collections.sort(responseDtoList);
-        return responseDtoList;
+        schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId())
+                .forEach(schedule -> responseDtoList.add(MyScheduleResponseDto.of(schedule)));
+
+        return responseDtoList.stream().sorted().collect(Collectors.toList());
+
     }
 
 
+    // Here !!
     @Transactional
     public IdResponseDto deleteSchedule(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(

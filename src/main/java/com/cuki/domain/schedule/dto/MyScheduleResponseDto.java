@@ -19,6 +19,8 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
 
     private String title;
 
+    private String nickname;
+
     private LocalDateTime startDateTime;
 
     private LocalDateTime endDateTime;
@@ -30,6 +32,7 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
         return MyScheduleResponseDto.builder()
                 .scheduleId(schedule.getId())
                 .title(schedule.getTitle())
+                .nickname(schedule.getMember().getNickname())
                 .startDateTime(schedule.getDateTime().getStartDateTime())
                 .endDateTime(schedule.getDateTime().getEndDateTime())
                 .status(schedule.getStatus())

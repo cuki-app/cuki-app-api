@@ -1,11 +1,11 @@
 package com.cuki.domain.schedule.service;
 
+import com.cuki.domain.schedule.entity.SchedulePeriod;
 import com.cuki.domain.schedule.entity.ScheduleStatus;
 import com.cuki.domain.schedule.utils.WriterVerification;
 import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
 import com.cuki.domain.member.repository.MemberRepository;
-import com.cuki.domain.schedule.entity.DateTime;
 import com.cuki.domain.schedule.entity.Location;
 import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.dto.*;
@@ -81,14 +81,16 @@ public class SchedulesService {
 //                .nickname("테스트 사용자")
 //                .build();
 
+        final LocalDateTime startDate = LocalDateTime.now().plusDays(2);
         for (int i = 0; i < 30; i++) {
             Schedule schedule = Schedule.builder()
                     .title("북카페 모임 " + (i+1))
-                    .dateTime(new DateTime(LocalDateTime.of(2021, 9, 21, 21, 32), LocalDateTime.of(2021, 10, 13, 21, 30)))
+                    .dateTime(new SchedulePeriod(startDate, startDate.plusDays(2)))
                     .fixedNumberOfPeople(3)
                     .currentNumberOfPeople(1)
                     .location(new Location("합정 교보문고"))
                     .details("더미 데이터 " + (i+1))
+                    .status(ScheduleStatus.IN_PROGRESS)
                     .build();
             schedulesRepository.save(schedule);
         }
@@ -102,13 +104,14 @@ public class SchedulesService {
         );
 
         final Schedule schedule =
-                registrationRequestDto.of(currentMember, new DateTime(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace())
+                registrationRequestDto.of(currentMember, new SchedulePeriod(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace())
                 );
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
     }
 
     // main
+    @Transactional(readOnly = true)
     public List<AllScheduleResponseDto> getAllSchedule() {
         final List<Schedule> allSchedule = schedulesRepository.findAll();
 
@@ -124,6 +127,7 @@ public class SchedulesService {
                     AllScheduleResponseDto.builder()
                             .scheduleId(schedule.getId())
                             .title(schedule.getTitle())
+                            .nickname(schedule.getMember().getNickname())
                             .place(schedule.getLocation().getPlace())
                             .startDateTime(schedule.getDateTime().getStartDateTime())
                             .endDateTime(schedule.getDateTime().getEndDateTime())

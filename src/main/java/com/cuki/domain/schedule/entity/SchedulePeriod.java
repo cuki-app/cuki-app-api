@@ -14,28 +14,27 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class DateTime {
+public class SchedulePeriod {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @NotNull
+    @NotNull(message = "시작일은 null 일 수 없습니다.")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
 
-    @NotNull
+    @NotNull(message = "종료일은 null 일 수 없습니다.")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "end_date_time")
     private LocalDateTime endDateTime;
 
 
-    public DateTime(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public SchedulePeriod(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
     }
-
 
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class Scheduler {
+public class CukiScheduler {
 
     private final SchedulesRepository schedulesRepository;
 

@@ -6,14 +6,11 @@ import com.cuki.domain.participation.entity.Participation;
 import com.cuki.domain.participation.entity.PermissionResult;
 import lombok.*;
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Builder
-@AllArgsConstructor
-@ToString
+
 @Getter
 @NoArgsConstructor
 @Entity
@@ -21,54 +18,53 @@ public class Schedule extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true)
     private Long id;
 
-    @NotNull
-    @Column(name= "title", length = 100)
+    @Column(nullable = false)
     private String title;
 
-    @NotNull
+
     @OneToOne(cascade = CascadeType.ALL)
     private Location location;
 
-    @NotNull
-    @OneToOne(cascade = CascadeType.ALL)
-    private DateTime dateTime;
 
-    @NotNull
+    @OneToOne(cascade = CascadeType.ALL)
+    private SchedulePeriod dateTime;
+
+    @Column(nullable = false)
     private int fixedNumberOfPeople;
 
-    @NotNull
+    @Column(nullable = false)
     private int currentNumberOfPeople;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @NotNull
-    @Column(name = "details", length = 300)
+
+    @Column(length = 300, nullable = false)
     private String details;
 
     private int numberOfPeopleWaiting;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ScheduleStatus status;
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)  //
     private Set<Participation> participation = new HashSet<>();
 
 
 
     @Builder
-    public Schedule(String title, Member member, DateTime dateTime,
+    public Schedule(String title, Member member, SchedulePeriod dateTime,
                     int fixedNumberOfPeople, int currentNumberOfPeople,
-                    Location location, String details) {
+                    Location location, String details, ScheduleStatus status) {
         System.out.println("validation하는 Schedule 생성자 호출");
-        checkTitleValidation(title);
-        checkTimeValidation(dateTime);
-
-        checkLocationValidation(location);
-        checkDetailValidation(details);
+//        checkTitleValidation(title);
+//        checkTimeValidation(dateTime);
+//
+//        checkLocationValidation(location);
+//        checkDetailValidation(details);
         // 하.............. 이게 뭐야
         this.title = title;
         this.member = member;
@@ -77,6 +73,7 @@ public class Schedule extends BaseTimeEntity {
         this.currentNumberOfPeople = currentNumberOfPeople;
         this.location = location;
         this.details = details;
+        this.status = status;
     }
 
 
@@ -132,7 +129,7 @@ public class Schedule extends BaseTimeEntity {
     }
 
 
-    private void checkTimeValidation(DateTime dateTime) {
+    private void checkTimeValidation(SchedulePeriod dateTime) {
         LocalDateTime startDateTime = dateTime.getStartDateTime();
         LocalDateTime endDateTime = dateTime.getEndDateTime();
 

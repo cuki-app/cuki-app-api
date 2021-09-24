@@ -60,12 +60,9 @@ public class Schedule extends BaseTimeEntity {
                     int fixedNumberOfPeople, int currentNumberOfPeople,
                     Location location, String details, ScheduleStatus status) {
         System.out.println("validation하는 Schedule 생성자 호출");
-//        checkTitleValidation(title);
-//        checkTimeValidation(dateTime);
-//
-//        checkLocationValidation(location);
+        checkTitleValidation(title);
 //        checkDetailValidation(details);
-        // 하.............. 이게 뭐야
+
         this.title = title;
         this.member = member;
         this.dateTime = dateTime;
@@ -155,10 +152,10 @@ public class Schedule extends BaseTimeEntity {
 
     private void checkTitleValidation(String title) {
         if (title == null) {
-            throw new IllegalArgumentException("제목은 필수 값입니다. null이 되면 안됩니다.");
+            throw new IllegalArgumentException("제목은 Null 일 수 없습니다.");
         }
         if (title.replace(" ", "").isEmpty()) {
-            throw new IllegalArgumentException("제목은 공백이 될 수 없습니다.");
+            throw new IllegalArgumentException("제목은 공백이거나 빈 문자열일 수 없습니다.");
         }
     }
 

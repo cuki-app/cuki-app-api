@@ -1,5 +1,6 @@
 package com.cuki.domain.schedule.service;
 
+
 import com.cuki.domain.schedule.entity.SchedulePeriod;
 import com.cuki.domain.schedule.entity.ScheduleStatus;
 import com.cuki.domain.schedule.utils.WriterVerification;
@@ -17,8 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -46,7 +49,7 @@ public class SchedulesService {
                     AllScheduleResponseDto.builder()
                             .scheduleId(schedule.getId())
                             .title(schedule.getTitle())
-//                            .nickname(schedule.getMember().getNickname())
+                            .nickname(schedule.getMember().getNickname())
                             .place(schedule.getLocation().getPlace())
                             .startDateTime(schedule.getDateTime().getStartDateTime())
                             .endDateTime(schedule.getDateTime().getEndDateTime())
@@ -71,41 +74,16 @@ public class SchedulesService {
             log.info("닉네임으로 찾은 스케쥴 - 스케쥴 아이디 = {}", schedule.getId());
         }
 
-        return schedulesRepository.findAllByMemberNickname("무적토마토", pageable);
-    }
-
-    // page test
-    public void initializing() {
-        // 왜 를 생각해볼 것
-//        final Member member = Member.builder()
-//                .nickname("테스트 사용자")
-//                .build();
-
-        final LocalDateTime startDate = LocalDateTime.now().plusDays(2);
-        for (int i = 0; i < 30; i++) {
-            Schedule schedule = Schedule.builder()
-                    .title("북카페 모임 " + (i+1))
-                    .dateTime(new SchedulePeriod(startDate, startDate.plusDays(2)))
-                    .fixedNumberOfPeople(3)
-                    .currentNumberOfPeople(1)
-                    .location(new Location("합정 교보문고"))
-                    .details("더미 데이터 " + (i+1))
-                    .status(ScheduleStatus.IN_PROGRESS)
-                    .build();
-            schedulesRepository.save(schedule);
-        }
+        return schedulesRepository.findAllByMemberNickname("납작한감자", pageable);
     }
 
 
+
+    // start line
     @Transactional
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
-        final Member currentMember = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
-                () -> new IllegalArgumentException("유저 정보가 없습니다.")
-        );
-
-        final Schedule schedule =
-                registrationRequestDto.of(currentMember, new SchedulePeriod(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()), new Location(registrationRequestDto.getPlace())
-                );
+        final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId()).map(registrationRequestDto::toEntity)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저 입니다."));
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
     }
@@ -113,57 +91,27 @@ public class SchedulesService {
     // main
     @Transactional(readOnly = true)
     public List<AllScheduleResponseDto> getAllSchedule() {
-        final List<Schedule> allSchedule = schedulesRepository.findAll();
-
-        // 최신 순으로 정렬하기  -> dto 에서 다시 작업
-        allSchedule.sort(
-                (a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate())
-        );
-
         List<AllScheduleResponseDto> responseDtoList = new ArrayList<>();
 
-        for (Schedule schedule : allSchedule) {
-            responseDtoList.add(
-                    AllScheduleResponseDto.builder()
-                            .scheduleId(schedule.getId())
-                            .title(schedule.getTitle())
-                            .nickname(schedule.getMember().getNickname())
-                            .place(schedule.getLocation().getPlace())
-                            .startDateTime(schedule.getDateTime().getStartDateTime())
-                            .endDateTime(schedule.getDateTime().getEndDateTime())
-                            .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
-                            .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
-                            .status(schedule.getStatus())
-                            .build());
-        }
+        schedulesRepository.findAll()
+                .stream()
+                .sorted((a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate()))
+                .forEach(schedule -> responseDtoList.add(AllScheduleResponseDto.of(schedule)));
+
         return responseDtoList;
     }
 
-    // 일정 상세 조회
+    // 일정 상세 조회  // SRP
     public OneScheduleResponseDto getOneSchedule(Long scheduleId) {
-        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
-        );
-
-        return OneScheduleResponseDto.builder()
-                .scheduleId(schedule.getId())
-                .title(schedule.getTitle())
-                .startDateTime(schedule.getDateTime().getStartDateTime())
-                .endDateTime(schedule.getDateTime().getEndDateTime())
-                .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
-                .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
-                .place(schedule.getLocation().getPlace())
-                .details(schedule.getDetails())
-                .numberOfPeopleWaiting(schedule.getNumberOfPeopleWaiting())
-                .status(schedule.getStatus())
-                .build();
+        return schedulesRepository.findById(scheduleId).map(OneScheduleResponseDto::of).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 모집 일정글 입니다."));
     }
 
 
     // 내가 등록한 모집 일정 전체 보여주기
     public List<MyScheduleResponseDto> getMySchedule(Long memberId) {
         if (!SecurityUtil.getCurrentMemberId().equals(memberId)) {
-            throw new IllegalArgumentException("요청한 데이터와 로그인한 회원 데이터가 일치하지 않습니다.");
+            throw new IllegalArgumentException("현재 로그인한 회원과 데이터를 요청한 회원의 정보가 일치하지 않습니다.");
         }
 
         final List<Schedule> allMySchedule = schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId());

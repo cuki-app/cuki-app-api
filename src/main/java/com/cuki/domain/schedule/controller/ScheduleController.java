@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 
@@ -51,10 +50,7 @@ public class ScheduleController {
         return ApiResponse.ok(all);
     }
 
-    @PostConstruct
-    public void initializing() {
-        schedulesService.initializing();
-    }
+
 
     @PostMapping("/schedules")
     public ApiResponse<IdResponseDto> createSchedule(@RequestBody ScheduleRegistrationRequestDto requestDto) {

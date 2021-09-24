@@ -31,16 +31,16 @@ public class ScheduleRegistrationRequestDto {
     private String details;
 
 
-    public Schedule of(Member member, SchedulePeriod dateTime, Location location) {
+    public Schedule toEntity(Member member) {
         return Schedule.builder()
                 .title(title)
                 .member(member)
-                .dateTime(dateTime)
+                .dateTime(new SchedulePeriod(startDateTime, endDateTime))
                 .fixedNumberOfPeople(fixedNumberOfPeople)
-                .currentNumberOfPeople(1)
-                .location(location)
+                .currentNumberOfPeople(1)   //
+                .location(new Location(place))
                 .details(details)
-                .status(ScheduleStatus.IN_PROGRESS)
+                .status(ScheduleStatus.IN_PROGRESS) //
                 .build();
     }
 

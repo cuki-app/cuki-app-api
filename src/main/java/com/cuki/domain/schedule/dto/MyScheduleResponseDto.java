@@ -1,5 +1,6 @@
 package com.cuki.domain.schedule.dto;
 
+import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.entity.ScheduleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +26,16 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
     private ScheduleStatus status;
 
 
+    public static MyScheduleResponseDto of(Schedule schedule) {
+        return MyScheduleResponseDto.builder()
+                .scheduleId(schedule.getId())
+                .title(schedule.getTitle())
+                .startDateTime(schedule.getDateTime().getStartDateTime())
+                .endDateTime(schedule.getDateTime().getEndDateTime())
+                .status(schedule.getStatus())
+                .build();
+    }
+
     @Override
     public int compareTo(MyScheduleResponseDto o) {
 
@@ -34,4 +45,5 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
 
         return Long.compare(dDays, targetDdays);
     }
+
 }

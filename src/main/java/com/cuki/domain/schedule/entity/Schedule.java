@@ -54,11 +54,8 @@ public class Schedule extends BaseTimeEntity {
     private Set<Participation> participation = new HashSet<>();
 
 
-
     @Builder
-    public Schedule(String title, Member member, SchedulePeriod dateTime,
-                    int fixedNumberOfPeople, int currentNumberOfPeople,
-                    Location location, String details, ScheduleStatus status) {
+    public Schedule(String title, Member member, SchedulePeriod dateTime, int fixedNumberOfPeople, int currentNumberOfPeople, Location location, String details, ScheduleStatus status) {
         System.out.println("validation하는 Schedule 생성자 호출");
         checkTitleValidation(title);
 //        checkDetailValidation(details);

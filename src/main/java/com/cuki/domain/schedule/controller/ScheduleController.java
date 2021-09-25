@@ -1,14 +1,9 @@
 package com.cuki.domain.schedule.controller;
 
-import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.service.SchedulesService;
 import com.cuki.global.common.response.ApiResponse;
 import com.cuki.domain.schedule.dto.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -18,38 +13,6 @@ import java.util.List;
 public class ScheduleController {
 
     private final SchedulesService schedulesService;
-
-    // 페이징
-    @GetMapping("/schedules/page")
-    public ApiResponse<Slice<Schedule>> getAllSchedulesUsingPaging() {
-        Pageable pageable = PageRequest.of(0, 8);
-        Slice<Schedule> all = schedulesService.getAllSchedulesUsingPaging(pageable);
-        return ApiResponse.ok(all);
-    }
-
-    // 쿼리 메서드 사용
-    @GetMapping("/schedules/page/queryMethod")
-    public ApiResponse<Page<Schedule>> getScheduleByQueryMethod() {
-        Pageable pageable = PageRequest.of(0, 3);
-        final Page<Schedule> schedules = schedulesService.getScheduleByQueryMethod(pageable);
-        return ApiResponse.ok(schedules);
-    }
-
-    // 쿼리 파라미터로 정보 받기
-    @GetMapping("/schedules/page/queryParameter")
-    public ApiResponse<Page<Schedule>> getScheduleByQueryParameter(@RequestParam int page, @RequestParam int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Schedule> all = schedulesService.getAllSchedulesUsingPaging(pageable);
-        return ApiResponse.ok(all);
-    }
-
-    // spring web mvc 로 더 간단하게
-    @GetMapping("/schedules/page/mvc")
-    public ApiResponse<AllScheduleWithSliceResponseDto> getScheduleByQueryMethod(Pageable pageable) {
-        final AllScheduleWithSliceResponseDto all = schedulesService.getAllSchedulesWithSlice(pageable);
-        return ApiResponse.ok(all);
-    }
-
 
 
     @PostMapping("/schedules")

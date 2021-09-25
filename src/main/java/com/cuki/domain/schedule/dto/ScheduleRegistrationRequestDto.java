@@ -32,12 +32,13 @@ public class ScheduleRegistrationRequestDto {
 
 
     public Schedule toEntity(Member member) {
+        final int ONESELF = 1;
         return Schedule.builder()
                 .title(title)
                 .member(member)
                 .dateTime(new SchedulePeriod(startDateTime, endDateTime))
                 .fixedNumberOfPeople(fixedNumberOfPeople)
-                .currentNumberOfPeople(1)   //
+                .currentNumberOfPeople(ONESELF)   //
                 .location(new Location(place))
                 .details(details)
                 .status(ScheduleStatus.IN_PROGRESS) //

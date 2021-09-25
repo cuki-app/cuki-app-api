@@ -10,9 +10,7 @@ import com.cuki.domain.schedule.entity.ScheduleStatus;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor

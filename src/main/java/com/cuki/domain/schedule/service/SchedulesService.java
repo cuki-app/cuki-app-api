@@ -1,30 +1,21 @@
 package com.cuki.domain.schedule.service;
 
 
-import com.cuki.domain.schedule.entity.SchedulePeriod;
+
 import com.cuki.domain.schedule.entity.ScheduleStatus;
 import com.cuki.domain.schedule.utils.WriterVerification;
-import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
 import com.cuki.domain.member.repository.MemberRepository;
-import com.cuki.domain.schedule.entity.Location;
 import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.dto.*;
 import com.cuki.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,54 +24,6 @@ public class SchedulesService {
 
     private final MemberRepository memberRepository;
     private final SchedulesRepository schedulesRepository;
-
-
-    /**
-     * 페이징 처리 -> 따로 레포 팔 것.
-     */
-    public Page<Schedule> getAllSchedulesUsingPaging(Pageable pageable) {
-        return schedulesRepository.findAll(pageable);
-    }
-
-    public AllScheduleWithSliceResponseDto getAllSchedulesWithSlice(Pageable pageable) {
-        final Slice<Schedule> schedulesWithSlice = schedulesRepository.findBy(pageable);
-
-        List<AllScheduleResponseDto> responseDtoList = new ArrayList<>();
-
-        for (Schedule schedule : schedulesWithSlice) {
-            responseDtoList.add(
-                    AllScheduleResponseDto.builder()
-                            .scheduleId(schedule.getId())
-                            .title(schedule.getTitle())
-                            .nickname(schedule.getMember().getNickname())
-                            .place(schedule.getLocation().getPlace())
-                            .startDateTime(schedule.getDateTime().getStartDateTime())
-                            .endDateTime(schedule.getDateTime().getEndDateTime())
-                            .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
-                            .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
-                            .status(schedule.getStatus())
-                            .build());
-        }
-
-
-        return AllScheduleWithSliceResponseDto.of(responseDtoList, schedulesWithSlice.hasNext());
-
-    }
-
-
-    public Page<Schedule> getScheduleByQueryMethod(Pageable pageable) {
-
-        final Page<Schedule> allByMemberNickname = schedulesRepository.findAllByMemberNickname("무적토마토", pageable);
-
-        for (Schedule schedule : allByMemberNickname) {
-            log.info("닉네임으로 찾은 스케쥴 - 닉네임= {}", schedule.getMember().getNickname());
-            log.info("닉네임으로 찾은 스케쥴 - 스케쥴 아이디 = {}", schedule.getId());
-        }
-
-        return schedulesRepository.findAllByMemberNickname("납작한감자", pageable);
-    }
-
-
 
 
     @Transactional

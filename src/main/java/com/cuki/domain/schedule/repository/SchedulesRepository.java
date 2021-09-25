@@ -1,6 +1,5 @@
 package com.cuki.domain.schedule.repository;
 
-
 import com.cuki.domain.schedule.entity.ScheduleStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,12 +12,6 @@ public interface SchedulesRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findAllByMemberId(Long memberId);
 
-    Page<Schedule> findAllByMemberNickname(String nickname, Pageable pageable);
-
     List<Schedule> findAllByStatus(ScheduleStatus status);
-
-    Slice<Schedule> findBy(Pageable pageable);
-
-
 
 }

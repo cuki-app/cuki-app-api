@@ -1,7 +1,5 @@
 package com.cuki.domain.schedule.service;
 
-
-
 import com.cuki.domain.schedule.entity.ScheduleStatus;
 import com.cuki.domain.schedule.utils.WriterVerification;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
@@ -28,7 +26,8 @@ public class SchedulesService {
 
     @Transactional
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
-        final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId()).map(registrationRequestDto::toEntity)
+        final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .map(registrationRequestDto::toEntity)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
@@ -49,8 +48,9 @@ public class SchedulesService {
 
     // 일정 상세 조회  // SRP
     public OneScheduleResponseDto getOneSchedule(Long scheduleId) {
-        return schedulesRepository.findById(scheduleId).map(OneScheduleResponseDto::of).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 모집 일정글 입니다."));
+        return schedulesRepository.findById(scheduleId)
+                .map(OneScheduleResponseDto::of)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 모집 일정글 입니다."));
     }
 
 
@@ -71,7 +71,6 @@ public class SchedulesService {
     }
 
 
-    // Here !!
     @Transactional
     public IdResponseDto deleteSchedule(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
@@ -87,14 +86,16 @@ public class SchedulesService {
         return new IdResponseDto(schedule.getId());
     }
 
-    // effective java
+
     @Transactional
-    public IdAndStatusResponseDto updateStatus(UpdateStatusRequestDto statusRequestDto) {
-        final Schedule schedule = schedulesRepository.findById(statusRequestDto.getScheduleId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 스케쥴 입니다."));
+    public IdAndStatusResponseDto closeUpSchedule(CloseUpScheduleRequestDto closeUpRequestDto) {
+        final Schedule schedule = schedulesRepository.findById(closeUpRequestDto.getScheduleId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 스케쥴 입니다."));
         if (schedule.getStatus().equals(ScheduleStatus.DONE)) {
             throw new IllegalArgumentException("이미 신청 마감 처리 되었습니다.");
         }
-        schedule.updateStatus();
+        schedule.updateStatusToDone();
         return IdAndStatusResponseDto.of(schedule);
     }
+
 }
+

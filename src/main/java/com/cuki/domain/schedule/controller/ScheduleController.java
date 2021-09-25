@@ -43,8 +43,8 @@ public class ScheduleController {
     }
 
     @PutMapping("/schedules/status")
-    public ApiResponse<IdAndStatusResponseDto> updateStatus(@RequestBody UpdateStatusRequestDto statusRequestDto) {
-        return ApiResponse.ok(schedulesService.updateStatus(statusRequestDto));
+    public ApiResponse<IdAndStatusResponseDto> closeUpSchedule(@RequestBody CloseUpScheduleRequestDto closeUpRequestDto) {
+        return ApiResponse.ok(schedulesService.closeUpSchedule(closeUpRequestDto));
     }
 
 }

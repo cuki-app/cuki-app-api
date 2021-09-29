@@ -1,5 +1,6 @@
 package com.cuki.domain.schedule.dto;
 
+import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.entity.ScheduleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,5 +29,19 @@ public class AllScheduleResponseDto {
     private int currentNumberOfPeople;
 
     private ScheduleStatus status;
+
+    public static AllScheduleResponseDto of(Schedule schedule) {
+        return AllScheduleResponseDto.builder()
+                .scheduleId(schedule.getId())
+                .title(schedule.getTitle())
+                .nickname(schedule.getMember().getNickname())
+                .place(schedule.getLocation().getPlace())
+                .startDateTime(schedule.getDateTime().getStartDateTime())
+                .endDateTime(schedule.getDateTime().getEndDateTime())
+                .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
+                .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
+                .status(schedule.getStatus())
+                .build();
+    }
 
 }

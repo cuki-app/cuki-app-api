@@ -8,7 +8,7 @@ import com.cuki.domain.comment.entity.Comment;
 import com.cuki.domain.comment.repository.CommentRepository;
 import com.cuki.domain.member.entity.Member;
 import com.cuki.domain.member.repository.MemberRepository;
-import com.cuki.domain.schedule.domain.Schedule;
+import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
 import com.cuki.global.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;

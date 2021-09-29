@@ -1,16 +1,10 @@
 package com.cuki.entity;
 
-<<<<<<< HEAD
 import com.cuki.domain.member.entity.Member;
-import com.cuki.domain.schedule.domain.DateTime;
-import com.cuki.domain.schedule.domain.Location;
-import com.cuki.domain.schedule.domain.Schedule;
-=======
-import com.cuki.domain.member.domain.Member;
-import com.cuki.domain.schedule.entity.DateTime;
+import com.cuki.domain.schedule.entity.SchedulePeriod;
 import com.cuki.domain.schedule.entity.Location;
 import com.cuki.domain.schedule.entity.Schedule;
->>>>>>> 6f02bde31d87f0f449b8ed90262a27719394f234
+import com.cuki.domain.schedule.entity.ScheduleStatus;
 
 import java.time.LocalDateTime;
 
@@ -22,8 +16,9 @@ public class ScheduleFixtureBuilder {
     private int fixedNumberOfPeople = 2;
     private int currentNumberOfPeople = 1;
     private Location location = new Location("광화문 교보문고");
-    private String description = "장소에 대한 세부 설명입니다.";
+    private String details = "장소에 대한 세부 설명입니다.";
     private Member member;
+    private ScheduleStatus status = ScheduleStatus.IN_PROGRESS;
 
     public static ScheduleFixtureBuilder builder() {
         return new ScheduleFixtureBuilder();
@@ -59,8 +54,8 @@ public class ScheduleFixtureBuilder {
         return this;
     }
 
-    public ScheduleFixtureBuilder description(String description) {
-        this.description = description;
+    public ScheduleFixtureBuilder details(String details) {
+        this.details = details;
         return this;
     }
 
@@ -69,14 +64,20 @@ public class ScheduleFixtureBuilder {
         return this;
     }
 
+    public ScheduleFixtureBuilder status(ScheduleStatus status) {
+        this.status = status;
+        return this;
+    }
+
     public Schedule build() {
         return new Schedule(title,
                 member,
-                new DateTime(startDateTime, endDateTime),
+                new SchedulePeriod(startDateTime, endDateTime),
                 fixedNumberOfPeople,
                 currentNumberOfPeople,
                 location,
-                description
+                details,
+                status
         );
     }
 

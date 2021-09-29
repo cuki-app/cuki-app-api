@@ -129,7 +129,7 @@ class ScheduleTest {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> ScheduleFixtureBuilder.builder()
-                        .description(null)
+                        .details(null)
                         .build()
         );
     }
@@ -140,7 +140,7 @@ class ScheduleTest {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> ScheduleFixtureBuilder.builder()
-                        .description("")
+                        .details("")
                         .build()
         );
     }
@@ -151,7 +151,7 @@ class ScheduleTest {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> ScheduleFixtureBuilder.builder()
-                        .description(String.format("%0301d", 301))
+                        .details(String.format("%0301d", 301))
                         .build()
         );
     }
@@ -160,7 +160,7 @@ class ScheduleTest {
     @DisplayName("세부 설명의 글자 수가 300자인 경우 테스트에 통과합니다.")
     void 글자_수가_300자인_경우() {
         ScheduleFixtureBuilder.builder()
-                .description(String.format("%0300d", 300))
+                .details(String.format("%0300d", 300))
                 .build();
     }
 }

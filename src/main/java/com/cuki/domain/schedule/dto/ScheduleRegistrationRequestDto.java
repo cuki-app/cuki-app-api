@@ -1,7 +1,7 @@
 package com.cuki.domain.schedule.dto;
 
 import com.cuki.domain.member.entity.Member;
-import com.cuki.domain.schedule.entity.DateTime;
+import com.cuki.domain.schedule.entity.SchedulePeriod;
 import com.cuki.domain.schedule.entity.Location;
 import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.entity.ScheduleStatus;
@@ -31,16 +31,17 @@ public class ScheduleRegistrationRequestDto {
     private String details;
 
 
-    public Schedule of(Member member, DateTime dateTime, Location location) {
+    public Schedule toEntity(Member member) {
+        final int ONESELF = 1;
         return Schedule.builder()
                 .title(title)
                 .member(member)
-                .dateTime(dateTime)
+                .dateTime(new SchedulePeriod(startDateTime, endDateTime))
                 .fixedNumberOfPeople(fixedNumberOfPeople)
-                .currentNumberOfPeople(1)
-                .location(location)
+                .currentNumberOfPeople(ONESELF)   //
+                .location(new Location(place))
                 .details(details)
-                .status(ScheduleStatus.IN_PROGRESS)
+                .status(ScheduleStatus.IN_PROGRESS) //
                 .build();
     }
 

@@ -36,3 +36,37 @@ jobs:
         source: "build/libs/*.jar" 
         target: "source" 
         rm: true
+    - name: Deploy new version of server
+      uses: appleboy/ssh-action@master 
+      with: 
+        host: ${{ secrets.CUKI_SSH_HOST }} 
+        username: ${{ secrets.CUKI_SSH_USERNAME }} 
+        key: ${{ secrets.CUKI_SSH_KEY }} 
+        port: ${{ secrets.CUKI_SSH_PORT }}
+        script: | 
+          SOURCE_DIR=source/build/libs
+          FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+          PID=`ps -ef | grep java | grep cuki | grep -v "bash -c" | awk '{print $2}'`
+          
+          echo "Old version of app is currently running on $PID." 
+          echo "Filename of new version is $FILE_NAME." 
+          echo "Directory: $SOURCE_DIR"
+          
+          if [ -z "$PID" ]; then 
+            echo "No process found." 
+          else 
+            echo "Terminating $PID..." 
+            kill $PID 
+          fi
+          java -jar $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+        
+
+    
+    
+    
+    
+    
+    
+    
+    
+    

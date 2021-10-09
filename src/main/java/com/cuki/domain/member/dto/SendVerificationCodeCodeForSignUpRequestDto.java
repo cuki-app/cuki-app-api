@@ -3,6 +3,6 @@ package com.cuki.domain.member.dto;
 import lombok.Getter;
 
 @Getter
-public class SendVerifyCodeForSignUpRequestDto {
+public class SendVerificationCodeCodeForSignUpRequestDto {
     private String email;
 }

@@ -41,7 +41,7 @@ public class AuthService {
     }
 
     // 회원가입 2단계 - 인증코드 전송
-    public Boolean SendVerifyCodeForSignUp(SendVerifyCodeForSignUpRequestDto requestDto) throws Exception {
+    public Boolean SendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) throws Exception {
         emailService.sendMessageForSignUp(requestDto.getEmail());
 
         return true;
@@ -75,7 +75,7 @@ public class AuthService {
     }
 
     // 로그인 2단계 - 인증코드 전송
-    public Boolean SendVerifyCodeForLogin(SendVerifyCodeForLoginRequestDto requestDto) throws Exception {
+    public Boolean SendVerificationCodeForLogin(SendVerificationCodeForLoginRequestDto requestDto) throws Exception {
         emailService.sendMessageForLogin(requestDto.getEmail());
 
         return true;

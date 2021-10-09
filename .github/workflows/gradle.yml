@@ -26,3 +26,13 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Deliver file
+      uses: appleboy/scp-action@master
+      with: 
+        host: ${{ secrets.CUKI_SSH_HOST }} 
+        username: ${{ secrets.CUKI_SSH_USERNAME }} 
+        key: ${{ secrets.CUKI_SSH_KEY }} 
+        port: ${{ secrets.CUKI_SSH_PORT }} 
+        source: "build/libs/*.jar" 
+        target: "source" 
+        rm: true

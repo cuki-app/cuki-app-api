@@ -67,10 +67,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/members/sign-up/email").permitAll()
-                .antMatchers("/members/sign-up/verificationCode").permitAll()
+                .antMatchers("/members/sign-up/verification-code").permitAll()
                 .antMatchers("/members/sign-up").permitAll()
                 .antMatchers("/auth/login/email").permitAll()
-                .antMatchers("/auth/login/verificationCode").permitAll()
+                .antMatchers("/auth/login/verification-code").permitAll()
                 .antMatchers("/auth/login").permitAll()
                 .anyRequest().authenticated()
 

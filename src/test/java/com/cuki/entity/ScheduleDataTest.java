@@ -17,6 +17,7 @@ import org.springframework.data.domain.Slice;
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
+@Disabled
 @SpringBootTest
 public class ScheduleDataTest {
 

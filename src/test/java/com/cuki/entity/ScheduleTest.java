@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 
+@Disabled
 @DisplayName("일정 등록 테스트")
 class ScheduleTest {
 

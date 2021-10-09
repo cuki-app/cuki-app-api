@@ -21,9 +21,9 @@ public class AuthController {
     }
 
     // 회원가입 2단계 - 인증번호 발송
-    @PostMapping("/members/sign-up/verifyCode")
-    public ApiResponse<Boolean> SendVerifyCodeForSignUp(@RequestBody SendVerifyCodeForSignUpRequestDto requestDto) throws Exception {
-        return ApiResponse.ok(authService.SendVerifyCodeForSignUp(requestDto));
+    @PostMapping("/members/sign-up/verification-code")
+    public ApiResponse<Boolean> SendVerificationCodeForSignUp(@RequestBody SendVerificationCodeCodeForSignUpRequestDto requestDto) throws Exception {
+        return ApiResponse.ok(authService.SendVerificationCodeForSignUp(requestDto));
     }
 
     // 회원가입 최종
@@ -39,9 +39,9 @@ public class AuthController {
     }
 
     // 로그인 2단계 - 인증번호 발송
-    @PostMapping("/auth/login/verifyCode")
-    public ApiResponse<Boolean> SendVerifyCodeForLogin(@RequestBody SendVerifyCodeForLoginRequestDto requestDto) throws Exception {
-        return ApiResponse.ok(authService.SendVerifyCodeForLogin(requestDto));
+    @PostMapping("/auth/login/verification-code")
+    public ApiResponse<Boolean> SendVerificationCodeForLogin(@RequestBody SendVerificationCodeForLoginRequestDto requestDto) throws Exception {
+        return ApiResponse.ok(authService.SendVerificationCodeForLogin(requestDto));
     }
 
     // 로그인 - 최종

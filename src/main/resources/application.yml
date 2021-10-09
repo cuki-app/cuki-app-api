@@ -35,5 +35,4 @@ logging:
   file:
     name: ./logs/cuki-operation.log
   level:
-    com.zaxxer.hikari: debug
     com.cuki: debug

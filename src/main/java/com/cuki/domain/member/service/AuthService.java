@@ -31,17 +31,18 @@ public class AuthService {
     private final EmailService emailService;
 
 
-    // 회원가입 1단계 - 메일주소 중복확인 및 인증코드 전송
-    public Boolean duplicateEmailAddressForSignUp(DuplicateEmailAddressForSignUpRequestDto duplicateEmailAddressForSignUpRequestDto) throws Exception {
-        String email = duplicateEmailAddressForSignUpRequestDto.getEmail();
-
-        // 1. 메일주소 중복확인
-        if (memberRepository.existsByEmail(email)) {
+    // 회원가입 1단계 - 메일주소 중복확인
+    public Boolean duplicateEmailAddressForSignUp(DuplicateEmailAddressForSignUpRequestDto requestDto) {
+        if (memberRepository.existsByEmail(requestDto.getEmail())) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
         }
 
-        // 2. 해당 메일주소로 인증코드 전송
-        emailService.sendMessageForSignUp(email);
+        return true;
+    }
+
+    // 회원가입 2단계 - 인증코드 전송
+    public Boolean SendVerifyCodeForSignUp(SendVerifyCodeForSignUpRequestDto requestDto) throws Exception {
+        emailService.sendMessageForSignUp(requestDto.getEmail());
 
         return true;
     }
@@ -64,21 +65,21 @@ public class AuthService {
         return MemberInfoResponseDto.of(memberRepository.save(member));
     }
 
-    // 로그인 1단계 - 메일주소 존재 여부 및 인증코드 전송
-    public Boolean existEmailAddress(ExistEmailAddressForLoginRequestDto existEmailAddressForLoginRequestDto) throws Exception {
-        String email = existEmailAddressForLoginRequestDto.getEmail();
-
-        // 1. 메일주소 존재 여부
-        if (!memberRepository.existsByEmail(email)) {
+    // 로그인 1단계 - 메일주소 존재 여부
+    public Boolean existEmailAddress(ExistEmailAddressForLoginRequestDto requestDto) {
+        if (!memberRepository.existsByEmail(requestDto.getEmail())) {
             throw new RuntimeException("존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.");
         }
-
-        // 2. 해당 메일주소로 인증코드 전송
-        emailService.sendMessageForLogin(email);
 
         return true;
     }
 
+    // 로그인 2단계 - 인증코드 전송
+    public Boolean SendVerifyCodeForLogin(SendVerifyCodeForLoginRequestDto requestDto) throws Exception {
+        emailService.sendMessageForLogin(requestDto.getEmail());
+
+        return true;
+    }
 
     // 로그인 최종
     @Transactional
@@ -95,8 +96,6 @@ public class AuthService {
 
         // 4. 인증 정보를 기반으로 AccessToken과 RefreshToken 생성
         TokenResponseDto tokenResponseDto = tokenProvider.createToken(authentication);
-
-        log.info("리프레쉬토큰 저장 시 authentication.getName() : " + authentication.getName());
 
         // 5. RefreshToken 저장
         RefreshToken refreshToken = RefreshToken.builder()
@@ -141,10 +140,12 @@ public class AuthService {
         return tokenResponseDto;
     }
 
-    // 로그아웃 - 리프레쉬 토큰 값 변경
+    // 로그아웃 - 리프레쉬 토큰 값 삭제
     @Transactional
     public Boolean logout() {
         refreshTokenRepository.deleteById(SecurityUtil.getCurrentMemberId());
+
         return true;
     }
 }
+

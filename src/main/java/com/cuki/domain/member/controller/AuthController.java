@@ -14,22 +14,34 @@ public class AuthController {
 
     private final AuthService authService;
 
-    // 회원가입 - 이메일 중복확인
+    // 회원가입 1단계 - 이메일 중복확인
     @PostMapping("/members/sign-up/email")
-    public ApiResponse<Boolean> DuplicateEmailAddress(@RequestBody DuplicateEmailAddressForSignUpRequestDto duplicateEmailAddressForSignUpRequestDto) throws Exception {
-        return ApiResponse.ok(authService.duplicateEmailAddressForSignUp(duplicateEmailAddressForSignUpRequestDto));
+    public ApiResponse<Boolean> DuplicateEmailAddress(@RequestBody DuplicateEmailAddressForSignUpRequestDto requestDto) {
+        return ApiResponse.ok(authService.duplicateEmailAddressForSignUp(requestDto));
     }
 
-    // 회원가입 - 최종
+    // 회원가입 2단계 - 인증번호 발송
+    @PostMapping("/members/sign-up/verifyCode")
+    public ApiResponse<Boolean> SendVerifyCodeForSignUp(@RequestBody SendVerifyCodeForSignUpRequestDto requestDto) throws Exception {
+        return ApiResponse.ok(authService.SendVerifyCodeForSignUp(requestDto));
+    }
+
+    // 회원가입 최종
     @PostMapping("/members/sign-up")
     public ApiResponse<MemberInfoResponseDto> signUp(@RequestBody SignUpRequestDto signUpRequestDto) {
         return ApiResponse.ok(authService.signup(signUpRequestDto));
     }
 
-    // 로그인 - 회원 존재 여부 확인
+    // 로그인 1단계 - 회원 존재 여부 확인
     @PostMapping("/auth/login/email")
-    public ApiResponse<Boolean> existEmailAddress(@RequestBody ExistEmailAddressForLoginRequestDto existEmailAddressForLoginRequestDto) throws Exception {
-        return ApiResponse.ok(authService.existEmailAddress(existEmailAddressForLoginRequestDto));
+    public ApiResponse<Boolean> existEmailAddress(@RequestBody ExistEmailAddressForLoginRequestDto requestDto) {
+        return ApiResponse.ok(authService.existEmailAddress(requestDto));
+    }
+
+    // 로그인 2단계 - 인증번호 발송
+    @PostMapping("/auth/login/verifyCode")
+    public ApiResponse<Boolean> SendVerifyCodeForLogin(@RequestBody SendVerifyCodeForLoginRequestDto requestDto) throws Exception {
+        return ApiResponse.ok(authService.SendVerifyCodeForLogin(requestDto));
     }
 
     // 로그인 - 최종
@@ -50,3 +62,4 @@ public class AuthController {
         return ApiResponse.ok(authService.logout());
     }
 }
+

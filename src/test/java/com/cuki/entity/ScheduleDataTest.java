@@ -6,6 +6,7 @@ import com.cuki.domain.schedule.entity.SchedulePeriod;
 import com.cuki.domain.schedule.entity.Location;
 import com.cuki.domain.schedule.entity.Schedule;
 import com.cuki.domain.schedule.repository.SchedulesRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +27,7 @@ public class ScheduleDataTest {
     MemberRepository memberRepository;
 
     @Test
+    @Disabled
     public void insertDummy() {
 
         final Member member = memberRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("없는 사용자 입니다."));

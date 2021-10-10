@@ -60,6 +60,8 @@ jobs:
           fi
           
           export APPLICATION_CONFIG_ADMIN_MAIL_PASSWORD=${{ secrets.APPLICATION_CONFIG_ADMIN_MAIL_PASSWORD }}
+          export APPLICATION_CONFIG_ADMIN_MAIL_ADDRESS=${{ secrets.APPLICATION_CONFIG_ADMIN_MAIL_ADDRESS }}
+          export APPLICATION_CONFIG_JWT_SECRET=${{ secrets.APPLICATION_CONFIG_JWT_SECRET }}
           
           echo "env var $APPLICATION_CONFIG_ADMIN_MAIL_PASSWORD"
           

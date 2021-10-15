@@ -1,6 +1,8 @@
 package io.cuki.infra.email;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -16,26 +18,31 @@ import java.util.Random;
 
 @Slf4j
 @Service
+@PropertySource("classpath:email.properties")
 public class EmailService {
 
     private final JavaMailSender mailSender;
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private final String SENDER_EMAIL;
+    private final String SENDER_NAME = "cuki";
     private final String KEY_PREFIX = "email:";
     private final int LIMIT_TIME = 60 * 5;
     private String verificationCode;
 
-    public EmailService(JavaMailSender mailSender, RedisTemplate<String, Object> redisTemplate) {
+    public EmailService(JavaMailSender mailSender, RedisTemplate<String, Object> redisTemplate, @Value("${AdminMail.id}") String SENDER_EMAIL) {
         this.mailSender = mailSender;
         this.redisTemplate = redisTemplate;
+        this.SENDER_EMAIL = SENDER_EMAIL;
     }
 
     // 인증번호 발송 - 회원가입
     public void sendMessageForSignUp(String email) throws Exception {
         MimeMessage message = createMessageForSignUp(email);
 
-        log.info("보내는 대상 : " + email);
-        log.info("인증 번호 : " + verificationCode);
+        log.debug("관리자 계정: {}", SENDER_EMAIL);
+        log.debug("보내는 대상: {}", email);
+        log.debug("인증 번호: {}", verificationCode);
 
         try {
             // 1. 메일 전송
@@ -94,7 +101,7 @@ public class EmailService {
         html += "</div>";
 
         message.setText(html, "utf-8", "html");  // 내용
-        message.setFrom(new InternetAddress("verycona@gmail.com", "cuki")); // 보내는 사람
+        message.setFrom(new InternetAddress(SENDER_EMAIL, SENDER_NAME)); // 보내는 사람
 
         return message;
     }
@@ -125,7 +132,7 @@ public class EmailService {
         html += "</div>";
 
         message.setText(html, "utf-8", "html");  // 내용
-        message.setFrom(new InternetAddress("verycona@gmail.com", "cuki")); // 보내는 사람
+        message.setFrom(new InternetAddress(SENDER_EMAIL, SENDER_NAME)); // 보내는 사람
 
         return message;
     }

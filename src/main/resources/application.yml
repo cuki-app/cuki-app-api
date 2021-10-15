@@ -19,12 +19,19 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+    open-in-view: false
+
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
 
 jwt:
   header: Authorization
-  #echo 'test-testtest-test-testtest-test-testtest-test-testtest-test-testtest-test-testtest'|base64
-  secret: dGVzdC10ZXN0dGVzdC10ZXN0LXRlc3R0ZXN0LXRlc3QtdGVzdHRlc3QtdGVzdC10ZXN0dGVzdC10ZXN0LXRlc3R0ZXN0LXRlc3QtdGVzdHRlc3QK
+  secret: ${APPLICATION_CONFIG_JWT_SECRET}
 
 logging:
+  file:
+    name: ./logs/cuki-operation.log
   level:
-    com.cuki: DEBUG
+    io.cuki: debug

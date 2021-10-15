@@ -1,0 +1,80 @@
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 8.0.292+10
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8.0.292+10'
+        distribution: 'adopt'
+        cache: gradle
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: ./gradlew build
+    - name: Deliver file
+      uses: appleboy/scp-action@master
+      with: 
+        host: ${{ secrets.CUKI_SSH_HOST }} 
+        username: ${{ secrets.CUKI_SSH_USERNAME }} 
+        key: ${{ secrets.CUKI_SSH_KEY }} 
+        port: ${{ secrets.CUKI_SSH_PORT }} 
+        source: "build/libs/*.jar" 
+        target: "source" 
+        rm: true
+    - name: Deploy new version of server
+      uses: appleboy/ssh-action@master 
+      with: 
+        host: ${{ secrets.CUKI_SSH_HOST }} 
+        username: ${{ secrets.CUKI_SSH_USERNAME }} 
+        key: ${{ secrets.CUKI_SSH_KEY }} 
+        port: ${{ secrets.CUKI_SSH_PORT }}
+        script: | 
+          SOURCE_DIR=source/build/libs
+          FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+          PID=`ps -ef | grep java | grep cuki | grep -v "bash -c" | awk '{print $2}'`
+          
+          echo "Old version of app is currently running on $PID." 
+          echo "Filename of new version is $FILE_NAME." 
+          echo "Directory: $SOURCE_DIR"
+          
+          if [ -z "$PID" ]; then 
+            echo "No process found." 
+          else 
+            echo "Terminating $PID..." 
+            kill $PID 
+          fi
+          
+          export APPLICATION_CONFIG_ADMIN_MAIL_PASSWORD=${{ secrets.APPLICATION_CONFIG_ADMIN_MAIL_PASSWORD }}
+          export APPLICATION_CONFIG_ADMIN_MAIL_ADDRESS=${{ secrets.APPLICATION_CONFIG_ADMIN_MAIL_ADDRESS }}
+          export APPLICATION_CONFIG_JWT_SECRET=${{ secrets.APPLICATION_CONFIG_JWT_SECRET }}
+          
+          echo "env var $APPLICATION_CONFIG_ADMIN_MAIL_PASSWORD"
+          
+          java -jar $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+          
+        
+
+    
+    
+    
+    
+    
+    
+    
+    
+    

@@ -1,10 +1,6 @@
 package io.cuki.entity;
 
-<<<<<<< HEAD:src/test/java/com/cuki/entity/ScheduleTest.java
-import com.cuki.schedule.domain.Location;
-=======
 import io.cuki.domain.schedule.entity.Location;
->>>>>>> cce819170e3d106b98658538837bd3b03063fbcc:src/test/java/io/cuki/entity/ScheduleTest.java
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;

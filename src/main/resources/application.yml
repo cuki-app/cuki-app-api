@@ -34,4 +34,4 @@ logging:
   file:
     name: ./logs/cuki-operation.log
   level:
-    com.cuki: debug
+    io.cuki: debug

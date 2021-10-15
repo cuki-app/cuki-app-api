@@ -39,8 +39,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers(
-                  "/h2-console/**", "/favicon.ico"
+                .antMatchers("/h2-console/**", "/favicon.ico",
+                        "/v2/api-docs", "/configuration/**",
+                        "/swagger*/**", "/webjars/**"
+
                 );
     }
 
@@ -66,13 +68,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/members/sign-up/email").permitAll()
-                .antMatchers("/members/sign-up/verification-code").permitAll()
-                .antMatchers("/members/sign-up").permitAll()
-                .antMatchers("/auth/login/email").permitAll()
-                .antMatchers("/auth/login/verification-code").permitAll()
-                .antMatchers("/auth/login").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/members/sign-up/email", "/members/sign-up/verification-code", "/members/sign-up")
+                .permitAll()
+                .antMatchers("/auth/login/email", "/auth/login/verification-code", "/auth/login")
+                .permitAll()
 
                 // JwtSecurityConfig 클래스 적용
                 .and()

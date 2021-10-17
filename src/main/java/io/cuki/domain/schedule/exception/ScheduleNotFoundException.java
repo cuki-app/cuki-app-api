@@ -1,4 +1,4 @@
-package io.cuki.domain.schedule.utils;
+package io.cuki.domain.schedule.exception;
 
 public class ScheduleNotFoundException extends RuntimeException{
 

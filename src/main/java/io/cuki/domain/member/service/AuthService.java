@@ -2,6 +2,7 @@ package io.cuki.domain.member.service;
 
 import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.member.entity.jwt.TokenProvider;
+import io.cuki.domain.member.exception.MemberAlreadyExistException;
 import io.cuki.infra.email.EmailService;
 import io.cuki.domain.member.dto.*;
 import io.cuki.domain.member.entity.RefreshToken;
@@ -34,7 +35,7 @@ public class AuthService {
     // 회원가입 1단계 - 메일주소 중복확인
     public Boolean duplicateEmailAddressForSignUp(DuplicateEmailAddressForSignUpRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
-            throw new RuntimeException("이미 가입되어 있는 유저입니다.");
+            throw new MemberAlreadyExistException("이미 가입되어 있는 유저입니다.");
         }
 
         return true;

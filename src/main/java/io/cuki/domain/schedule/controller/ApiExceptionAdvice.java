@@ -7,7 +7,7 @@ import io.cuki.global.common.response.ApiResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = {"io.cuki.domain.schedule", "io.cuki.domain.participation"})
 public class ApiExceptionAdvice {
 
     @ExceptionHandler({MemberNotFoundException.class, ScheduleNotFoundException.class})

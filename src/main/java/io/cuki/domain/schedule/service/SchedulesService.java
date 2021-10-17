@@ -2,12 +2,12 @@ package io.cuki.domain.schedule.service;
 
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
-import io.cuki.domain.schedule.utils.MemberNotFoundException;
-import io.cuki.domain.schedule.utils.MemberNotMatchException;
-import io.cuki.domain.schedule.utils.ScheduleNotFoundException;
-import io.cuki.domain.schedule.utils.WriterVerification;
+import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
+import io.cuki.domain.schedule.utils.*;
 import io.cuki.domain.schedule.repository.SchedulesRepository;
 import io.cuki.domain.member.repository.MemberRepository;
+import io.cuki.global.error.exception.MemberNotFoundException;
+import io.cuki.global.error.exception.MemberNotMatchException;
 import io.cuki.global.util.SecurityUtil;
 import io.cuki.domain.schedule.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,7 @@ public class SchedulesService {
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
         final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .map(registrationRequestDto::toEntity)
+//                .orElseThrow(() -> new NotFoundException("존재하지 않는 회원입니다."));
                 .orElseThrow(MemberNotFoundException::new);
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());

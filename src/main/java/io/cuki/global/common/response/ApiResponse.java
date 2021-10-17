@@ -2,7 +2,6 @@ package io.cuki.global.common.response;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -28,29 +27,4 @@ public final class ApiResponse<T> {
                 LocalDateTime.now()
         );
     }
-
-    public static <T> ApiResponse<T> notFound(T result) {
-        return of(
-                HttpStatus.NOT_FOUND.value(),
-                result,
-                LocalDateTime.now()
-        );
-    }
-
-    public static <T> ApiResponse<T> forbidden(T result) {
-        return of(
-                HttpStatus.FORBIDDEN.value(),
-                result,
-                LocalDateTime.now()
-        );
-    }
-
-    public static <T> ApiResponse<T> conflict(T result) {
-        return of(
-                HttpStatus.CONFLICT.value(),
-                result,
-                LocalDateTime.now()
-        );
-    }
-
 }

@@ -2,6 +2,9 @@ package io.cuki.domain.schedule.service;
 
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
+import io.cuki.domain.schedule.utils.MemberNotFoundException;
+import io.cuki.domain.schedule.utils.MemberNotMatchException;
+import io.cuki.domain.schedule.utils.ScheduleNotFoundException;
 import io.cuki.domain.schedule.utils.WriterVerification;
 import io.cuki.domain.schedule.repository.SchedulesRepository;
 import io.cuki.domain.member.repository.MemberRepository;
@@ -28,7 +31,7 @@ public class SchedulesService {
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
         final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .map(registrationRequestDto::toEntity)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
+                .orElseThrow(MemberNotFoundException::new);
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
     }
@@ -46,11 +49,11 @@ public class SchedulesService {
         return responseDtoList;
     }
 
-    // 일정 상세 조회  // SRP
+    // 일정 상세 조회
     public OneScheduleResponseDto getOneSchedule(Long scheduleId) {
         return schedulesRepository.findById(scheduleId)
                 .map(OneScheduleResponseDto::of)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 모집 일정글 입니다."));
+                .orElseThrow(ScheduleNotFoundException::new);
     }
 
 
@@ -58,7 +61,7 @@ public class SchedulesService {
     public List<MyScheduleResponseDto> getMySchedule(Long memberId) {
         log.info("start time = {}", LocalDateTime.now());
         if (!SecurityUtil.getCurrentMemberId().equals(memberId)) {
-            throw new IllegalArgumentException("현재 로그인한 회원과 데이터를 요청한 회원의 정보가 일치하지 않습니다.");
+            throw new MemberNotMatchException("현재 로그인 한 회원과 파라미터의 회원 정보가 일치하지 않습니다.");
         }
 
         List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();
@@ -73,14 +76,12 @@ public class SchedulesService {
 
     @Transactional
     public IdResponseDto deleteSchedule(Long scheduleId) {
-        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
-        );
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
 
         if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
             schedulesRepository.delete(schedule);
         } else {
-            throw new IllegalArgumentException("게시글 작성자만 삭제할 수 있습니다.");
+            throw new MemberNotMatchException("현재 로그인 한 회원과 게시글 작성자가 일치하지 않습니다.");
         }
 
         return new IdResponseDto(schedule.getId());
@@ -89,8 +90,10 @@ public class SchedulesService {
 
     @Transactional
     public IdAndStatusResponseDto closeUpSchedule(CloseUpScheduleRequestDto closeUpRequestDto) {
-        final Schedule schedule = schedulesRepository.findById(closeUpRequestDto.getScheduleId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 스케쥴 입니다."));
-        if (schedule.getStatus().equals(ScheduleStatus.DONE)) {
+        final Schedule schedule = schedulesRepository.findById(closeUpRequestDto.getScheduleId()).orElseThrow(ScheduleNotFoundException::new);
+        // 작성자만 신청마감 할 수 있는 기능
+
+        if (schedule.getStatus() == ScheduleStatus.DONE) {
             throw new IllegalArgumentException("이미 신청 마감 처리 되었습니다.");
         }
         schedule.updateStatusToDone();

@@ -41,7 +41,7 @@ public class Member {
     @Column(nullable = false)
     private Authority authority;
 
-    public static String CreateRandomNickname() {
+    public static String createRandomNickname() {
         List<String> firstPart = Arrays.asList(
                 "두려운", "나쁜", "날으는", "수줍은", "열받은", "화가많은", "행복한", "즐거운", "새침한", "귀여운",
                 "그리운", "서운한", "당당한", "시끄러운", "잘생긴", "예쁜", "기분좋은", "기분나쁜", "상쾌한", "배부른",
@@ -51,7 +51,7 @@ public class Member {
         );
 
         List<String> secondPart = Arrays.asList(
-                "코뿔소", "부엉이", "올빼미", "독수리", "바다거북", "곰", "호랑이", "고라니", "너구리", "송아",
+                "코뿔소", "부엉이", "올빼미", "독수리", "바다거북", "곰", "호랑이", "고라니", "너구리", "송아지",
                 "돼지", "사슴", "양", "다람쥐", "고릴라", "사자", "늑대", "코끼리", "고슴도치", "낙타",
                 "호빵맨", "둘리", "강아지", "고양이", "붕어", "여우", "악어", "기린", "수달", "거북이",
                 "염소", "판다", "참새", "토끼", "참치", "아기", "얼룩말", "짱구", "개미", "오리",

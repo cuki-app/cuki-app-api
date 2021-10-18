@@ -42,7 +42,7 @@ public class AuthService {
     }
 
     // 회원가입 2단계 - 인증코드 전송
-    public Boolean SendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) throws Exception {
+    public Boolean sendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) throws Exception {
         emailService.sendMessageForSignUp(requestDto.getEmail());
 
         return true;
@@ -50,14 +50,14 @@ public class AuthService {
 
     // 회원가입 최종
     @Transactional
-    public MemberInfoResponseDto signup(SignUpRequestDto signUpRequestDto) {
+    public MemberInfoResponseDto signUp(SignUpRequestDto signUpRequestDto) {
         // 1. 인증코드 검증
         emailService.verifyCode(signUpRequestDto.getEmail(), signUpRequestDto.getVerificationCode());
 
         // 2. 닉네임 랜덤 생성
-        String nickname = Member.CreateRandomNickname();
+        String nickname = Member.createRandomNickname();
         while (memberRepository.existsByNickname(nickname)){
-            nickname = Member.CreateRandomNickname();
+            nickname = Member.createRandomNickname();
         }
 
         // 3. 멤버 객체 저장
@@ -76,7 +76,7 @@ public class AuthService {
     }
 
     // 로그인 2단계 - 인증코드 전송
-    public Boolean SendVerificationCodeForLogin(SendVerificationCodeForLoginRequestDto requestDto) throws Exception {
+    public Boolean sendVerificationCodeForLogin(SendVerificationCodeForLoginRequestDto requestDto) throws Exception {
         emailService.sendMessageForLogin(requestDto.getEmail());
 
         return true;

@@ -5,8 +5,11 @@ import io.cuki.domain.schedule.entity.ScheduleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.LocalDateTime;
 
+@Slf4j
 @Builder
 @AllArgsConstructor
 @Getter
@@ -31,6 +34,10 @@ public class AllScheduleResponseDto {
     private ScheduleStatus status;
 
     public static AllScheduleResponseDto of(Schedule schedule) {
+        log.debug("AllScheduleResponseDto - of, 멤버 id = {}", schedule.getMember().getId());
+        log.debug("AllScheduleResponseDto - of, 멤버 nickName = {}", schedule.getMember().getNickname());
+        log.debug("AllScheduleResponseDto - of, 멤버 email = {}", schedule.getMember().getEmail());
+
         return AllScheduleResponseDto.builder()
                 .scheduleId(schedule.getId())
                 .title(schedule.getTitle())

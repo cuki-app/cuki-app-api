@@ -25,7 +25,7 @@ public class Schedule extends BaseTimeEntity {
 
 
     @OneToOne(cascade = CascadeType.ALL)
-    private SchedulePeriod dateTime;
+    private SchedulePeriod dateTime;    // period
 
     @Column(nullable = false)
     private int fixedNumberOfPeople;

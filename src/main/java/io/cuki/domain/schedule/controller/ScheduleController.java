@@ -1,5 +1,6 @@
 package io.cuki.domain.schedule.controller;
 
+import io.cuki.domain.participation.dto.ScheduleSummaryResponseDto;
 import io.cuki.domain.schedule.service.SchedulesService;
 import io.cuki.global.common.response.ApiResponse;
 import io.cuki.domain.schedule.dto.*;
@@ -15,14 +16,14 @@ public class ScheduleController {
     private final SchedulesService schedulesService;
 
 
+    @GetMapping
+    public ApiResponse<List<AllScheduleResponseDto>> getAllSchedule() {
+        return ApiResponse.ok(schedulesService.getAllSchedule());
+    }
+
     @PostMapping("/schedules")
     public ApiResponse<IdResponseDto> createSchedule(@RequestBody ScheduleRegistrationRequestDto requestDto) {
         return ApiResponse.ok(schedulesService.createSchedule(requestDto));
-    }
-
-    @GetMapping("/")
-    public ApiResponse<List<AllScheduleResponseDto>> getAllSchedule() {
-        return ApiResponse.ok(schedulesService.getAllSchedule());
     }
 
     @GetMapping("/schedules/{scheduleId}")
@@ -32,18 +33,23 @@ public class ScheduleController {
         return ApiResponse.ok(oneSchedule);
     }
 
+    // 일정 요약 정보 조회 (상세 조회 api 에서 detail 만 사용하지 않고 데이터 뿌려주면 안되나?
+    @GetMapping("/schedules/{scheduleId}/summary")
+    public ApiResponse<ScheduleSummaryResponseDto> getScheduleSummary(@PathVariable Long scheduleId) {
+        return ApiResponse.ok(schedulesService.getScheduleSummary(scheduleId));
+    }
 
-    @GetMapping("/schedules/members/{memberId}")
+    @GetMapping("/members/{memberId}/schedules")
     public ApiResponse<List<MyScheduleResponseDto>> getMySchedule(@PathVariable Long memberId) {
         return ApiResponse.ok(schedulesService.getMySchedule(memberId));
     }
 
-    @DeleteMapping("/schedules/{id}")
-    public ApiResponse<IdResponseDto> deleteSchedule(@PathVariable Long id) {
-        return ApiResponse.ok(schedulesService.deleteSchedule(id));
+    @DeleteMapping("/schedules/{scheduleId}")
+    public ApiResponse<IdResponseDto> deleteSchedule(@PathVariable Long scheduleId) {
+        return ApiResponse.ok(schedulesService.deleteSchedule(scheduleId));
     }
 
-    @PutMapping("/schedules/status")
+    @PutMapping("/schedules")
     public ApiResponse<IdAndStatusResponseDto> closeUpSchedule(@RequestBody CloseUpScheduleRequestDto closeUpRequestDto) {
         return ApiResponse.ok(schedulesService.closeUpSchedule(closeUpRequestDto));
     }

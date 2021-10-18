@@ -13,23 +13,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiExceptionAdvice {
 
     @ExceptionHandler({MemberNotFoundException.class, ScheduleNotFoundException.class})
-    public ResponseEntity<ErrorResponse> notFoundException(RuntimeException e) {
+    public ResponseEntity<ErrorResponse<MessageResponseDto>> notFoundException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.notFound(e.getMessage()));
+                .body(ErrorResponse.notFound(new MessageResponseDto(e.getMessage())));
     }
 
     @ExceptionHandler(MemberNotMatchException.class)
-    public ResponseEntity<ErrorResponse> memberNotMatchException(RuntimeException e) {
+    public ResponseEntity<ErrorResponse<String>> memberNotMatchException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ErrorResponse.forbidden(e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> illegalArgumentException(RuntimeException e) {
+    public ResponseEntity<ErrorResponse<String>> illegalArgumentException(RuntimeException e) {
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ErrorResponse.conflict(e.getMessage()));
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.badRequest(e.getMessage()));
     }
 }

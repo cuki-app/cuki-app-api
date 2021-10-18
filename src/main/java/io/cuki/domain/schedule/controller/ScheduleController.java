@@ -28,6 +28,7 @@ public class ScheduleController {
     @GetMapping("/schedules/{scheduleId}")
     public ApiResponse<OneScheduleResponseDto> getOneSchedule(@PathVariable Long scheduleId) {
         final OneScheduleResponseDto oneSchedule = schedulesService.getOneSchedule(scheduleId);
+        // dto 가 제대로 반환되든지, exception 터져서 ScheduleNotFoundException 이 터지든지
         return ApiResponse.ok(oneSchedule);
     }
 

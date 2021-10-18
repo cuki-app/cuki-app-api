@@ -1,31 +1,37 @@
 package io.cuki.global.common.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public final class ApiResponse<T> {
+public class ApiResponse<T> {
     private final int statusCode;
-    private final String message;
-    private final T result;
+    private T result;
     private final LocalDateTime timestamp;
 
-    private ApiResponse(int statusCode, String message, T result, LocalDateTime timestamp) {
+    public ApiResponse(int statusCode, LocalDateTime timestamp) {
         this.statusCode = statusCode;
-        this.message = message;
+        this.timestamp = timestamp;
+    }
+
+    protected ApiResponse(int statusCode, T result, LocalDateTime timestamp) {
+        this.statusCode = statusCode;
         this.result = result;
         this.timestamp = timestamp;
     }
 
-    private static <T> ApiResponse<T> of(int statusCode, String message, T result, LocalDateTime timestamp) {
-        return new ApiResponse<>(statusCode, message, result, timestamp);
+
+    protected static <T> ApiResponse<T> of(int statusCode, T result, LocalDateTime timestamp) {
+        return new ApiResponse<>(statusCode, result, timestamp);
     }
 
     public static <T> ApiResponse<T> ok(T result) {
         return of(
                 HttpStatus.OK.value(),
-                HttpStatus.OK.getReasonPhrase(),
                 result,
                 LocalDateTime.now()
         );

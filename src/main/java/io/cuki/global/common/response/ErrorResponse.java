@@ -4,44 +4,44 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 
+
 @Getter
-public class ErrorResponse {
-    private final int statusCode;
-    private final String message;
-    private final LocalDateTime timeStamp;
+public class ErrorResponse<T> extends ApiResponse<T> {
 
-    private ErrorResponse(int statusCode, String message, LocalDateTime timeStamp) {
-        this.statusCode = statusCode;
+    private final T message;
+
+
+    private ErrorResponse(int statusCode, LocalDateTime timestamp, T message) {
+        super(statusCode, timestamp);
         this.message = message;
-        this.timeStamp = timeStamp;
-    }
-
-    private static ErrorResponse of(int statusCode, String message, LocalDateTime timeStamp) {
-        return new ErrorResponse(statusCode, message, timeStamp);
     }
 
 
-    public static ErrorResponse notFound(String message) {
+    private static <T> ErrorResponse<T> of(int statusCode, LocalDateTime timestamp, T message) {
+        return new ErrorResponse<>(statusCode, timestamp, message);
+    }
+
+    public static <T> ErrorResponse <T> notFound(T message) {
         return of(
                 HttpStatus.NOT_FOUND.value(),
-                message,
-                LocalDateTime.now()
-        );
+                LocalDateTime.now(),
+                message
+                );
     }
 
-    public static ErrorResponse forbidden(String message) {
+    public static <T> ErrorResponse<T> forbidden(T message) {
         return of(
                 HttpStatus.FORBIDDEN.value(),
-                message,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                message
         );
     }
 
-    public static ErrorResponse conflict(String message) {
+    public static <T> ErrorResponse<T> conflict(T message) {
         return of(
                 HttpStatus.CONFLICT.value(),
-                message,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                message
         );
     }
 }

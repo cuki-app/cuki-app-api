@@ -1,4 +1,4 @@
-package io.cuki.global.error.exception;
+package io.cuki.domain.member.exception;
 
 public class MemberNotMatchException extends RuntimeException {
 

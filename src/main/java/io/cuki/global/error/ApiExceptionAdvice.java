@@ -1,8 +1,8 @@
 package io.cuki.global.error;
 
 import io.cuki.global.common.response.ErrorResponse;
-import io.cuki.global.error.exception.MemberNotFoundException;
-import io.cuki.global.error.exception.MemberNotMatchException;
+import io.cuki.domain.member.exception.MemberNotFoundException;
+import io.cuki.domain.member.exception.MemberNotMatchException;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

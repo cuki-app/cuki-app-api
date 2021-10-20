@@ -11,8 +11,12 @@ import io.cuki.domain.member.exception.MemberNotFoundException;
 import io.cuki.domain.member.exception.MemberNotMatchException;
 import io.cuki.global.util.SecurityUtil;
 import io.cuki.domain.schedule.dto.*;
+import io.cuki.global.util.SliceCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -28,6 +32,21 @@ public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
 
 
+    // main
+    @Transactional(readOnly = true)
+    public SliceCustom<AllScheduleResponseDto> getAllSchedule(Pageable pageable) {
+        final Slice<Schedule> schedules = schedulesRepository.findBy(pageable);
+        List<AllScheduleResponseDto> dtoList = new ArrayList<>();
+
+        schedules
+                .stream().sorted((a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate()))
+                .forEach(schedule -> dtoList.add(AllScheduleResponseDto.of(schedule)));
+
+        final Slice<AllScheduleResponseDto> dtoSlice = new SliceImpl<>(dtoList, pageable, schedules.hasNext());
+
+        return new SliceCustom<>(dtoList, dtoSlice.hasNext());
+    }
+
     @Transactional
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
         final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
@@ -35,19 +54,6 @@ public class SchedulesService {
                 .orElseThrow(MemberNotFoundException::new);
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
-    }
-
-    // main
-    @Transactional(readOnly = true)
-    public List<AllScheduleResponseDto> getAllSchedule() {
-        List<AllScheduleResponseDto> responseDtoList = new ArrayList<>();
-
-        schedulesRepository.findAll()
-                .stream()
-                .sorted((a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate()))
-                .forEach(schedule -> responseDtoList.add(AllScheduleResponseDto.of(schedule)));
-
-        return responseDtoList;
     }
 
     // 일정 상세 조회

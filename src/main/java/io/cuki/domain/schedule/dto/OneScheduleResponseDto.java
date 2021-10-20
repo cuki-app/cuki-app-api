@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -15,33 +14,29 @@ import java.time.LocalDateTime;
 @Getter
 public class OneScheduleResponseDto {
 
-    private Long scheduleId;
+    private final Long scheduleId;
 
-    private String title;
+    private final String title;
 
-    private String nickname;
+    private final String nickname;
 
-    private String place;
+    private final String place;
 
-    private LocalDateTime startDateTime;
+    private final LocalDateTime startDateTime;
 
-    private LocalDateTime endDateTime;
+    private final LocalDateTime endDateTime;
 
-    private int fixedNumberOfPeople;
+    private final int fixedNumberOfPeople;
 
-    private int currentNumberOfPeople;
+    private final int currentNumberOfPeople;
 
-    private String details;
+    private final String details;
 
-    private int numberOfPeopleWaiting;
+    private final int numberOfPeopleWaiting;
 
-    private ScheduleStatus status;
+    private final ScheduleStatus status;
 
     public static OneScheduleResponseDto of(Schedule schedule) {
-        log.debug("OneScheduleResponseDto - of, 멤버 id = {}", schedule.getMember().getId());
-        log.debug("OneScheduleResponseDto - of, 멤버 nickName = {}", schedule.getMember().getNickname());
-        log.debug("OneScheduleResponseDto - of, 멤버 email = {}", schedule.getMember().getEmail());
-
         return OneScheduleResponseDto.builder()
                 .scheduleId(schedule.getId())
                 .title(schedule.getTitle())

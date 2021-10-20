@@ -17,27 +17,23 @@ public class AllScheduleResponseDto {
 
     private final Long scheduleId;
 
-    private String title;
+    private final String title;
 
-    private String nickname;
+    private final String nickname;
 
-    private String place;
+    private final String place;
 
-    private LocalDateTime startDateTime;
+    private final LocalDateTime startDateTime;
 
-    private LocalDateTime endDateTime;
+    private final LocalDateTime endDateTime;
 
-    private int fixedNumberOfPeople;
+    private final int fixedNumberOfPeople;
 
-    private int currentNumberOfPeople;
+    private final int currentNumberOfPeople;
 
-    private ScheduleStatus status;
+    private final ScheduleStatus status;
 
     public static AllScheduleResponseDto of(Schedule schedule) {
-        log.debug("AllScheduleResponseDto - of, 멤버 id = {}", schedule.getMember().getId());
-        log.debug("AllScheduleResponseDto - of, 멤버 nickName = {}", schedule.getMember().getNickname());
-        log.debug("AllScheduleResponseDto - of, 멤버 email = {}", schedule.getMember().getEmail());
-
         return AllScheduleResponseDto.builder()
                 .scheduleId(schedule.getId())
                 .title(schedule.getTitle())

@@ -4,7 +4,9 @@ import io.cuki.domain.participation.dto.ScheduleSummaryResponseDto;
 import io.cuki.domain.schedule.service.SchedulesService;
 import io.cuki.global.common.response.ApiResponse;
 import io.cuki.domain.schedule.dto.*;
+import io.cuki.global.util.SliceCustom;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -17,8 +19,8 @@ public class ScheduleController {
 
 
     @GetMapping
-    public ApiResponse<List<AllScheduleResponseDto>> getAllSchedule() {
-        return ApiResponse.ok(schedulesService.getAllSchedule());
+    public ApiResponse<SliceCustom<AllScheduleResponseDto>> getAllSchedule(Pageable pageable) {
+        return ApiResponse.ok(schedulesService.getAllSchedule(pageable));
     }
 
     @PostMapping("/schedules")

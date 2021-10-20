@@ -26,7 +26,6 @@ public class Participation {
 
     private String reasonForParticipation;
 
-
     private PermissionResult result;
 
 

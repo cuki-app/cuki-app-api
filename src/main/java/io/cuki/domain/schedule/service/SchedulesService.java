@@ -1,5 +1,6 @@
 package io.cuki.domain.schedule.service;
 
+import io.cuki.domain.participation.dto.ScheduleSummaryResponseDto;
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
@@ -10,8 +11,12 @@ import io.cuki.domain.member.exception.MemberNotFoundException;
 import io.cuki.domain.member.exception.MemberNotMatchException;
 import io.cuki.global.util.SecurityUtil;
 import io.cuki.domain.schedule.dto.*;
+import io.cuki.global.util.SliceCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -27,6 +32,21 @@ public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
 
 
+    // main
+    @Transactional(readOnly = true)
+    public SliceCustom<AllScheduleResponseDto> getAllSchedule(Pageable pageable) {
+        final Slice<Schedule> schedules = schedulesRepository.findBy(pageable);
+        List<AllScheduleResponseDto> dtoList = new ArrayList<>();
+
+        schedules
+                .stream().sorted((a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate()))
+                .forEach(schedule -> dtoList.add(AllScheduleResponseDto.of(schedule)));
+
+        final Slice<AllScheduleResponseDto> dtoSlice = new SliceImpl<>(dtoList, pageable, schedules.hasNext());
+
+        return new SliceCustom<>(dtoList, dtoSlice.hasNext());
+    }
+
     @Transactional
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
         final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
@@ -34,19 +54,6 @@ public class SchedulesService {
                 .orElseThrow(MemberNotFoundException::new);
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
-    }
-
-    // main
-    @Transactional(readOnly = true)
-    public List<AllScheduleResponseDto> getAllSchedule() {
-        List<AllScheduleResponseDto> responseDtoList = new ArrayList<>();
-
-        schedulesRepository.findAll()
-                .stream()
-                .sorted((a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate()))
-                .forEach(schedule -> responseDtoList.add(AllScheduleResponseDto.of(schedule)));
-
-        return responseDtoList;
     }
 
     // 일정 상세 조회
@@ -57,10 +64,30 @@ public class SchedulesService {
                 .orElseThrow(ScheduleNotFoundException::new);
     }
 
+    // 일정 요약 정보 보여주기
+    @Transactional(readOnly = true)
+    public ScheduleSummaryResponseDto getScheduleSummary(Long scheduleId) {
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
+        );
+
+        return ScheduleSummaryResponseDto.builder()
+                .scheduleId(schedule.getId())
+                .title(schedule.getTitle())
+                .place(schedule.getLocation().getPlace())
+                .startDateTime(schedule.getDateTime().getStartDateTime())
+                .endDateTime(schedule.getDateTime().getEndDateTime())
+                .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
+                .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
+                .numberOfPeopleWaiting(schedule.getNumberOfPeopleWaiting())
+                .status(schedule.getStatus())
+                .build();
+    }
+
 
     // 내가 등록한 모집 일정 전체 보여주기
+    @Transactional(readOnly = true)
     public List<MyScheduleResponseDto> getMySchedule(Long memberId) {
-        log.info("start time = {}", LocalDateTime.now());
         if (!SecurityUtil.getCurrentMemberId().equals(memberId)) {
             throw new MemberNotMatchException("현재 로그인 한 회원과 파라미터의 회원 정보가 일치하지 않습니다.");
         }
@@ -92,7 +119,10 @@ public class SchedulesService {
     @Transactional
     public IdAndStatusResponseDto closeUpSchedule(CloseUpScheduleRequestDto closeUpRequestDto) {
         final Schedule schedule = schedulesRepository.findById(closeUpRequestDto.getScheduleId()).orElseThrow(ScheduleNotFoundException::new);
-        // 작성자만 신청마감 할 수 있는 기능
+
+        if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
+            throw new MemberNotMatchException("현재 로그인 한 회원과 게시글 작성자가 일치하지 않습니다.");
+        }
 
         if (schedule.getStatus() == ScheduleStatus.DONE) {
             throw new IllegalArgumentException("이미 신청 마감 처리 되었습니다.");

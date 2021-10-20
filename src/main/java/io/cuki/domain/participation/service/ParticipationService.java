@@ -38,25 +38,6 @@ public class ParticipationService {
     private final ParticipationRepository participationRepository;
 
 
-    // 일정 요약 정보 보여주기
-    public ScheduleSummaryResponseDto getScheduleSummary(Long scheduleId) {
-        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
-        );
-
-        return ScheduleSummaryResponseDto.builder()
-                .scheduleId(schedule.getId())
-                .title(schedule.getTitle())
-                .place(schedule.getLocation().getPlace())
-                .startDateTime(schedule.getDateTime().getStartDateTime())
-                .endDateTime(schedule.getDateTime().getEndDateTime())
-                .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
-                .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
-                .numberOfPeopleWaiting(schedule.getNumberOfPeopleWaiting())
-                .status(schedule.getStatus())
-                .build();
-    }
-
     // 마감된 모집 일정에 참여 신청 할 수 없게
     @Transactional
     public ParticipationSimpleResponseDto createParticipation(ApplyParticipationRequestDto requestDto) throws IllegalAccessException {
@@ -158,6 +139,7 @@ public class ParticipationService {
     }
 
     public Set<ParticipantInfoResponseDto> getParticipantList(Long scheduleId) {
+        // 확정자 명단 조회는 누구나 조회 가능한지?
         Set<ParticipantInfoResponseDto> members = new HashSet<>();
         final Set<Participation> participationByAccept = participationRepository.findByScheduleIdAndResult(scheduleId, PermissionResult.ACCEPT);
         for (Participation participation : participationByAccept) {

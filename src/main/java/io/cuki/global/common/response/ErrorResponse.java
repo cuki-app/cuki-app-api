@@ -44,4 +44,12 @@ public class ErrorResponse<T> extends ApiResponse<T> {
                 message
         );
     }
+
+    public static <T> ErrorResponse<T> badRequest(T message) {
+        return of(
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                message
+        );
+    }
 }

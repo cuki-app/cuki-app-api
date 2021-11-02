@@ -1,9 +1,7 @@
 package io.cuki.global.error;
 
-import io.cuki.domain.member.exception.MemberAlreadyExistException;
+import io.cuki.domain.member.exception.*;
 import io.cuki.global.common.response.ErrorResponse;
-import io.cuki.domain.member.exception.MemberNotFoundException;
-import io.cuki.domain.member.exception.MemberNotMatchException;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,10 @@ public class ApiExceptionAdvice {
                 .body(ErrorResponse.forbidden(e.getMessage()));
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, MemberAlreadyExistException.class})
+    @ExceptionHandler({IllegalArgumentException.class, MemberAlreadyExistException.class,
+            RefreshTokenNotValidException.class, AuthorityNotFoundInJwtException.class,
+            MemberAlreadyLoggedOutException.class, RefreshTokenNotMatchException.class
+    })
     public ResponseEntity<ErrorResponse<String>> illegalArgumentException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

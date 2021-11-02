@@ -1,16 +1,20 @@
 package io.cuki.domain.member.controller;
 
 import io.cuki.domain.member.dto.*;
+import io.cuki.domain.member.exception.MemberAlreadyExistException;
+import io.cuki.domain.member.exception.MemberNotFoundException;
 import io.cuki.global.common.response.ApiResponse;
 import io.cuki.domain.member.service.AuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @Api(tags = {"회원 인증 관련 API"})
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -20,7 +24,11 @@ public class AuthController {
     @ApiOperation(value = "회원가입 1단계 - 이메일 중복확인")
     @PostMapping("/members/sign-up/email")
     public ApiResponse<Boolean> duplicateEmailAddressForSignUp(@RequestBody DuplicateEmailAddressForSignUpRequestDto requestDto) {
-        return ApiResponse.ok(authService.duplicateEmailAddressForSignUp(requestDto));
+        if (authService.existsEmailAddress(requestDto.getEmail())) {
+            log.debug("{} -> 이미 가입되어 있는 유저입니다.", requestDto.getEmail());
+            throw new MemberAlreadyExistException("이미 가입되어 있는 유저입니다.");
+        }
+        return ApiResponse.ok(true);
     }
 
     @ApiOperation(value = "회원가입 2단계 - 인증번호 발송")
@@ -37,8 +45,12 @@ public class AuthController {
 
     @ApiOperation(value = "로그인 1단계 - 회원 여부 체크")
     @PostMapping("/auth/login/email")
-    public ApiResponse<Boolean> existEmailAddress(@RequestBody ExistEmailAddressForLoginRequestDto requestDto) {
-        return ApiResponse.ok(authService.existEmailAddress(requestDto));
+    public ApiResponse<Boolean> existsEmailAddress(@RequestBody ExistEmailAddressForLoginRequestDto requestDto) {
+        if (!authService.existsEmailAddress(requestDto.getEmail())) {
+            log.debug("{} -> 존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.", requestDto.getEmail());
+            throw new MemberNotFoundException("존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.");
+        }
+        return ApiResponse.ok(true);
     }
 
     @ApiOperation(value = "로그인 2단계 - 인증번호 발송")

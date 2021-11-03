@@ -10,12 +10,10 @@ public class ErrorResponse<T> extends ApiResponse<T> {
 
     private final T message;
 
-
     private ErrorResponse(int statusCode, LocalDateTime timestamp, T message) {
         super(statusCode, timestamp);
         this.message = message;
     }
-
 
     private static <T> ErrorResponse<T> of(int statusCode, LocalDateTime timestamp, T message) {
         return new ErrorResponse<>(statusCode, timestamp, message);
@@ -48,6 +46,14 @@ public class ErrorResponse<T> extends ApiResponse<T> {
     public static <T> ErrorResponse<T> badRequest(T message) {
         return of(
                 HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                message
+        );
+    }
+
+    public static <T> ErrorResponse<T> unauthorized(T message) {
+        return of(
+                HttpStatus.UNAUTHORIZED.value(),
                 LocalDateTime.now(),
                 message
         );

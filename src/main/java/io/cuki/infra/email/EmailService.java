@@ -1,8 +1,8 @@
 package io.cuki.infra.email;
 
 import io.cuki.infra.email.exception.IncorrectVerificationCodeException;
+import io.cuki.infra.email.exception.SendMailFailedException;
 import io.cuki.infra.email.exception.VerificationCodeExpiredException;
-import io.jsonwebtoken.IncorrectClaimException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
@@ -39,7 +40,8 @@ public class EmailService {
     }
 
     // 인증번호 발송 - 회원가입
-    public void sendMessageForSignUp(String email) throws Exception {
+    @Transactional
+    public Boolean sendMessageForSignUp(String email) throws Exception {
         MimeMessage message = createMessageForSignUp(email);
 
         log.debug("관리자 계정: {}", SENDER_EMAIL);
@@ -53,16 +55,20 @@ public class EmailService {
             redisTemplate.opsForValue().set(KEY_PREFIX + email, verificationCode, Duration.ofSeconds(LIMIT_TIME));
         } catch (MailException e){
             e.printStackTrace();
-            throw new IllegalArgumentException();
+            log.error("메일 전송에 실패했습니다.");
+            throw new SendMailFailedException("메일 전송에 실패했습니다.");
         }
+        return true;
     }
 
     // 인증번호 발송 - 로그인
+    @Transactional
     public boolean sendMessageForLogin(String email) throws Exception {
         MimeMessage message = createMessageForLogin(email);
 
-        log.debug("보내는 대상 : " + email);
-        log.debug("인증 번호 : " + verificationCode);
+        log.debug("관리자 계정: {}", SENDER_EMAIL);
+        log.debug("보내는 대상: {}", email);
+        log.debug("인증 번호: {}", verificationCode);
 
         try {
             // 1. 메일 전송
@@ -71,9 +77,9 @@ public class EmailService {
             redisTemplate.opsForValue().set(KEY_PREFIX + email, verificationCode, Duration.ofSeconds(LIMIT_TIME));
         } catch (MailException e){
             e.printStackTrace();
-            throw new IllegalArgumentException();
+            log.error("메일 전송에 실패했습니다.");
+            throw new SendMailFailedException("메일 전송에 실패했습니다.");
         }
-
         return true;
     }
 

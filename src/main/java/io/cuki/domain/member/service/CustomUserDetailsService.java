@@ -1,6 +1,8 @@
 package io.cuki.domain.member.service;
 
 import io.cuki.domain.member.entity.Member;
+import io.cuki.domain.member.exception.DeactivatedMemberException;
+import io.cuki.domain.member.exception.MemberNotFoundException;
 import io.cuki.domain.member.repository.MemberRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,12 +29,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return memberRepository.findByEmail(username)
                 .map(this::createUserDetails)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 유저는 데이터베이스에서 찾을 수 없습니다."));
+                .orElseThrow(() -> new UsernameNotFoundException("가입되어 있지 않은 메일 주소입니다."));
     }
 
     private UserDetails createUserDetails(Member member) {
         if (!member.getActivated()) {
-            throw new RuntimeException("해당 유저는 활성화되어 있지 않습니다.");
+            throw new DeactivatedMemberException();
         }
 
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());

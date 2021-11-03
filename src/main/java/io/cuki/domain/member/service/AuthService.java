@@ -41,8 +41,7 @@ public class AuthService {
     @Transactional
     public Boolean sendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) throws Exception {
         if (!existsEmailAddress(requestDto.getEmail())) {
-            emailService.sendMessageForSignUp(requestDto.getEmail());
-            return true;
+            return emailService.sendMessageForSignUp(requestDto.getEmail());
         } else {
             log.debug("{} -> 이미 가입되어 있는 유저입니다. 비정상적인 접근입니다.", requestDto.getEmail());
             throw new MemberAlreadyExistException("이미 가입되어 있는 유저입니다. 비정상적인 접근입니다.");
@@ -80,8 +79,7 @@ public class AuthService {
         final String email = requestDto.getEmail();
 
         if (existsEmailAddress(email)) {
-            emailService.sendMessageForLogin(email);
-            return true;
+            return emailService.sendMessageForLogin(email);
         } else {
             log.debug("{} -> 존재하지 않는 회원입니다. 비정상적인 접근입니다.", requestDto.getEmail());
             throw new MemberNotFoundException("존재하지 않는 회원입니다. 비정상적인 접근입니다.");

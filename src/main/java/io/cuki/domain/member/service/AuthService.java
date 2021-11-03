@@ -38,6 +38,7 @@ public class AuthService {
     }
 
     // 회원가입 - 인증코드 전송
+    @Transactional
     public Boolean sendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) throws Exception {
         if (!existsEmailAddress(requestDto.getEmail())) {
             emailService.sendMessageForSignUp(requestDto.getEmail());
@@ -74,6 +75,7 @@ public class AuthService {
     }
 
     // 로그인 - 인증코드 전송
+    @Transactional
     public Boolean sendVerificationCodeForLogin(SendVerificationCodeForLoginRequestDto requestDto) throws Exception {
         final String email = requestDto.getEmail();
 

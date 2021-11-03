@@ -1,5 +1,6 @@
 package io.cuki.global.error;
 
+import io.cuki.domain.comment.exception.CommentNotFoundException;
 import io.cuki.domain.member.exception.*;
 import io.cuki.global.common.response.ErrorResponse;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionAdvice {
 
-    @ExceptionHandler({MemberNotFoundException.class, ScheduleNotFoundException.class})
+    @ExceptionHandler({MemberNotFoundException.class, ScheduleNotFoundException.class,
+            CommentNotFoundException.class})
     public ResponseEntity<ErrorResponse<MessageResponseDto>> notFoundException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)

@@ -1,5 +1,8 @@
 package io.cuki.infra.email;
 
+import io.cuki.infra.email.exception.IncorrectVerificationCodeException;
+import io.cuki.infra.email.exception.VerificationCodeExpiredException;
+import io.jsonwebtoken.IncorrectClaimException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -12,7 +15,6 @@ import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.time.Duration;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Random;
 
@@ -59,8 +61,8 @@ public class EmailService {
     public boolean sendMessageForLogin(String email) throws Exception {
         MimeMessage message = createMessageForLogin(email);
 
-        log.info("보내는 대상 : " + email);
-        log.info("인증 번호 : " + verificationCode);
+        log.debug("보내는 대상 : " + email);
+        log.debug("인증 번호 : " + verificationCode);
 
         try {
             // 1. 메일 전송
@@ -154,18 +156,18 @@ public class EmailService {
 
         String actualCode = (String) redisTemplate.opsForValue().get(KEY_PREFIX + email);
 
-        log.info("uncheckedCode : " + uncheckedCode + " actualCode : " + actualCode);
-        log.info("email : " + email);
+        log.debug("uncheckedCode : " + uncheckedCode + " actualCode : " + actualCode);
+        log.debug("email : " + email);
 
 
         if (!Boolean.TRUE.equals(redisTemplate.opsForValue().getOperations().hasKey(KEY_PREFIX + email))) {
-            throw new NoSuchElementException("인증번호 입력시간이 만료되었습니다.");
+            throw new VerificationCodeExpiredException("인증번호 입력시간이 만료되었거나 유효하지 않은 요청입니다.");
         }
 
         if (Objects.equals(actualCode, uncheckedCode)) {
             redisTemplate.delete(KEY_PREFIX + email);
         } else {
-            throw new IllegalArgumentException("인증번호가 틀렸습니다.");
+            throw new IncorrectVerificationCodeException();
         }
     }
 }

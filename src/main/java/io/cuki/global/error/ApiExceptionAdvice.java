@@ -5,14 +5,13 @@ import io.cuki.domain.member.exception.*;
 import io.cuki.global.common.response.ErrorResponse;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import io.cuki.infra.email.exception.IncorrectVerificationCodeException;
+import io.cuki.infra.email.exception.SendMailFailedException;
 import io.cuki.infra.email.exception.VerificationCodeExpiredException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import javax.mail.SendFailedException;
 
 @RestControllerAdvice
 public class ApiExceptionAdvice {
@@ -43,7 +42,8 @@ public class ApiExceptionAdvice {
             RefreshTokenNotValidException.class, AuthorityNotFoundInJwtException.class,
             MemberAlreadyLoggedOutException.class, RefreshTokenNotMatchException.class,
             IncorrectVerificationCodeException.class, VerificationCodeExpiredException.class,
-            DeactivatedMemberException.class, UsernameNotFoundException.class
+            DeactivatedMemberException.class, UsernameNotFoundException.class,
+            SendMailFailedException.class
     })
     public ResponseEntity<ErrorResponse<String>> illegalArgumentException(RuntimeException e) {
         return ResponseEntity

@@ -8,8 +8,11 @@ import io.cuki.infra.email.exception.IncorrectVerificationCodeException;
 import io.cuki.infra.email.exception.VerificationCodeExpiredException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import javax.mail.SendFailedException;
 
 @RestControllerAdvice
 public class ApiExceptionAdvice {
@@ -22,6 +25,13 @@ public class ApiExceptionAdvice {
                 .body(ErrorResponse.notFound(new MessageResponseDto(e.getMessage())));
     }
 
+    @ExceptionHandler(AuthenticationNotFoundException.class)
+    public ResponseEntity<ErrorResponse<String>> authenticationException(RuntimeException e) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.unauthorized(e.getMessage()));
+    }
+
     @ExceptionHandler(MemberNotMatchException.class)
     public ResponseEntity<ErrorResponse<String>> memberNotMatchException(RuntimeException e) {
         return ResponseEntity
@@ -32,7 +42,8 @@ public class ApiExceptionAdvice {
     @ExceptionHandler({IllegalArgumentException.class, MemberAlreadyExistException.class,
             RefreshTokenNotValidException.class, AuthorityNotFoundInJwtException.class,
             MemberAlreadyLoggedOutException.class, RefreshTokenNotMatchException.class,
-            IncorrectVerificationCodeException.class, VerificationCodeExpiredException.class
+            IncorrectVerificationCodeException.class, VerificationCodeExpiredException.class,
+            DeactivatedMemberException.class, UsernameNotFoundException.class
     })
     public ResponseEntity<ErrorResponse<String>> illegalArgumentException(RuntimeException e) {
         return ResponseEntity

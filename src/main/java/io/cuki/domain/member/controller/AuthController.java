@@ -33,7 +33,7 @@ public class AuthController {
 
     @ApiOperation(value = "회원가입 2단계 - 인증번호 발송")
     @PostMapping("/members/sign-up/verification-code")
-    public ApiResponse<Boolean> sendVerificationCodeForSignUp(@RequestBody SendVerificationCodeCodeForSignUpRequestDto requestDto) throws Exception {
+    public ApiResponse<Boolean> sendVerificationCodeForSignUp(@RequestBody SendVerificationCodeCodeForSignUpRequestDto requestDto) {
         return ApiResponse.ok(authService.sendVerificationCodeForSignUp(requestDto));
     }
 
@@ -55,7 +55,7 @@ public class AuthController {
 
     @ApiOperation(value = "로그인 2단계 - 인증번호 발송")
     @PostMapping("/auth/login/verification-code")
-    public ApiResponse<Boolean> sendVerificationCodeForLogin(@RequestBody SendVerificationCodeForLoginRequestDto requestDto) throws Exception {
+    public ApiResponse<Boolean> sendVerificationCodeForLogin(@RequestBody SendVerificationCodeForLoginRequestDto requestDto) {
         return ApiResponse.ok(authService.sendVerificationCodeForLogin(requestDto));
     }
 

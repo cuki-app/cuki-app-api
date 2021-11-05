@@ -9,9 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Api(tags = {"회원 인증 관련 API"})
 @Slf4j
@@ -75,6 +73,12 @@ public class AuthController {
     @PostMapping("/auth/logout")
     public ApiResponse<Boolean> logout() {
         return ApiResponse.ok(authService.logout());
+    }
+
+    @ApiOperation(value = "회원탈퇴")
+    @DeleteMapping("/members/{memberId}")
+    public ApiResponse<SuccessfullyDeletedMemberResponseDto> withdrawal(@PathVariable Long memberId) {
+        return ApiResponse.ok(authService.withdrawal(memberId));
     }
 }
 

@@ -164,5 +164,26 @@ public class AuthService {
 
         return true;
     }
+
+
+    // 회원탈퇴
+    @Transactional
+    public SuccessfullyDeletedMemberResponseDto withdrawal(Long memberId) {
+        if (!memberId.equals(SecurityUtil.getCurrentMemberId())) {
+            log.error("현재 로그인한 회원의 정보와 시큐리티 컨텍스트에 저장되어 있는 회원 정보가 일치하지 않습니다.");
+            throw new MemberNotMatchException("현재 로그인한 회원의 정보와 시큐리티 컨텍스트에 저장되어 있는 회원 정보가 일치하지 않습니다.");
+        }
+        try {
+            memberRepository.deleteById(memberId);
+        } catch (EmptyResultDataAccessException e) {
+            e.getStackTrace();
+            log.error("{} -> 삭제하려는 사용자의 정보를 데이터베이스에서 불러올 수 없습니다.", memberId);
+            throw new MemberNotFoundException("삭제하려는 사용자의 정보를 데이터베이스에서 불러올 수 없습니다.");
+        }
+
+        return SuccessfullyDeletedMemberResponseDto.builder()
+                .id(memberId)
+                .build();
+    }
 }
 

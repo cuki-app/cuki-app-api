@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Random;
@@ -43,7 +45,7 @@ public class EmailService {
     // 인증번호 발송 - 회원가입
     @Async
     @Transactional
-    public void sendMessageForSignUp(String email) throws Exception {
+    public void sendMessageForSignUp(String email) {
         MimeMessage message = createMessageForSignUp(email);
 
         log.debug("관리자 계정: {}", SENDER_EMAIL);
@@ -65,7 +67,7 @@ public class EmailService {
     // 인증번호 발송 - 로그인
     @Async
     @Transactional
-    public void sendMessageForLogin(String email) throws Exception {
+    public void sendMessageForLogin(String email) {
         MimeMessage message = createMessageForLogin(email);
 
         log.debug("관리자 계정: {}", SENDER_EMAIL);
@@ -85,63 +87,67 @@ public class EmailService {
     }
 
     // MimeMessage - 회원가입
-    private MimeMessage createMessageForSignUp(String email) throws Exception {
-
+    private MimeMessage createMessageForSignUp(String email) {
         verificationCode = createVerificationCode();
-
         MimeMessage message = mailSender.createMimeMessage();
+        try {
+            message.addRecipients(Message.RecipientType.TO, email); // 보내는 대상
+            message.setSubject("[cuki] 회원가입을 위한 인증번호를 확인해주세요.");  // 제목
 
-        message.addRecipients(Message.RecipientType.TO, email); // 보내는 대상
-        message.setSubject("[cuki] 회원가입을 위한 인증번호를 확인해주세요.");  // 제목
+            String html = "";
+            html += "<div align='center' style='margin:50px;'>";
+            html += "<h1>가입 안내</h1>";
+            html += "<br>";
+            html += "<p>아래 인증 코드를 입력하시면 회원가입이 완료됩니다. 감사합니다.</p>";
+            html += "<br>";
+            html += "<div align='center' style='border:1px solid black; font-family:verdana';>";
+            html += "<h3 style='color:darkgreen;'>회원가입 코드</h3>";
+            html += "<div style='font-size:130%'>";
+            html += "CODE : <strong>";
+            html += verificationCode;
+            html += "</strong><div><br/> ";
+            html += "<a href='https://cuki.io' target='_blank'>cuki 홈페이지 바로가기</a>";
+            html += "</div>";
 
-        String html = "";
-        html += "<div align='center' style='margin:50px;'>";
-        html += "<h1>가입 안내</h1>";
-        html += "<br>";
-        html += "<p>아래 인증 코드를 입력하시면 회원가입이 완료됩니다. 감사합니다.</p>";
-        html += "<br>";
-        html += "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        html += "<h3 style='color:darkgreen;'>회원가입 코드</h3>";
-        html += "<div style='font-size:130%'>";
-        html += "CODE : <strong>";
-        html += verificationCode;
-        html += "</strong><div><br/> ";
-        html += "<a href='https://cuki.io' target='_blank'>cuki 홈페이지 바로가기</a>";
-        html += "</div>";
-
-        message.setText(html, "utf-8", "html");  // 내용
-        message.setFrom(new InternetAddress(SENDER_EMAIL, SENDER_NAME)); // 보내는 사람
+            message.setText(html, "utf-8", "html");  // 내용
+            message.setFrom(new InternetAddress(SENDER_EMAIL, SENDER_NAME)); // 보내는 사람
+        } catch (UnsupportedEncodingException | MessagingException e) {
+            e.printStackTrace();
+            throw new SendMailFailedException("메일 전송에 실패했습니다.");
+        }
 
         return message;
     }
 
     // MimeMessage - 로그인
-    private MimeMessage createMessageForLogin(String email) throws Exception {
-
+    private MimeMessage createMessageForLogin(String email){
         verificationCode = createVerificationCode();
-
         MimeMessage message = mailSender.createMimeMessage();
+        try {
+            message.addRecipients(Message.RecipientType.TO, email); // 보내는 대상
+            message.setSubject("[cuki] 로그인을 위한 인증번호를 확인해주세요.");  // 제목
 
-        message.addRecipients(Message.RecipientType.TO, email); // 보내는 대상
-        message.setSubject("[cuki] 로그인을 위한 인증번호를 확인해주세요.");  // 제목
+            String html = "";
+            html += "<div align='center' style='margin:50px;'>";
+            html += "<h1>로그인 안내</h1>";
+            html += "<br>";
+            html += "<p>아래 인증 코드를 입력하시면 로그인이 완료됩니다. 감사합니다.</p>";
+            html += "<br>";
+            html += "<div align='center' style='border:1px solid black; font-family:verdana';>";
+            html += "<h3 style='color:darkgreen;'>로그인 코드</h3>";
+            html += "<div style='font-size:130%'>";
+            html += "CODE : <strong>";
+            html += verificationCode;
+            html += "</strong><div><br/> ";
+            html += "<a href='https://cuki.io' target='_blank'>cuki 홈페이지 바로가기</a>";
+            html += "</div>";
 
-        String html = "";
-        html += "<div align='center' style='margin:50px;'>";
-        html += "<h1>로그인 안내</h1>";
-        html += "<br>";
-        html += "<p>아래 인증 코드를 입력하시면 로그인이 완료됩니다. 감사합니다.</p>";
-        html += "<br>";
-        html += "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        html += "<h3 style='color:darkgreen;'>로그인 코드</h3>";
-        html += "<div style='font-size:130%'>";
-        html += "CODE : <strong>";
-        html += verificationCode;
-        html += "</strong><div><br/> ";
-        html += "<a href='https://cuki.io' target='_blank'>cuki 홈페이지 바로가기</a>";
-        html += "</div>";
-
-        message.setText(html, "utf-8", "html");  // 내용
-        message.setFrom(new InternetAddress(SENDER_EMAIL, SENDER_NAME)); // 보내는 사람
+            message.setText(html, "utf-8", "html");  // 내용
+            message.setFrom(new InternetAddress(SENDER_EMAIL, SENDER_NAME)); // 보내는 사람
+        } catch (UnsupportedEncodingException | MessagingException e) {
+            e.printStackTrace();
+            throw new SendMailFailedException("메일 전송에 실패했습니다.");
+        }
 
         return message;
     }

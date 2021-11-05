@@ -11,6 +11,7 @@ import io.cuki.domain.member.repository.RefreshTokenRepository;
 import io.cuki.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -39,7 +40,7 @@ public class AuthService {
 
     // 회원가입 - 인증코드 전송
     @Transactional
-    public Boolean sendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) throws Exception {
+    public Boolean sendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) {
         if (!existsEmailAddress(requestDto.getEmail())) {
             emailService.sendMessageForSignUp(requestDto.getEmail());
         } else {
@@ -76,7 +77,7 @@ public class AuthService {
 
     // 로그인 - 인증코드 전송
     @Transactional
-    public Boolean sendVerificationCodeForLogin(SendVerificationCodeForLoginRequestDto requestDto) throws Exception {
+    public Boolean sendVerificationCodeForLogin(SendVerificationCodeForLoginRequestDto requestDto) {
         final String email = requestDto.getEmail();
 
         if (existsEmailAddress(email)) {
@@ -155,7 +156,11 @@ public class AuthService {
     // 로그아웃 - 리프레쉬 토큰 값 삭제
     @Transactional
     public Boolean logout() {
-        refreshTokenRepository.deleteById(SecurityUtil.getCurrentMemberId());
+        try {
+            refreshTokenRepository.deleteById(SecurityUtil.getCurrentMemberId());
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchRefeshTokenException(SecurityUtil.getCurrentMemberId() + " -> 해당 사용자의 Refresh Token은 존재하지 않습니다.");
+        }
 
         return true;
     }

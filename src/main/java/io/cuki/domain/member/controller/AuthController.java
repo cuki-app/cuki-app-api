@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-@Api(tags = {"회원 인증 관련 API"})
+@Api(tags = {"회원 및 인증 관련 API"})
 @Slf4j
 @RestController
 @RequiredArgsConstructor

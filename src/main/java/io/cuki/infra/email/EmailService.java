@@ -44,11 +44,6 @@ public class EmailService {
     @Async
     @Transactional
     public void sendMessageForSignUp(String email) throws Exception {
-        log.debug("getName -> {}", Thread.currentThread().getName());
-        final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        for (StackTraceElement stackTraceElement : stackTrace) {
-            System.out.println(stackTraceElement);
-        }
         MimeMessage message = createMessageForSignUp(email);
 
         log.debug("관리자 계정: {}", SENDER_EMAIL);

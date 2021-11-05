@@ -9,11 +9,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@Api(tags = {"회원 인증 관련 API"})
+@Api(tags = {"회원 및 인증 관련 API"})
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +31,7 @@ public class AuthController {
 
     @ApiOperation(value = "회원가입 2단계 - 인증번호 발송")
     @PostMapping("/members/sign-up/verification-code")
-    public ApiResponse<Boolean> sendVerificationCodeForSignUp(@RequestBody SendVerificationCodeCodeForSignUpRequestDto requestDto) throws Exception {
+    public ApiResponse<Boolean> sendVerificationCodeForSignUp(@RequestBody SendVerificationCodeCodeForSignUpRequestDto requestDto) {
         return ApiResponse.ok(authService.sendVerificationCodeForSignUp(requestDto));
     }
 
@@ -55,7 +53,7 @@ public class AuthController {
 
     @ApiOperation(value = "로그인 2단계 - 인증번호 발송")
     @PostMapping("/auth/login/verification-code")
-    public ApiResponse<Boolean> sendVerificationCodeForLogin(@RequestBody SendVerificationCodeForLoginRequestDto requestDto) throws Exception {
+    public ApiResponse<Boolean> sendVerificationCodeForLogin(@RequestBody SendVerificationCodeForLoginRequestDto requestDto) {
         return ApiResponse.ok(authService.sendVerificationCodeForLogin(requestDto));
     }
 
@@ -75,6 +73,12 @@ public class AuthController {
     @PostMapping("/auth/logout")
     public ApiResponse<Boolean> logout() {
         return ApiResponse.ok(authService.logout());
+    }
+
+    @ApiOperation(value = "회원탈퇴")
+    @DeleteMapping("/members/{memberId}")
+    public ApiResponse<SuccessfullyDeletedMemberResponseDto> withdrawal(@PathVariable Long memberId) {
+        return ApiResponse.ok(authService.withdrawal(memberId));
     }
 }
 

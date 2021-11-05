@@ -11,6 +11,7 @@ import io.cuki.domain.member.repository.RefreshTokenRepository;
 import io.cuki.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -39,7 +40,7 @@ public class AuthService {
 
     // 회원가입 - 인증코드 전송
     @Transactional
-    public Boolean sendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) throws Exception {
+    public Boolean sendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) {
         if (!existsEmailAddress(requestDto.getEmail())) {
             emailService.sendMessageForSignUp(requestDto.getEmail());
         } else {
@@ -76,7 +77,7 @@ public class AuthService {
 
     // 로그인 - 인증코드 전송
     @Transactional
-    public Boolean sendVerificationCodeForLogin(SendVerificationCodeForLoginRequestDto requestDto) throws Exception {
+    public Boolean sendVerificationCodeForLogin(SendVerificationCodeForLoginRequestDto requestDto) {
         final String email = requestDto.getEmail();
 
         if (existsEmailAddress(email)) {
@@ -155,9 +156,34 @@ public class AuthService {
     // 로그아웃 - 리프레쉬 토큰 값 삭제
     @Transactional
     public Boolean logout() {
-        refreshTokenRepository.deleteById(SecurityUtil.getCurrentMemberId());
+        try {
+            refreshTokenRepository.deleteById(SecurityUtil.getCurrentMemberId());
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchRefeshTokenException(SecurityUtil.getCurrentMemberId() + " -> 해당 사용자의 Refresh Token은 존재하지 않습니다.");
+        }
 
         return true;
+    }
+
+
+    // 회원탈퇴
+    @Transactional
+    public SuccessfullyDeletedMemberResponseDto withdrawal(Long memberId) {
+        if (!memberId.equals(SecurityUtil.getCurrentMemberId())) {
+            log.error("현재 로그인한 회원의 정보와 시큐리티 컨텍스트에 저장되어 있는 회원 정보가 일치하지 않습니다.");
+            throw new MemberNotMatchException("현재 로그인한 회원의 정보와 시큐리티 컨텍스트에 저장되어 있는 회원 정보가 일치하지 않습니다.");
+        }
+        try {
+            memberRepository.deleteById(memberId);
+        } catch (EmptyResultDataAccessException e) {
+            e.getStackTrace();
+            log.error("{} -> 삭제하려는 사용자의 정보를 데이터베이스에서 불러올 수 없습니다.", memberId);
+            throw new MemberNotFoundException("삭제하려는 사용자의 정보를 데이터베이스에서 불러올 수 없습니다.");
+        }
+
+        return SuccessfullyDeletedMemberResponseDto.builder()
+                .id(memberId)
+                .build();
     }
 }
 

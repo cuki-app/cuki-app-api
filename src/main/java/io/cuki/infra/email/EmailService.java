@@ -9,6 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +41,14 @@ public class EmailService {
     }
 
     // 인증번호 발송 - 회원가입
+    @Async
     @Transactional
-    public Boolean sendMessageForSignUp(String email) throws Exception {
+    public void sendMessageForSignUp(String email) throws Exception {
+        log.debug("getName -> {}", Thread.currentThread().getName());
+        final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (StackTraceElement stackTraceElement : stackTrace) {
+            System.out.println(stackTraceElement);
+        }
         MimeMessage message = createMessageForSignUp(email);
 
         log.debug("관리자 계정: {}", SENDER_EMAIL);
@@ -58,12 +65,12 @@ public class EmailService {
             log.error("메일 전송에 실패했습니다.");
             throw new SendMailFailedException("메일 전송에 실패했습니다.");
         }
-        return true;
     }
 
     // 인증번호 발송 - 로그인
+    @Async
     @Transactional
-    public boolean sendMessageForLogin(String email) throws Exception {
+    public void sendMessageForLogin(String email) throws Exception {
         MimeMessage message = createMessageForLogin(email);
 
         log.debug("관리자 계정: {}", SENDER_EMAIL);
@@ -80,7 +87,6 @@ public class EmailService {
             log.error("메일 전송에 실패했습니다.");
             throw new SendMailFailedException("메일 전송에 실패했습니다.");
         }
-        return true;
     }
 
     // MimeMessage - 회원가입

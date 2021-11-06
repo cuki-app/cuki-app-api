@@ -16,14 +16,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/me")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ApiResponse<MemberInfoResponseDto> getMyInfo() {
         return ApiResponse.ok(memberService.getMyInfo());
-    }
-
-    @GetMapping("/{email}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ApiResponse<MemberInfoForAdminResponseDto> getMemberInfo(@PathVariable String email) {
-        return ApiResponse.ok(memberService.getMemberInfo(email));
     }
 }

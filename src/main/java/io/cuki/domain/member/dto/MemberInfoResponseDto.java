@@ -10,11 +10,11 @@ import lombok.*;
 @NoArgsConstructor
 public class MemberInfoResponseDto {
 
+    private Long memberId;
     private String email;
     private String nickname;
-    private Authority authority;
 
     public static MemberInfoResponseDto of(Member member) {
-        return new MemberInfoResponseDto(member.getEmail(), member.getNickname(), member.getAuthority());
+        return new MemberInfoResponseDto(member.getId(), member.getEmail(), member.getNickname());
     }
 }

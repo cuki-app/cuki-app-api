@@ -43,4 +43,15 @@ public class ScheduleRegistrationRequestDto {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "ScheduleRegistrationRequestDto{" +
+                "title='" + title + '\'' +
+                ", startDateTime=" + startDateTime +
+                ", endDateTime=" + endDateTime +
+                ", fixedNumberOfPeople=" + fixedNumberOfPeople +
+                ", place='" + place + '\'' +
+                ", details='" + details + '\'' +
+                '}';
+    }
 }

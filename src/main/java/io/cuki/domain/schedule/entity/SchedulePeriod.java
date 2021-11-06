@@ -21,7 +21,7 @@ public class SchedulePeriod {
 
 
     private LocalDateTime startDateTime;
-    
+
     private LocalDateTime endDateTime;
 
 

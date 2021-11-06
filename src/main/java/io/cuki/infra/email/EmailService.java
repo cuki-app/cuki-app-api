@@ -86,7 +86,6 @@ public class EmailService {
 
     // MimeMessage - 회원가입
     private MimeMessage createMessageForSignUp(String email, String verificationCode) {
-        verificationCode = createVerificationCode();
         MimeMessage message = mailSender.createMimeMessage();
         try {
             message.addRecipients(Message.RecipientType.TO, email); // 보내는 대상
@@ -119,7 +118,6 @@ public class EmailService {
 
     // MimeMessage - 로그인
     private MimeMessage createMessageForLogin(String email, String verificationCode){
-        verificationCode = createVerificationCode();
         MimeMessage message = mailSender.createMimeMessage();
         try {
             message.addRecipients(Message.RecipientType.TO, email); // 보내는 대상

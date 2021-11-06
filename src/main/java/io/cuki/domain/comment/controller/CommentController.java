@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Api(tags = {"댓글 API"})
-@RequestMapping("/comments")
 @RestController
 public class CommentController {
 
@@ -26,20 +25,20 @@ public class CommentController {
     }
 
     @ApiOperation(value = "댓글등록")
-    @PostMapping
-    public ApiResponse<SuccessfullyRegisteredCommentResponseDto> registerComment(@RequestBody RegisterCommentRequestDto registerCommentRequestDto) {
-        return ApiResponse.ok(commentService.registerComment(registerCommentRequestDto));
+    @PostMapping("/schedules/{scheduleId}/comments")
+    public ApiResponse<SuccessfullyRegisteredCommentResponseDto> registerComment(@RequestBody RegisterCommentRequestDto registerCommentRequestDto, @PathVariable Long scheduleId) {
+        return ApiResponse.ok(commentService.registerComment(registerCommentRequestDto, scheduleId));
     }
 
     @ApiOperation(value = "댓글 조회 - 게시물 기준")
-    @GetMapping("/{scheduleId}")
+    @GetMapping("/schedules/{scheduleId}/comments")
     public ApiResponse<List<CommentResponseDto>> getComments(@PathVariable Long scheduleId) {
         return ApiResponse.ok(commentService.getComments(scheduleId));
     }
 
     @ApiOperation(value = "댓글 삭제")
-    @DeleteMapping("/{commentId}")
-    public ApiResponse<SuccessfullyDeletedCommentResponseDto> deleteComment(@PathVariable Long commentId) {
-        return ApiResponse.ok(commentService.deleteComment(commentId));
+    @DeleteMapping("/schedules/{scheduleId}/comments/{commentId}")
+    public ApiResponse<SuccessfullyDeletedCommentResponseDto> deleteComment(@PathVariable Long scheduleId, @PathVariable Long commentId) {
+        return ApiResponse.ok(commentService.deleteComment(scheduleId, commentId));
     }
 }

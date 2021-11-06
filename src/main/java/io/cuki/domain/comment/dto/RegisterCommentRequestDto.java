@@ -9,7 +9,6 @@ import lombok.Getter;
 public class RegisterCommentRequestDto {
 
     private String content;
-    private Long scheduleId;
 
     public Comment of(Member member, Schedule schedule) {
         return Comment.builder()

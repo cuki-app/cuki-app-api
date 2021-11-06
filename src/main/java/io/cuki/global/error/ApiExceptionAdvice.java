@@ -18,10 +18,10 @@ public class ApiExceptionAdvice {
 
     @ExceptionHandler({MemberNotFoundException.class, ScheduleNotFoundException.class,
             CommentNotFoundException.class})
-    public ResponseEntity<ErrorResponse<MessageResponseDto>> notFoundException(RuntimeException e) {
+    public ResponseEntity<ErrorResponse<String>> notFoundException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.notFound(new MessageResponseDto(e.getMessage())));
+                .body(ErrorResponse.notFound(e.getMessage()));
     }
 
     @ExceptionHandler(AuthenticationNotFoundException.class)
@@ -46,6 +46,13 @@ public class ApiExceptionAdvice {
             SendMailFailedException.class, NoSuchRefeshTokenException.class
     })
     public ResponseEntity<ErrorResponse<String>> illegalArgumentException(RuntimeException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.badRequest(e.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalAccessException.class)
+    public ResponseEntity<ErrorResponse<String>> IllegalAccessException(Exception e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.badRequest(e.getMessage()));

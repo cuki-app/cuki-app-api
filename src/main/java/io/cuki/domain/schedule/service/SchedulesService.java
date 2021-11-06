@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -32,13 +33,19 @@ public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
 
 
-    // main
+
     @Transactional(readOnly = true)
-    public SliceCustom<AllScheduleResponseDto> getAllSchedule(Pageable pageable) {
+    public SliceCustom<AllScheduleResponseDto> getAllSchedule(@PageableDefault(size = 10) Pageable pageable) {
         final Slice<Schedule> schedules = schedulesRepository.findBy(pageable);
         log.debug("ScheduleService.getAllSchedule(), schedules = {}", schedules);
         List<AllScheduleResponseDto> dtoList = new ArrayList<>();
 
+//
+//        for (Schedule schedule : schedules) {
+//            dtoList.add(AllScheduleResponseDto.of(schedule));
+//        }
+//
+//        Collections.sort(dtoList, Collections.reverseOrder());
         schedules
                 .stream().sorted((a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate()))
                 .forEach(schedule -> dtoList.add(AllScheduleResponseDto.of(schedule)));

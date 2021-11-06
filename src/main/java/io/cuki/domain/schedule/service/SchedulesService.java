@@ -36,6 +36,7 @@ public class SchedulesService {
     @Transactional(readOnly = true)
     public SliceCustom<AllScheduleResponseDto> getAllSchedule(Pageable pageable) {
         final Slice<Schedule> schedules = schedulesRepository.findBy(pageable);
+        log.debug("ScheduleService.getAllSchedule(), schedules = {}", schedules);
         List<AllScheduleResponseDto> dtoList = new ArrayList<>();
 
         schedules
@@ -43,6 +44,8 @@ public class SchedulesService {
                 .forEach(schedule -> dtoList.add(AllScheduleResponseDto.of(schedule)));
 
         final Slice<AllScheduleResponseDto> dtoSlice = new SliceImpl<>(dtoList, pageable, schedules.hasNext());
+
+        log.debug("ScheduleService.getAllSchedule(), AllScheduleResponseDto = {}", dtoSlice);
 
         return new SliceCustom<>(dtoList, dtoSlice.hasNext());
     }

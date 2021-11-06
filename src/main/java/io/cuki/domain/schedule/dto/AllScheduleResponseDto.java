@@ -5,10 +5,12 @@ import io.cuki.domain.schedule.entity.ScheduleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
+@ToString
 @Slf4j
 @Builder
 @AllArgsConstructor

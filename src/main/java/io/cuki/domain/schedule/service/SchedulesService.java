@@ -59,6 +59,8 @@ public class SchedulesService {
 
     @Transactional
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
+        log.debug("registrationRequestDto = {}", registrationRequestDto);
+
         final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .map(registrationRequestDto::toEntity)
                 .orElseThrow(MemberNotFoundException::new);

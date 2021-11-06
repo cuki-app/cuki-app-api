@@ -19,15 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * 해야할 것:
- * 1. 작성자가 '참여마감' 버튼 누른 경우 -> DONE
- * 2. 정원이 차면 자동으로 마감 -> DONE
- * 3. 종료 날짜가 되면 자동으로 마감 -> DONE
- * 4. 확정 유저 명단 -> DONE
- * 5. 참여 마감 -> 참여 신청 보내기 막기 -> DONE
- * 6. 참여 마감 -> 참여 신청 허가 | 거절  안되게 -> DONE
- */
+
 @Slf4j
 @RequiredArgsConstructor
 @Service

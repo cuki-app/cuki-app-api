@@ -46,8 +46,6 @@ public class Schedule extends BaseTimeEntity {
     @Column(nullable = false)
     private ScheduleStatus status;
 
-//    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)  //
-//    private Set<Participation> participation = new HashSet<>();
 
 
     @Builder

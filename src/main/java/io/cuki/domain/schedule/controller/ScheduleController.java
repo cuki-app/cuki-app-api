@@ -60,8 +60,8 @@ public class ScheduleController {
         return ApiResponse.ok(schedulesService.deleteSchedule(scheduleId));
     }
 
-    @ApiOperation(value = "게시물 참여 상태 - 마감으로 변경")
-    @PutMapping("/schedules")
+    @ApiOperation(value = "게시물 모집 상태 - 마감으로 변경")
+    @PutMapping("/schedules/{scheduleId}/status")
     public ApiResponse<IdAndStatusResponseDto> closeUpSchedule(@RequestBody CloseUpScheduleRequestDto closeUpRequestDto) {
         return ApiResponse.ok(schedulesService.closeUpSchedule(closeUpRequestDto));
     }

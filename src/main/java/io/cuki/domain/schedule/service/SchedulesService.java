@@ -14,9 +14,7 @@ import io.cuki.domain.schedule.dto.*;
 import io.cuki.global.util.SliceCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,25 +32,21 @@ public class SchedulesService {
 
 
 
-    @Transactional(readOnly = true)
-    public SliceCustom<AllScheduleResponseDto> getAllSchedule(@PageableDefault(size = 10) Pageable pageable) {
-        final Slice<Schedule> schedules = schedulesRepository.findBy(pageable);
-        log.debug("ScheduleService.getAllSchedule(), schedules = {}", schedules);
+    @Transactional(readOnly = true) //
+    public SliceCustom<AllScheduleResponseDto> getAllSchedule(Pageable pageable) {
+        log.debug("page number = {}, page size = {}", pageable.getPageNumber(), pageable.getPageSize());
+        final Sort createdDate = Sort.by(Sort.Direction.DESC, "createdDate");
+        final PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), createdDate);
+
+        final Slice<Schedule> scheduleSlice = schedulesRepository.findBy(pageRequest);
         List<AllScheduleResponseDto> dtoList = new ArrayList<>();
+        for (Schedule schedule : scheduleSlice) {
+            log.debug("repo 에서 뽑은 schedule id = {}", schedule.getId());
+            dtoList.add(AllScheduleResponseDto.of(schedule));
+        }
 
-//
-//        for (Schedule schedule : schedules) {
-//            dtoList.add(AllScheduleResponseDto.of(schedule));
-//        }
-//
-//        Collections.sort(dtoList, Collections.reverseOrder());
-        schedules
-                .stream().sorted((a, b) -> b.getCreatedDate().compareTo(a.getCreatedDate()))
-                .forEach(schedule -> dtoList.add(AllScheduleResponseDto.of(schedule)));
-
-        final Slice<AllScheduleResponseDto> dtoSlice = new SliceImpl<>(dtoList, pageable, schedules.hasNext());
-
-        log.debug("ScheduleService.getAllSchedule(), AllScheduleResponseDto = {}", dtoSlice);
+        final Slice<AllScheduleResponseDto> dtoSlice = new SliceImpl<>(dtoList, pageRequest, scheduleSlice.hasNext());
+        log.debug("schedule response dto is empty ? = {}", dtoSlice.isEmpty());
 
         return new SliceCustom<>(dtoList, dtoSlice.hasNext());
     }

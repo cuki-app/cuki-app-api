@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
-@ToString
 @Slf4j
 @Builder
 @AllArgsConstructor

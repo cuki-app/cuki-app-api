@@ -44,10 +44,10 @@ public class CommentService {
 
     // 댓글 등록
     @Transactional
-    public SuccessfullyRegisteredCommentResponseDto registerComment(RegisterCommentRequestDto registerCommentRequestDto) {
+    public SuccessfullyRegisteredCommentResponseDto registerComment(RegisterCommentRequestDto registerCommentRequestDto, Long scheduleId) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new MemberNotFoundException("디비에서 현재 접속중인 멤버의 id를 찾을 수 없습니다."));
-        Schedule schedule = schedulesRepository.findById(registerCommentRequestDto.getScheduleId())
+        Schedule schedule = schedulesRepository.findById(scheduleId)
                 .orElseThrow(ScheduleNotFoundException::new);
 
         Comment comment = commentRepository.save(registerCommentRequestDto.of(member, schedule));
@@ -82,7 +82,7 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public SuccessfullyDeletedCommentResponseDto deleteComment(Long commentId) {
+    public SuccessfullyDeletedCommentResponseDto deleteComment(Long scheduleId, Long commentId) {
         Optional<Comment> comment = commentRepository.findById(commentId);
 
         if (!comment.isPresent()) {

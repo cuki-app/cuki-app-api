@@ -11,7 +11,6 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -34,7 +33,6 @@ public class EmailService {
     private final String SENDER_NAME = "cuki";
     private final String KEY_PREFIX = "email:";
     private final int LIMIT_TIME = 60 * 5;
-    private String verificationCode;
 
     public EmailService(JavaMailSender mailSender, RedisTemplate<String, Object> redisTemplate, @Value("${AdminMail.id}") String SENDER_EMAIL) {
         this.mailSender = mailSender;
@@ -44,19 +42,19 @@ public class EmailService {
 
     // 인증번호 발송 - 회원가입
     @Async
-    @Transactional
     public void sendMessageForSignUp(String email) {
-        MimeMessage message = createMessageForSignUp(email);
+        String verificationCode = createVerificationCode();
+        MimeMessage message = createMessageForSignUp(email, verificationCode);
 
         log.debug("관리자 계정: {}", SENDER_EMAIL);
         log.debug("보내는 대상: {}", email);
         log.debug("인증 번호: {}", verificationCode);
 
         try {
-            // 1. 메일 전송
-            mailSender.send(message);
-            // 2. 레디스 서버에 인증번호 저장
+            // 1. 레디스 서버에 인증번호 저장
             redisTemplate.opsForValue().set(KEY_PREFIX + email, verificationCode, Duration.ofSeconds(LIMIT_TIME));
+            // 2. 메일 전송
+            mailSender.send(message);
         } catch (MailException e){
             e.printStackTrace();
             log.error("메일 전송에 실패했습니다.");
@@ -66,19 +64,19 @@ public class EmailService {
 
     // 인증번호 발송 - 로그인
     @Async
-    @Transactional
     public void sendMessageForLogin(String email) {
-        MimeMessage message = createMessageForLogin(email);
+        String verificationCode = createVerificationCode();
+        MimeMessage message = createMessageForLogin(email, verificationCode);
 
         log.debug("관리자 계정: {}", SENDER_EMAIL);
         log.debug("보내는 대상: {}", email);
         log.debug("인증 번호: {}", verificationCode);
 
         try {
-            // 1. 메일 전송
-            mailSender.send(message);
-            // 2. 레디스 서버에 인증번호 저장
+            // 1. 레디스 서버에 인증번호 저장
             redisTemplate.opsForValue().set(KEY_PREFIX + email, verificationCode, Duration.ofSeconds(LIMIT_TIME));
+            // 2. 메일 전송
+            mailSender.send(message);
         } catch (MailException e){
             e.printStackTrace();
             log.error("메일 전송에 실패했습니다.");
@@ -87,7 +85,7 @@ public class EmailService {
     }
 
     // MimeMessage - 회원가입
-    private MimeMessage createMessageForSignUp(String email) {
+    private MimeMessage createMessageForSignUp(String email, String verificationCode) {
         verificationCode = createVerificationCode();
         MimeMessage message = mailSender.createMimeMessage();
         try {
@@ -120,7 +118,7 @@ public class EmailService {
     }
 
     // MimeMessage - 로그인
-    private MimeMessage createMessageForLogin(String email){
+    private MimeMessage createMessageForLogin(String email, String verificationCode){
         verificationCode = createVerificationCode();
         MimeMessage message = mailSender.createMimeMessage();
         try {

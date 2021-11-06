@@ -21,8 +21,8 @@ public class ScheduleController {
     private final SchedulesService schedulesService;
 
 
-    @ApiOperation(value = "메인화면", notes = "모든 게시물을 조회한다.")
-    @GetMapping
+    @ApiOperation(value = "게시글 전체 조회", notes = "모든 게시물을 조회한다.")
+    @GetMapping("/schedules")
     public ApiResponse<SliceCustom<AllScheduleResponseDto>> getAllSchedule(Pageable pageable) {
         return ApiResponse.ok(schedulesService.getAllSchedule(pageable));
     }

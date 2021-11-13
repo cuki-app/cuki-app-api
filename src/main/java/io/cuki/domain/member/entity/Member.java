@@ -1,6 +1,8 @@
 package io.cuki.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.cuki.domain.member.dto.MemberInfoResponseDto;
+import io.cuki.domain.member.dto.UpdateMyPageInfoRequestDto;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +43,12 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Authority authority;
+
+    public MemberInfoResponseDto updateMemberInfo(UpdateMyPageInfoRequestDto requestDto) {
+        this.nickname = requestDto.getNickName();
+
+        return MemberInfoResponseDto.of(this);
+    }
 
     public static String createRandomNickname() {
         final String[] firstPart = {

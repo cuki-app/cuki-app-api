@@ -21,7 +21,7 @@ public class AuthController {
 
     @ApiOperation(value = "회원가입 1단계 - 이메일 중복확인")
     @PostMapping("/members/sign-up/email")
-    public ApiResponse<Boolean> duplicateEmailAddressForSignUp(@RequestBody DuplicateEmailAddressForSignUpRequestDto requestDto) {
+    public ApiResponse<Boolean> duplicateEmailAddressForSignUp(@RequestBody ValidateDuplicateEmailAddressForSignUpRequestDto requestDto) {
         if (authService.existsEmailAddress(requestDto.getEmail())) {
             log.debug("{} -> 이미 가입되어 있는 유저입니다.", requestDto.getEmail());
             throw new MemberAlreadyExistException("이미 가입되어 있는 유저입니다.");
@@ -43,7 +43,7 @@ public class AuthController {
 
     @ApiOperation(value = "로그인 1단계 - 회원 여부 체크")
     @PostMapping("/auth/login/email")
-    public ApiResponse<Boolean> existsEmailAddress(@RequestBody ExistEmailAddressForLoginRequestDto requestDto) {
+    public ApiResponse<Boolean> existsEmailAddress(@RequestBody ValidateExistEmailAddressForLoginRequestDto requestDto) {
         if (!authService.existsEmailAddress(requestDto.getEmail())) {
             log.debug("{} -> 존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.", requestDto.getEmail());
             throw new MemberNotFoundException("존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.");

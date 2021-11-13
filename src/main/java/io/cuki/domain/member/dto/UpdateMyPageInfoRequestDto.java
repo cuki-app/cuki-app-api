@@ -1,2 +1,8 @@
-package io.cuki.domain.member.dto;public class UpdateMyPageInfoRequestDto {
+package io.cuki.domain.member.dto;
+
+import lombok.Getter;
+
+@Getter
+public class UpdateMyPageInfoRequestDto {
+    private String nickName;
 }

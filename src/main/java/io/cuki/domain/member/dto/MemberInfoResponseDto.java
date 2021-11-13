@@ -5,9 +5,7 @@ import io.cuki.domain.member.entity.Authority;
 import lombok.*;
 
 @Getter
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor
 public class MemberInfoResponseDto {
 
     private Long memberId;

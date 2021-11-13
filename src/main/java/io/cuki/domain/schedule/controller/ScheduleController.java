@@ -1,7 +1,5 @@
 package io.cuki.domain.schedule.controller;
 
-import io.cuki.domain.participation.dto.ScheduleSummaryResponseDto;
-import io.cuki.domain.schedule.entity.ScheduleOwner;
 import io.cuki.domain.schedule.service.SchedulesService;
 import io.cuki.global.common.response.ApiResponse;
 import io.cuki.domain.schedule.dto.*;
@@ -10,7 +8,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -26,7 +23,7 @@ public class ScheduleController {
 
     @ApiOperation(value = "게시글 전체 조회", notes = "모든 게시물을 조회한다.")
     @GetMapping("/schedules")
-    public ApiResponse<SliceCustom<AllScheduleResponseDto>> getAllSchedule(@RequestParam int page, @RequestParam int size) {
+    public ApiResponse<SliceCustom<AllScheduleResponseDto>> getAllSchedule(@RequestParam int page, @RequestParam(defaultValue = "20") int size) {
         log.debug("ScheduleController 의 getAllSchedule 메소드");
         return ApiResponse.ok(schedulesService.getAllSchedule(page, size));
     }

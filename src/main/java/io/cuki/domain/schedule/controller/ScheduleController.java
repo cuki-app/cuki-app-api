@@ -1,6 +1,7 @@
 package io.cuki.domain.schedule.controller;
 
 import io.cuki.domain.participation.dto.ScheduleSummaryResponseDto;
+import io.cuki.domain.schedule.entity.ScheduleOwner;
 import io.cuki.domain.schedule.service.SchedulesService;
 import io.cuki.global.common.response.ApiResponse;
 import io.cuki.domain.schedule.dto.*;
@@ -25,9 +26,9 @@ public class ScheduleController {
 
     @ApiOperation(value = "게시글 전체 조회", notes = "모든 게시물을 조회한다.")
     @GetMapping("/schedules")
-    public ApiResponse<SliceCustom<AllScheduleResponseDto>> getAllSchedule(Pageable pageable) {
+    public ApiResponse<SliceCustom<AllScheduleResponseDto>> getAllSchedule(@RequestParam int page, @RequestParam int size) {
         log.debug("ScheduleController 의 getAllSchedule 메소드");
-        return ApiResponse.ok(schedulesService.getAllSchedule(pageable));
+        return ApiResponse.ok(schedulesService.getAllSchedule(page, size));
     }
 
     @ApiOperation(value = "게시물 등록")

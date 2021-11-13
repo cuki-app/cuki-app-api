@@ -1,11 +1,13 @@
 package io.cuki.domain.comment.controller;
 
 import io.cuki.domain.comment.dto.CommentResponseDto;
+import io.cuki.domain.comment.entity.CommentAuthority;
 import io.cuki.global.common.response.ApiResponse;
 import io.cuki.domain.comment.dto.RegisterCommentRequestDto;
 import io.cuki.domain.comment.dto.SuccessfullyDeletedCommentResponseDto;
 import io.cuki.domain.comment.dto.SuccessfullyRegisteredCommentResponseDto;
 import io.cuki.domain.comment.service.CommentService;
+import io.cuki.global.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,8 @@ public class CommentController {
     @ApiOperation(value = "댓글 조회 - 게시물 기준")
     @GetMapping("/schedules/{scheduleId}/comments")
     public ApiResponse<List<CommentResponseDto>> getComments(@PathVariable Long scheduleId) {
-        return ApiResponse.ok(commentService.getComments(scheduleId));
+        final long memberId = SecurityUtil.getCurrentMemberId();
+        return ApiResponse.ok(commentService.getComments(scheduleId, memberId));
     }
 
     @ApiOperation(value = "댓글 삭제")

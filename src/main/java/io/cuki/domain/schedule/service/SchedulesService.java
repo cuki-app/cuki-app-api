@@ -31,7 +31,7 @@ public class SchedulesService {
 
     @Transactional(readOnly = true) //
     public SliceCustom<AllScheduleResponseDto> getAllSchedule(Pageable pageable) {
-        log.debug("page number = {}, page size = {}", pageable.getPageNumber(), pageable.getPageSize());
+        log.debug("client request - page number = {}, page size = {}", pageable.getPageNumber(), pageable.getPageSize());
         final Sort createdDate = Sort.by(Sort.Direction.DESC, "createdDate");
         final PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), createdDate);
 
@@ -44,8 +44,9 @@ public class SchedulesService {
 
         final Slice<AllScheduleResponseDto> dtoSlice = new SliceImpl<>(dtoList, pageRequest, scheduleSlice.hasNext());
         log.debug("schedule response dto is empty ? = {}", dtoSlice.isEmpty());
+        log.debug("response - page number = {}", dtoSlice.getNumber());
 
-        return new SliceCustom<>(dtoList, dtoSlice.hasNext());
+        return new SliceCustom<>(dtoList, dtoSlice.hasNext(), dtoSlice.getNumber());
     }
 
     @Transactional

@@ -9,9 +9,11 @@ public class SliceCustom<T> {
 
     private final List<T> content;
     private final boolean hasNext;
+    private final int currentPageNumber;
 
-    public SliceCustom(List<T> content, boolean hasNext) {
+    public SliceCustom(List<T> content, boolean hasNext, int currentPageNumber) {
         this.content = content;
         this.hasNext = hasNext;
+        this.currentPageNumber = currentPageNumber;
     }
 }

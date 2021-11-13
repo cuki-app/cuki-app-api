@@ -72,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/members/sign-up/email", "/members/sign-up/verification-code", "/members/sign-up").permitAll()
                 .antMatchers("/auth/login/email", "/auth/login/verification-code", "/auth/login").permitAll()
                 .antMatchers("/auth/reissue").permitAll()
-//                .antMatchers("/schedules").permitAll()
+                .antMatchers("/schedules").permitAll()
                 .anyRequest().authenticated()
 
                 // JwtSecurityConfig 클래스 적용

@@ -1,6 +1,7 @@
 package io.cuki.domain.schedule.dto;
 
 import io.cuki.domain.schedule.entity.Schedule;
+import io.cuki.domain.schedule.entity.ScheduleOwner;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +37,9 @@ public class OneScheduleResponseDto {
 
     private final ScheduleStatus status;
 
-    public static OneScheduleResponseDto of(Schedule schedule) {
+    private final ScheduleOwner owner;
+
+    public static OneScheduleResponseDto of(Schedule schedule, ScheduleOwner owner) {
         return OneScheduleResponseDto.builder()
                 .scheduleId(schedule.getId())
                 .title(schedule.getTitle())
@@ -49,6 +52,7 @@ public class OneScheduleResponseDto {
                 .details(schedule.getDetails())
                 .numberOfPeopleWaiting(schedule.getNumberOfPeopleWaiting())
                 .status(schedule.getStatus())
+                .owner(owner)
                 .build();
     }
 

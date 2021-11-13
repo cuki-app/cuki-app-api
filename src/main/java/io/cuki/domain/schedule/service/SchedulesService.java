@@ -1,6 +1,7 @@
 package io.cuki.domain.schedule.service;
 
 import io.cuki.domain.schedule.entity.Schedule;
+import io.cuki.domain.schedule.entity.ScheduleOwner;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import io.cuki.domain.schedule.utils.*;
@@ -30,10 +31,10 @@ public class SchedulesService {
 
 
     @Transactional(readOnly = true) //
-    public SliceCustom<AllScheduleResponseDto> getAllSchedule(Pageable pageable) {
-        log.debug("client request - page number = {}, page size = {}", pageable.getPageNumber(), pageable.getPageSize());
+    public SliceCustom<AllScheduleResponseDto> getAllSchedule(int page, int size) {
+        log.debug("client request - page number = {}, page size = {}", page, size);
         final Sort createdDate = Sort.by(Sort.Direction.DESC, "createdDate");
-        final PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), createdDate);
+        final PageRequest pageRequest = PageRequest.of(page, size, createdDate);
 
         final Slice<Schedule> scheduleSlice = schedulesRepository.findBy(pageRequest);
         List<AllScheduleResponseDto> dtoList = new ArrayList<>();
@@ -63,9 +64,13 @@ public class SchedulesService {
     // 일정 상세 조회
     @Transactional(readOnly = true)
     public OneScheduleResponseDto getOneSchedule(Long scheduleId) {
-        return schedulesRepository.findById(scheduleId)
-                .map(OneScheduleResponseDto::of)
-                .orElseThrow(ScheduleNotFoundException::new);
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
+
+        if (!SecurityUtil.getCurrentMemberId().equals(schedule.getMember().getId())) {
+            return OneScheduleResponseDto.of(schedule, ScheduleOwner.GUEST);
+        } else {
+            return OneScheduleResponseDto.of(schedule, ScheduleOwner.SCHEDULE_OWNER);
+        }
     }
 
 
@@ -95,7 +100,8 @@ public class SchedulesService {
             schedulesRepository.delete(schedule);
         } else {
             log.debug("로그인 한 회원 = {}, 게시글 작성자 = {}", SecurityUtil.getCurrentMemberId(), schedule.getId());
-            throw new MemberNotMatchException("현재 로그인 한 회원과 게시글 작성자가 일치하지 않습니다.");
+            throw new ArrayIndexOutOfBoundsException("에러: 슬랙에 메시지 나타내기 테스트");
+//            throw new MemberNotMatchException("현재 로그인 한 회원과 게시글 작성자가 일치하지 않습니다.");
         }
 
         return new IdResponseDto(schedule.getId());

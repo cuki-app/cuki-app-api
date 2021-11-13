@@ -34,7 +34,7 @@ public class ParticipationController {
         return ApiResponse.ok(participationService.getWaitingList(scheduleId));
     }
 
-    @ApiOperation(value = "참여 요청한 대기자의 정보 조회", notes = "대기자에 대한 정보 - nickname, 참여 이유")
+    @ApiOperation(value = "'참여' 요청한 대기자의 정보 조회", notes = "대기자에 대한 정보 - nickname, 참여 이유")
     @GetMapping("/schedules/{scheduleId}/participants/{participantId}")
     public ApiResponse<WaitingDetailsInfoResponseDto> getWaitingDetailsInfo(@PathVariable Long participantId) throws IllegalAccessException {
         return ApiResponse.ok(participationService.getWaitingDetailsInfo(participantId));

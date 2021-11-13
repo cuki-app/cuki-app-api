@@ -1,6 +1,5 @@
 package io.cuki.domain.schedule.service;
 
-import io.cuki.domain.participation.dto.ScheduleSummaryResponseDto;
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
@@ -15,10 +14,8 @@ import io.cuki.global.util.SliceCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -70,25 +67,6 @@ public class SchedulesService {
                 .orElseThrow(ScheduleNotFoundException::new);
     }
 
-    // 일정 요약 정보 보여주기
-    @Transactional(readOnly = true)
-    public ScheduleSummaryResponseDto getScheduleSummary(Long scheduleId) {
-        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 모집 일정 게시글 입니다.")
-        );
-
-        return ScheduleSummaryResponseDto.builder()
-                .scheduleId(schedule.getId())
-                .title(schedule.getTitle())
-                .place(schedule.getLocation().getPlace())
-                .startDateTime(schedule.getDateTime().getStartDateTime())
-                .endDateTime(schedule.getDateTime().getEndDateTime())
-                .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())
-                .currentNumberOfPeople(schedule.getCurrentNumberOfPeople())
-                .numberOfPeopleWaiting(schedule.getNumberOfPeopleWaiting())
-                .status(schedule.getStatus())
-                .build();
-    }
 
 
     // 내가 등록한 모집 일정 전체 보여주기
@@ -115,6 +93,7 @@ public class SchedulesService {
         if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
             schedulesRepository.delete(schedule);
         } else {
+            log.debug("로그인 한 회원 = {}, 게시글 작성자 = {}", SecurityUtil.getCurrentMemberId(), schedule.getId());
             throw new MemberNotMatchException("현재 로그인 한 회원과 게시글 작성자가 일치하지 않습니다.");
         }
 
@@ -131,6 +110,7 @@ public class SchedulesService {
         }
 
         if (schedule.getStatus() == ScheduleStatus.DONE) {
+            log.debug("{}번 게시글은 이미 마감 처리되었습니다.", closeUpRequestDto.getScheduleId());
             throw new IllegalArgumentException("이미 신청 마감 처리 되었습니다.");
         }
         schedule.updateStatusToDone();

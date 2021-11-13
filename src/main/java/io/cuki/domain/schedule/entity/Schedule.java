@@ -2,9 +2,11 @@ package io.cuki.domain.schedule.entity;
 
 import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.model.BaseTimeEntity;
+import io.cuki.domain.participation.entity.Participation;
 import io.cuki.domain.participation.entity.PermissionResult;
 import lombok.*;
 import javax.persistence.*;
+import java.util.Set;
 
 
 @Getter
@@ -45,6 +47,9 @@ public class Schedule extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ScheduleStatus status;
+
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+    private Set<Participation> participants;
 
 
 

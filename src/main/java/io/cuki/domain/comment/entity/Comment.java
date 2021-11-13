@@ -27,7 +27,7 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(nullable = false, name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "schedule_id")
     private Schedule schedule;
 

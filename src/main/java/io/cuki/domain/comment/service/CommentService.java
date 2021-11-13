@@ -16,8 +16,13 @@ import io.cuki.domain.comment.dto.RegisterCommentRequestDto;
 import io.cuki.domain.comment.dto.SuccessfullyDeletedCommentResponseDto;
 import io.cuki.domain.comment.dto.SuccessfullyRegisteredCommentResponseDto;
 import io.cuki.domain.comment.entity.Comment;
+import io.cuki.global.util.SliceCustom;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,15 +64,19 @@ public class CommentService {
     }
 
     // 댓글 조회 - 특정 게시물 기준
-    public List<CommentResponseDto> getComments(Long scheduleId, Long memberId) {
+    public SliceCustom<CommentResponseDto> getComments(Long scheduleId, Long memberId, int page, int size) {
         if (!schedulesRepository.existsById(scheduleId)) {
             log.error("{} -> , 해당 id의 게시글은 존재하지 않습니다.", scheduleId);
             throw new ScheduleNotFoundException();
         }
-        List<Comment> comments = commentRepository.findAllByScheduleIdOrderByCreatedDateDesc(scheduleId);
+
+        final Sort createdDate = Sort.by(Sort.Direction.DESC, "createdDate");
+        final PageRequest pageRequest = PageRequest.of(page, size, createdDate);
+
+        final Slice<Comment> commentsSlice  = commentRepository.findAllByScheduleId(scheduleId, pageRequest);
         List<CommentResponseDto> responseDtos = new ArrayList<>();
 
-        for (Comment comment : comments) {
+        for (Comment comment : commentsSlice) {
             responseDtos.add(
                     CommentResponseDto.builder()
                             .commentId(comment.getId())
@@ -80,7 +89,9 @@ public class CommentService {
             );
         }
 
-        return responseDtos ;
+        final Slice<CommentResponseDto> dtoSlice  = new SliceImpl<>(responseDtos, pageRequest, commentsSlice.hasNext());
+
+        return new SliceCustom<>(responseDtos, dtoSlice.hasNext(), dtoSlice.getNumber());
     }
 
     // 댓글 삭제

@@ -1,6 +1,7 @@
 package io.cuki.domain.comment.service;
 
 import io.cuki.domain.comment.dto.CommentResponseDto;
+import io.cuki.domain.comment.entity.CommentAuthority;
 import io.cuki.domain.comment.exception.CommentNotFoundException;
 import io.cuki.domain.comment.repository.CommentRepository;
 import io.cuki.domain.member.entity.Member;
@@ -58,7 +59,7 @@ public class CommentService {
     }
 
     // 댓글 조회 - 특정 게시물 기준
-    public List<CommentResponseDto> getComments(Long scheduleId) {
+    public List<CommentResponseDto> getComments(Long scheduleId, Long memberId) {
         if (!schedulesRepository.existsById(scheduleId)) {
             log.error("{} -> , 해당 id의 게시글은 존재하지 않습니다.", scheduleId);
             throw new ScheduleNotFoundException();
@@ -70,9 +71,11 @@ public class CommentService {
             responseDtos.add(
                     CommentResponseDto.builder()
                             .commentId(comment.getId())
+                            .writerId(comment.getMember().getId())
                             .nickname(comment.getMember().getNickname())
                             .content(comment.getContent())
                             .textDate(makeTextDate(comment.getCreatedDate()))
+                            .commentAuthority(Objects.equals(memberId, comment.getMember().getId()) ? CommentAuthority.OWNER : CommentAuthority.GUEST)
                             .build()
             );
         }

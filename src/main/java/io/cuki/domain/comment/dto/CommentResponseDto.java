@@ -1,5 +1,6 @@
 package io.cuki.domain.comment.dto;
 
+import io.cuki.domain.comment.entity.CommentAuthority;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +10,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentResponseDto {
-    private Long commentId;
-    private String nickname;
-    private String content;
-    private String textDate;
+    private final Long commentId;
+    private final Long writerId;
+    private final String nickname;
+    private final String content;
+    private final String textDate;
+    private final CommentAuthority commentAuthority;
 
 }

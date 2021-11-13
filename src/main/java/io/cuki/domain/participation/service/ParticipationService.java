@@ -115,7 +115,7 @@ public class ParticipationService {
             throw new IllegalAccessException("해당 기능은 작성자만 이용할 수 있습니다.");
         }
 
-        if (schedule.isNotOverFixedNumber() && participation.getResult().equals(PermissionResult.NONE)) {
+        if (schedule.isNotOverFixedNumber() && participation.getResult() == PermissionResult.NONE) {
             if (permissionRequestDto.isAnswer()) {
                 participation.updateResult(PermissionResult.ACCEPT);
                 schedule.updateCurrentNumberOfPeople();
@@ -127,14 +127,15 @@ public class ParticipationService {
             schedule.updateNumberOfPeopleWaiting(PermissionResult.REJECT);
             return new PermissionResponseDto(participation.getId(), PermissionResult.REJECT);
         }
+        // 분기 나눠서 각각의 예외 던질 것
         throw new IllegalAccessException("모집인원 초과 || 참여 신청 결정은 한 번만 할 수 있습니다.");
     }
 
     public Set<ParticipantInfoResponseDto> getParticipantList(Long scheduleId) {
         // 확정자 명단 조회는 누구나 조회 가능한지?
         Set<ParticipantInfoResponseDto> members = new HashSet<>();
-        final Set<Participation> participationByAccept = participationRepository.findByScheduleIdAndResult(scheduleId, PermissionResult.ACCEPT);
-        for (Participation participation : participationByAccept) {
+        final Set<Participation> participantsByAccept = participationRepository.findByScheduleIdAndResult(scheduleId, PermissionResult.ACCEPT);
+        for (Participation participation : participantsByAccept) {
             members.add(ParticipantInfoResponseDto.of(participation));
         }
         return  members;
@@ -148,6 +149,7 @@ public class ParticipationService {
 
     private void isAlreadyCompleted(Schedule schedule) {    // status - in Schedule
         if (schedule.getStatus().equals(ScheduleStatus.DONE)) {
+            log.debug("스케쥴 상태 = {}", schedule.getStatus());
             throw new IllegalArgumentException("이미 모집이 마감된 스케쥴 입니다.");
         }
     }

@@ -44,12 +44,6 @@ public class ScheduleController {
         return ApiResponse.ok(oneSchedule);
     }
 
-    // 일정 요약 정보 조회 (상세 조회 api 에서 detail 만 사용하지 않고 데이터 뿌려주면 안되나? -> 삭제
-    @ApiOperation(value = "게시물 요약 정보 조회", notes = "상세조회에서 detail 정보만 빠진 것")
-    @GetMapping("/schedules/{scheduleId}/summary")
-    public ApiResponse<ScheduleSummaryResponseDto> getScheduleSummary(@PathVariable Long scheduleId) {
-        return ApiResponse.ok(schedulesService.getScheduleSummary(scheduleId));
-    }
 
     @ApiOperation(value = "내 게시물 조회")
     @GetMapping("/members/{memberId}/schedules")

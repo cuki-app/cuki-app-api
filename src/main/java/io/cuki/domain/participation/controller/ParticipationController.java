@@ -7,11 +7,13 @@ import io.cuki.domain.participation.service.ParticipationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 
 @Api(tags = {"모집일정 게시글에 참여하기 API"})
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class ParticipationController {
@@ -21,11 +23,12 @@ public class ParticipationController {
     @ApiOperation(value = "참여 요청하기")
     @PostMapping("/schedules/{scheduleId}/participation")
     public ApiResponse<ParticipationSimpleResponseDto> createParticipation(@RequestBody ApplyParticipationRequestDto requestDto) throws IllegalAccessException {
+        log.debug("참여 요청 = {}", requestDto);
         // try-catch 로 ErrorResponse 응답 할 때 제네릭 타입 반환형이 ok 응답 반환형과 맞지 않는 상황에 어떻게 할 것인가?
         return ApiResponse.ok(participationService.createParticipation(requestDto));
     }
 
-    @ApiOperation(value = "참여 요청한 대기자 리스트 조회", notes = "대기자에 대한 정보 - nickname 보여주기")
+    @ApiOperation(value = "참여 요청한 대기자 리스트 조회", notes = "대기자에 대한 정보 - nickname 보여주기, 아래 API만 살리면 어떨까?")
     @GetMapping("/schedules/{scheduleId}/participants/permission/none")
     public ApiResponse<Set<WaitingInfoResponseDto>> getWaitingList(@PathVariable Long scheduleId) {
         return ApiResponse.ok(participationService.getWaitingList(scheduleId));
@@ -40,6 +43,7 @@ public class ParticipationController {
     @ApiOperation(value = "참여 수락 또는 거절하기")
     @PutMapping("/schedules/{scheduleId}/participants/permission")
     public ApiResponse<PermissionResponseDto> updatePermission(@RequestBody PermissionRequestDto permissionRequestDto) throws IllegalAccessException {
+        log.debug("참여 수락 또는 거절 = {}", permissionRequestDto);
         return ApiResponse.ok(participationService.updatePermission(permissionRequestDto));
     }
 

@@ -35,7 +35,7 @@ public class CommentController {
 
     @ApiOperation(value = "댓글 조회 - 게시물 기준")
     @GetMapping("/schedules/{scheduleId}/comments")
-    public ApiResponse<SliceCustom<CommentResponseDto>> getComments(@PathVariable Long scheduleId, @RequestParam int page, @RequestParam(defaultValue = "100") int size) {
+    public ApiResponse<SliceCustom<CommentResponseDto>> getComments(@PathVariable Long scheduleId, @RequestParam int page, @RequestParam(defaultValue = "30") int size) {
         final Long memberId = SecurityUtil.getCurrentMemberId();
         return ApiResponse.ok(commentService.getComments(scheduleId, memberId, page, size));
     }

@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -16,5 +18,6 @@ public class CommentResponseDto {
     private final String content;
     private final String textDate;
     private final CommentAuthority commentAuthority;
+    private final LocalDateTime createdDate;
 
 }

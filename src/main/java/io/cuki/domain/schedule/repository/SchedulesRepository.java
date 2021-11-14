@@ -20,6 +20,4 @@ public interface SchedulesRepository extends JpaRepository<Schedule, Long> {
 
     Slice<Schedule> findBy(Pageable pageable);
 
-    Slice<Schedule> findByCreatedDate(@Param("createdDate") LocalDateTime createdDate, Pageable pageable);
-
 }

@@ -36,10 +36,10 @@ public class ScheduleRegistrationRequestDto {
                 .member(member)
                 .dateTime(new SchedulePeriod(startDateTime, endDateTime))
                 .fixedNumberOfPeople(fixedNumberOfPeople)
-                .currentNumberOfPeople(ONESELF)   //
+                .currentNumberOfPeople(ONESELF)
                 .location(new Location(place))
                 .details(details)
-                .status(ScheduleStatus.IN_PROGRESS) //
+                .status(ScheduleStatus.IN_PROGRESS)
                 .build();
     }
 

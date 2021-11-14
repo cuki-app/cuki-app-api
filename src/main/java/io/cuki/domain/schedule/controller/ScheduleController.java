@@ -3,6 +3,7 @@ package io.cuki.domain.schedule.controller;
 import io.cuki.domain.schedule.service.SchedulesService;
 import io.cuki.global.common.response.ApiResponse;
 import io.cuki.domain.schedule.dto.*;
+import io.cuki.global.util.SecurityUtil;
 import io.cuki.global.util.SliceCustom;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,7 +44,7 @@ public class ScheduleController {
     }
 
 
-    @ApiOperation(value = "내 게시물 조회")
+    @ApiOperation(value = "내가 작성한 게시물 전체 조회")
     @GetMapping("/members/{memberId}/schedules")
     public ApiResponse<List<MyScheduleResponseDto>> getMySchedule(@PathVariable Long memberId) {
         return ApiResponse.ok(schedulesService.getMySchedule(memberId));

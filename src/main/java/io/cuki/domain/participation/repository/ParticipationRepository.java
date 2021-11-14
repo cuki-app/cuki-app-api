@@ -15,6 +15,8 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
 
     List<Participation> findBySchedule(Schedule schedule);
 
+    List<Participation> findByMemberId(Long memberId);
+
     List<Participation> findByScheduleId(Long scheduleId);
 
     Set<Participation> findByScheduleIdAndResult(Long scheduleId, PermissionResult result);

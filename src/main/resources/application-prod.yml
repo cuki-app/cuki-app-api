@@ -35,7 +35,7 @@ jwt:
   secret: ${APPLICATION_CONFIG_JWT_SECRET}
 
 logging:
-  file:
-    name: ./logs/cuki-operation.log
-  level:
-    io.cuki: debug
+  slack:
+    webhook-uri: ${SLACK_WEBHOOK_URI}
+  config: classpath:logback-spring.xml
+

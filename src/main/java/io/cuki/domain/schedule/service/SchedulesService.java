@@ -1,7 +1,7 @@
 package io.cuki.domain.schedule.service;
 
 import io.cuki.domain.schedule.entity.Schedule;
-import io.cuki.domain.schedule.entity.ScheduleOwner;
+import io.cuki.domain.schedule.entity.ScheduleAuthority;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import io.cuki.domain.schedule.utils.*;
@@ -39,7 +39,6 @@ public class SchedulesService {
         final Slice<Schedule> scheduleSlice = schedulesRepository.findBy(pageRequest);
         List<AllScheduleResponseDto> dtoList = new ArrayList<>();
         for (Schedule schedule : scheduleSlice) {
-            log.debug("repo 에서 뽑은 schedule id = {}", schedule.getId());
             dtoList.add(AllScheduleResponseDto.of(schedule));
         }
 
@@ -67,9 +66,9 @@ public class SchedulesService {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
 
         if (!SecurityUtil.getCurrentMemberId().equals(schedule.getMember().getId())) {
-            return OneScheduleResponseDto.of(schedule, ScheduleOwner.GUEST);
+            return OneScheduleResponseDto.of(schedule, ScheduleAuthority.GUEST);
         } else {
-            return OneScheduleResponseDto.of(schedule, ScheduleOwner.SCHEDULE_OWNER);
+            return OneScheduleResponseDto.of(schedule, ScheduleAuthority.OWNER);
         }
     }
 
@@ -100,8 +99,7 @@ public class SchedulesService {
             schedulesRepository.delete(schedule);
         } else {
             log.debug("로그인 한 회원 = {}, 게시글 작성자 = {}", SecurityUtil.getCurrentMemberId(), schedule.getId());
-            throw new ArrayIndexOutOfBoundsException("에러: 슬랙에 메시지 나타내기 테스트");
-//            throw new MemberNotMatchException("현재 로그인 한 회원과 게시글 작성자가 일치하지 않습니다.");
+            throw new MemberNotMatchException("현재 로그인 한 회원과 게시글 작성자가 일치하지 않습니다.");
         }
 
         return new IdResponseDto(schedule.getId());
@@ -123,6 +121,8 @@ public class SchedulesService {
         schedule.updateStatusToDone();
         return IdAndStatusResponseDto.of(schedule);
     }
+
+
 
 }
 

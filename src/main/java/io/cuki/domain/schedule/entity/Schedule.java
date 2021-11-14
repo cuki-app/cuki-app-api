@@ -122,8 +122,8 @@ public class Schedule extends BaseTimeEntity {
 
     // 어노테이션으로 대체 가능
     private void checkFixedNumberOfPeople(int fixedNumberOfPeople) {
-        if (fixedNumberOfPeople < 2) {
-            throw new IllegalArgumentException("모집인원은 2명 이상이어야 합니다.");
+        if (fixedNumberOfPeople < 1) {
+            throw new IllegalArgumentException("모집인원은 1명 이상이어야 합니다.");
         }
     }
 

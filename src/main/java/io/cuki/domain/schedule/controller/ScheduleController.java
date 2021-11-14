@@ -61,4 +61,10 @@ public class ScheduleController {
         return ApiResponse.ok(schedulesService.closeUpSchedule(closeUpRequestDto));
     }
 
+    @ApiOperation(value = "슬랙 어펜더 테스트용 API")
+    @GetMapping("/slack")
+    public void slackAppender() {
+        log.error("슬랙 어펜더 테스트용 API 입니다. error log.");
+    }
+
 }

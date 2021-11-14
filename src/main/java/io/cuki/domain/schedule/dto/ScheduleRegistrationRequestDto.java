@@ -35,7 +35,7 @@ public class ScheduleRegistrationRequestDto {
                 .title(title)
                 .member(member)
                 .dateTime(new SchedulePeriod(startDateTime, endDateTime))
-                .fixedNumberOfPeople(fixedNumberOfPeople)
+                .fixedNumberOfPeople((fixedNumberOfPeople+ONESELF))
                 .currentNumberOfPeople(ONESELF)
                 .location(new Location(place))
                 .details(details)

@@ -56,6 +56,7 @@ public class SchedulesService {
         final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .map(registrationRequestDto::toEntity)
                 .orElseThrow(MemberNotFoundException::new);
+        log.debug("모집 인원(작성자 포함) = {}", schedule.getFixedNumberOfPeople());
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
     }
@@ -121,7 +122,6 @@ public class SchedulesService {
         schedule.updateStatusToDone();
         return IdAndStatusResponseDto.of(schedule);
     }
-
 
 
 }

@@ -15,9 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Slf4j
@@ -131,6 +129,14 @@ public class ParticipationService {
         throw new IllegalAccessException("모집인원 초과 || 참여 신청 결정은 한 번만 할 수 있습니다.");
     }
 
+    // 내가 참여한 게시글 상세 조회
+    public ParticipationResponseDto getOneParticipation(Long memberId) {
+        final List<Participation> participationList = participationRepository.findByMemberId(memberId);
+        // 게시글 정보, 내 신청 정보
+
+        return null;
+    }
+
     public Set<ParticipantInfoResponseDto> getParticipantList(Long scheduleId) {
         // 확정자 명단 조회는 누구나 조회 가능한지?
         Set<ParticipantInfoResponseDto> members = new HashSet<>();
@@ -152,5 +158,22 @@ public class ParticipationService {
             log.debug("스케쥴 상태 = {}", schedule.getStatus());
             throw new IllegalArgumentException("이미 모집이 마감된 스케쥴 입니다.");
         }
+    }
+
+    @Transactional
+    public List<ParticipationResponseDto> getMyParticipation(Long memberId) {
+        List<ParticipationResponseDto> responseDtoList = new ArrayList<>();
+        // ParticipationResponseDto
+        // OneParticipationResponseDto
+
+        participationRepository.findByMemberId(memberId)
+                .forEach(participation -> responseDtoList.add(ParticipationResponseDto.of(participation)));
+
+        Collections.sort(responseDtoList);
+        for (ParticipationResponseDto my : responseDtoList) {
+            log.debug("response sort = {}", my.getStartDateTime());
+        }
+
+        return responseDtoList;
     }
 }

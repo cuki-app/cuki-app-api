@@ -4,6 +4,7 @@ import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
 import io.cuki.domain.participation.dto.*;
+import io.cuki.domain.schedule.exception.NotFoundException;
 import io.cuki.domain.schedule.utils.WriterVerification;
 import io.cuki.domain.participation.entity.PermissionResult;
 import io.cuki.domain.participation.entity.Participation;
@@ -16,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
-
 
 @Slf4j
 @RequiredArgsConstructor
@@ -129,14 +129,6 @@ public class ParticipationService {
         throw new IllegalAccessException("모집인원 초과 || 참여 신청 결정은 한 번만 할 수 있습니다.");
     }
 
-    // 내가 참여한 게시글 상세 조회
-    public ParticipationResponseDto getOneParticipation(Long memberId) {
-        final List<Participation> participationList = participationRepository.findByMemberId(memberId);
-        // 게시글 정보, 내 신청 정보
-
-        return null;
-    }
-
     public Set<ParticipantInfoResponseDto> getParticipantList(Long scheduleId) {
         // 확정자 명단 조회는 누구나 조회 가능한지?
         Set<ParticipantInfoResponseDto> members = new HashSet<>();
@@ -144,7 +136,7 @@ public class ParticipationService {
         for (Participation participation : participantsByAccept) {
             members.add(ParticipantInfoResponseDto.of(participation));
         }
-        return  members;
+        return members;
     }
 
     private void isDuplicateParticipation(Member member, Schedule schedule) {   // participation
@@ -163,17 +155,25 @@ public class ParticipationService {
     @Transactional
     public List<ParticipationResponseDto> getMyParticipation(Long memberId) {
         List<ParticipationResponseDto> responseDtoList = new ArrayList<>();
-        // ParticipationResponseDto
-        // OneParticipationResponseDto
 
         participationRepository.findByMemberId(memberId)
                 .forEach(participation -> responseDtoList.add(ParticipationResponseDto.of(participation)));
 
         Collections.sort(responseDtoList);
-        for (ParticipationResponseDto my : responseDtoList) {
-            log.debug("response sort = {}", my.getStartDateTime());
-        }
 
         return responseDtoList;
     }
+
+
+    // 내가 참여한 게시글 상세 조회
+    // 스케쥴 상세조회 (스케쥴에 정의된 API)+ 참여한 스케쥴 상세조회 (this)
+    @Transactional
+    public OneParticipationResponseDto getOneParticipation(Long participationId) {
+        // exception 처리 해야 함
+        final Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new NotFoundException("요청하신 데이터로 내가 참여한 게시글을 찾을 수 없습니다."));
+        return OneParticipationResponseDto.of(participation);
+    }
 }
+
+
+

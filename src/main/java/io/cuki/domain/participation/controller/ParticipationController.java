@@ -41,13 +41,13 @@ public class ParticipationController {
         throw new MemberNotMatchException("파라미터 member id: " + memberId + " 와 로그인 한 유저의 member id:"+ SecurityUtil.getCurrentMemberId()+ " 가 일치 하지 않습니다.");
     }
 
-    @ApiOperation(value = "내가 참여한 게시물 상세 조회")
+    @ApiOperation(value = "내가 참여한 게시물 상세 조회", notes = "게시글 정보, 내 신청 정보와 결과 보여주기")
     @GetMapping("/members/{memberId}/participation/{participationId}")
-    public ApiResponse<ParticipationResponseDto> getOneParticipation(@PathVariable Long memberId) {
+    public ApiResponse<OneParticipationResponseDto> getOneParticipation(@PathVariable Long memberId, @PathVariable Long participationId) {
         if (!SecurityUtil.getCurrentMemberId().equals(memberId)) {
             throw new MemberNotMatchException("파라미터 member id: " + memberId + " 와 로그인 한 유저의 member id:"+ SecurityUtil.getCurrentMemberId()+ " 가 일치 하지 않습니다.");
         }
-        return ApiResponse.ok(participationService.getOneParticipation(memberId));
+        return ApiResponse.ok(participationService.getOneParticipation(participationId));
     }
 
     @ApiOperation(value = "참여 요청한 대기자 리스트 조회", notes = "대기자에 대한 정보 - nickname 보여주기, 아래 API만 살리면 어떨까?")

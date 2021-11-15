@@ -2,10 +2,14 @@ package io.cuki.domain.participation.entity;
 
 import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.schedule.entity.Schedule;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Entity

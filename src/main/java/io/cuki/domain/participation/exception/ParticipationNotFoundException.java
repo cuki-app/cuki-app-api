@@ -1,4 +1,4 @@
-package io.cuki.domain.schedule.exception;
+package io.cuki.domain.participation.exception;
 
 public class ParticipationNotFoundException extends RuntimeException {
 

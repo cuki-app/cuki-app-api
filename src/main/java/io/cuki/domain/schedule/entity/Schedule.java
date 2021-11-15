@@ -4,11 +4,14 @@ import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.model.BaseTimeEntity;
 import io.cuki.domain.participation.entity.Participation;
 import io.cuki.domain.participation.entity.PermissionResult;
+import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.persistence.*;
 import java.util.Set;
 
-
+@Slf4j
 @Getter
 @NoArgsConstructor
 @Entity
@@ -86,7 +89,7 @@ public class Schedule extends BaseTimeEntity {
         }
     }
 
-    //
+
     public boolean isNotOverFixedNumber() {
         return currentNumberOfPeople < fixedNumberOfPeople;
     }
@@ -95,6 +98,14 @@ public class Schedule extends BaseTimeEntity {
         if (status == ScheduleStatus.IN_PROGRESS) {
             this.status = ScheduleStatus.DONE;
         }
+    }
+
+    public boolean statusIsNotDone(Schedule schedule) throws ScheduleStatusIsAlreadyChangedException {
+        if (schedule.getStatus() == ScheduleStatus.DONE) {
+            log.debug("{}번 게시글은 이미 마감 처리되었습니다.", schedule.getId());
+            throw new ScheduleStatusIsAlreadyChangedException("이미 마감 처리된 게시글 입니다.");
+        }
+        return true;
     }
 
     // 어노테이션으로 대체 가능

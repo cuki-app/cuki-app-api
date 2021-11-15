@@ -2,7 +2,10 @@ package io.cuki.global.error;
 
 import io.cuki.domain.comment.exception.CommentNotFoundException;
 import io.cuki.domain.member.exception.*;
-import io.cuki.domain.schedule.exception.ParticipationNotFoundException;
+import io.cuki.domain.participation.exception.DuplicateParticipationException;
+import io.cuki.domain.participation.exception.FixedNumberOutOfBoundsException;
+import io.cuki.domain.participation.exception.ParticipationFunctionException;
+import io.cuki.domain.participation.exception.ParticipationNotFoundException;
 import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.global.common.response.ErrorResponse;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
@@ -60,7 +63,10 @@ public class ApiExceptionAdvice {
                 .body(ErrorResponse.badRequest(e.getMessage()));
     }
 
-    @ExceptionHandler(ScheduleStatusIsAlreadyChangedException.class)
+    @ExceptionHandler({ScheduleStatusIsAlreadyChangedException.class, ParticipationFunctionException.class,
+            DuplicateParticipationException.class, FixedNumberOutOfBoundsException.class
+
+    })
     public ResponseEntity<ErrorResponse<String>> conflictException(Exception e) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)

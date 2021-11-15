@@ -1,10 +1,16 @@
 package io.cuki.domain.participation.service;
 
 import io.cuki.domain.member.entity.Member;
+import io.cuki.domain.member.exception.MemberNotFoundException;
+import io.cuki.domain.participation.exception.DuplicateParticipationException;
+import io.cuki.domain.participation.exception.FixedNumberOutOfBoundsException;
+import io.cuki.domain.participation.exception.ParticipationFunctionException;
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
 import io.cuki.domain.participation.dto.*;
-import io.cuki.domain.schedule.exception.ParticipationNotFoundException;
+import io.cuki.domain.participation.exception.ParticipationNotFoundException;
+import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
+import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.domain.schedule.utils.WriterVerification;
 import io.cuki.domain.participation.entity.PermissionResult;
 import io.cuki.domain.participation.entity.Participation;
@@ -28,43 +34,35 @@ public class ParticipationService {
     private final ParticipationRepository participationRepository;
 
 
-    // 마감된 모집 일정에 참여 신청 할 수 없게
+
     @Transactional
-    public ParticipationSimpleResponseDto createParticipation(ApplyParticipationRequestDto requestDto) throws IllegalAccessException {
-        final Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(
-                () -> new IllegalArgumentException("유저 정보가 없습니다.")
-        );
+    public ParticipationResultResponseDto createParticipation(Long scheduleId, ParticipationRegistrationRequestDto requestDto) throws DuplicateParticipationException, ScheduleStatusIsAlreadyChangedException, ParticipationFunctionException {
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
+        final Member member = memberRepository.findById(requestDto.getMemberId()).orElseThrow(MemberNotFoundException::new);
+        final Participation participation = requestDto.toEntity(member, schedule);
 
-        final Schedule schedule = schedulesRepository.findById(requestDto.getScheduleId()).orElseThrow(
-                () -> new IllegalArgumentException("일정이 존재하지 않습니다.")
-        );
-
-        isDuplicateParticipation(member, schedule);
-        isAlreadyCompleted(schedule);
-
-        // 작성자이면 안되고, 모집 인원 초과가 아니어야 한다. -> '모집 마감' 상태가 아니어야 한다.
-        if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
-            if (schedule.isNotOverFixedNumber()) {
-                final Participation participation = new Participation(member, schedule, requestDto.getReasonForParticipation());
-                participationRepository.save(participation);
-
-                schedule.updateNumberOfPeopleWaiting(PermissionResult.NONE);
-
-                return ParticipationSimpleResponseDto.builder()
-                        .scheduleId(schedule.getId())
-                        .participationId(participation.getId())
-                        .build();
-            } else {
-                throw new IllegalAccessException("모집이 마감되었습니다.");
-            }
-
-        } else {
-            throw new IllegalAccessException("게시글 작성자는 본인의 모집 일정에 참여하기 기능을 사용할 수 없습니다.");
+        if (WriterVerification.isWriter(requestDto.getMemberId(), schedule.getMember().getId())) {
+            throw new ParticipationFunctionException("게시글 작성자는 참여 기능을 사용할 수 없습니다.");
         }
 
+        if (participationRepository.findByMemberIdAndScheduleId(requestDto.getMemberId(), scheduleId).isPresent()) {
+            throw new DuplicateParticipationException("중복 참여는 불가능합니다.");
+        }
+
+        if (!schedule.isNotOverFixedNumber()) {
+            throw new FixedNumberOutOfBoundsException("정원이 초과되었습니다.");
+        }
+
+        if (schedule.statusIsNotDone(schedule)) {
+            participationRepository.save(participation);
+            schedule.updateNumberOfPeopleWaiting(participation.getResult());
+        }
+
+        return ParticipationResultResponseDto.of(participation);
     }
 
 
+    // 대기자 명단과 대기자 정보 보는 API 하나로 만들 것
     // 참여 대기 확인하기 (작성자만)
     public Set<WaitingInfoResponseDto> getWaitingList(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(() -> new IllegalArgumentException("일정이 존재하지 않습니다."));
@@ -153,11 +151,11 @@ public class ParticipationService {
     }
 
     @Transactional
-    public List<ParticipationResponseDto> getMyParticipation(Long memberId) {
-        List<ParticipationResponseDto> responseDtoList = new ArrayList<>();
+    public List<MyParticipationResponseDto> getMyParticipationList(Long memberId) {
+        List<MyParticipationResponseDto> responseDtoList = new ArrayList<>();
 
         participationRepository.findByMemberId(memberId)
-                .forEach(participation -> responseDtoList.add(ParticipationResponseDto.of(participation)));
+                .forEach(participation -> responseDtoList.add(MyParticipationResponseDto.of(participation)));
 
         Collections.sort(responseDtoList);
 

@@ -43,7 +43,7 @@ public class ApiExceptionAdvice {
             MemberAlreadyLoggedOutException.class, RefreshTokenNotMatchException.class,
             IncorrectVerificationCodeException.class, VerificationCodeExpiredException.class,
             DeactivatedMemberException.class, UsernameNotFoundException.class,
-            SendMailFailedException.class, NoSuchRefeshTokenException.class
+            SendMailFailedException.class, RefeshTokenNotFoundException.class
     })
     public ResponseEntity<ErrorResponse<String>> illegalArgumentException(RuntimeException e) {
         return ResponseEntity

@@ -77,7 +77,7 @@ public class CommentService {
         List<CommentResponseDto> responseDtos = new ArrayList<>();
 
         for (Comment comment : commentsSlice) {
-            log.debug("댓글 id = {}, 댓글 생성일 = {}, 댓글 내용 = {} ", comment.getId(), comment.getCreatedDate(), comment.getContent());
+            log.debug("댓글 조회 : 댓글 id = {}, 댓글 생성일 = {}", comment.getId(), comment.getCreatedDate());
             responseDtos.add(
                     CommentResponseDto.builder()
                             .commentId(comment.getId())

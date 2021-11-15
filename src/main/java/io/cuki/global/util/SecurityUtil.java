@@ -14,10 +14,11 @@ public class SecurityUtil {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication.getName() == null) {
+            log.error("Security Context에 인증 정보가 없습니다.");
             throw new AuthenticationNotFoundException("Security Context에 인증 정보가 없습니다.");
         }
 
-        log.debug("authentication.getName() -> {}", authentication.getName());
+        log.debug("Security Context에서 조회한 회원의 번호 : {}", authentication.getName());
 
         return Long.parseLong(authentication.getName());
     }

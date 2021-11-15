@@ -4,6 +4,7 @@ import io.cuki.domain.member.dto.TokenResponseDto;
 import io.cuki.domain.member.exception.AuthorityNotFoundInJwtException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import lombok.extern.slf4j.Slf4j;
@@ -102,16 +103,20 @@ public class TokenProvider {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (MalformedJwtException e) {
-            log.error("구조적인 문제가 있는 JWT 토큰입니다");
-        } catch (SecurityException e) {
-            log.error("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
             log.error("만료된 JWT 토큰입니다.");
-        } catch (UnsupportedJwtException e) {
-            log.error("지왼되지 않는 JWT 토큰입니다.");
+        } catch (MalformedJwtException e) {
+            log.error("구조적인 문제가 있는 JWT 토큰입니다.");
+        } catch (SecurityException e) {
+            log.error("잘못된 JWT 서명입니다.");
+        }  catch (UnsupportedJwtException e) {
+            log.error("지원되지 않는 JWT 토큰입니다.");
+        } catch (DecodingException e) {
+            log.error("디코딩에 문제가 있는 JWT 토큰입니다.");
         } catch (IllegalArgumentException e) {
             log.error("JWT 토큰이 잘못되었습니다.");
+        } catch (JwtException e) {
+            log.error("유효한 JWT 토큰이 아닙니다.");
         }
         return false;
     }

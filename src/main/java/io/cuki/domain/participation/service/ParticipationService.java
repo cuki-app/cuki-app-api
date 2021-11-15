@@ -4,7 +4,7 @@ import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
 import io.cuki.domain.participation.dto.*;
-import io.cuki.domain.schedule.exception.NotFoundException;
+import io.cuki.domain.schedule.exception.ParticipationNotFoundException;
 import io.cuki.domain.schedule.utils.WriterVerification;
 import io.cuki.domain.participation.entity.PermissionResult;
 import io.cuki.domain.participation.entity.Participation;
@@ -170,7 +170,7 @@ public class ParticipationService {
     @Transactional
     public OneParticipationResponseDto getOneParticipation(Long participationId) {
         // exception 처리 해야 함
-        final Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new NotFoundException("요청하신 데이터로 내가 참여한 게시글을 찾을 수 없습니다."));
+        final Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new ParticipationNotFoundException("요청하신 데이터로 내가 참여한 게시글을 찾을 수 없습니다."));
         return OneParticipationResponseDto.of(participation);
     }
 }

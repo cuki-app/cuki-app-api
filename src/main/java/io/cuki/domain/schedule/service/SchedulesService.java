@@ -4,6 +4,7 @@ import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleAuthority;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
+import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.domain.schedule.utils.*;
 import io.cuki.domain.schedule.repository.SchedulesRepository;
 import io.cuki.domain.member.repository.MemberRepository;
@@ -17,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.file.AccessDeniedException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,36 +32,31 @@ public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
 
 
-
-    @Transactional(readOnly = true) //
-    public SliceCustom<AllScheduleResponseDto> getAllSchedule(int page, int size) {
-        log.debug("client request - page number = {}, page size = {}", page, size);
-        final Sort createdDate = Sort.by(Sort.Direction.DESC, "createdDate");
-        final PageRequest pageRequest = PageRequest.of(page, size, createdDate);
-
-        final Slice<Schedule> scheduleSlice = schedulesRepository.findBy(pageRequest);
-        List<AllScheduleResponseDto> dtoList = new ArrayList<>();
-        for (Schedule schedule : scheduleSlice) {
-            dtoList.add(AllScheduleResponseDto.of(schedule));
-        }
-
-        final Slice<AllScheduleResponseDto> dtoSlice = new SliceImpl<>(dtoList, pageRequest, scheduleSlice.hasNext());
-        log.debug("schedule response dto is empty ? = {}", dtoSlice.isEmpty());
-        log.debug("response - page number = {}", dtoSlice.getNumber());
-
-        return new SliceCustom<>(dtoList, dtoSlice.hasNext(), dtoSlice.getNumber());
-    }
-
     @Transactional
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
-        log.debug("registrationRequestDto = {}", registrationRequestDto);
-
         final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .map(registrationRequestDto::toEntity)
                 .orElseThrow(MemberNotFoundException::new);
         log.debug("모집 인원(작성자 포함) = {}", schedule.getFixedNumberOfPeople());
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
+    }
+
+    @Transactional(readOnly = true) //
+    public SliceCustom<AllScheduleResponseDto> getAllSchedule(int page, int size) {
+        log.debug("client request - page number = {}, page size = {}", page, size);
+        final Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        final PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+        List<AllScheduleResponseDto> dtoList = new ArrayList<>();
+        final boolean hasNext = schedulesRepository.findBy(pageRequest).hasNext();
+        schedulesRepository.findBy(pageRequest).forEach(schedule -> dtoList.add(AllScheduleResponseDto.of(schedule)));
+
+        final Slice<AllScheduleResponseDto> dtoSlice = new SliceImpl<>(dtoList, pageRequest, hasNext);
+        log.debug("schedule response dto is empty = {}", dtoSlice.isEmpty());
+        log.debug("response - page number = {}", dtoSlice.getNumber());
+
+        return new SliceCustom<>(dtoList, dtoSlice.hasNext(), dtoSlice.getNumber());
     }
 
     // 일정 상세 조회
@@ -75,16 +73,12 @@ public class SchedulesService {
 
 
 
-    // 내가 등록한 모집 일정 전체 보여주기
+    // 내가 등록한 게시글 전체 조회
     @Transactional(readOnly = true)
-    public List<MyScheduleResponseDto> getMySchedule(Long memberId) {
-        if (!SecurityUtil.getCurrentMemberId().equals(memberId)) {
-            throw new MemberNotMatchException("현재 로그인 한 회원과 파라미터의 회원 정보가 일치하지 않습니다.");
-        }
-
+    public List<MyScheduleResponseDto> getMySchedule(Long writerId) {
         List<MyScheduleResponseDto> responseDtoList = new ArrayList<>();
 
-        schedulesRepository.findAllByMemberId(SecurityUtil.getCurrentMemberId())
+        schedulesRepository.findAllByMemberId(writerId)
                 .forEach(schedule -> responseDtoList.add(MyScheduleResponseDto.of(schedule)));
 
         return responseDtoList.stream().sorted().collect(Collectors.toList());
@@ -100,7 +94,7 @@ public class SchedulesService {
             schedulesRepository.delete(schedule);
         } else {
             log.debug("로그인 한 회원 = {}, 게시글 작성자 = {}", SecurityUtil.getCurrentMemberId(), schedule.getId());
-            throw new MemberNotMatchException("현재 로그인 한 회원과 게시글 작성자가 일치하지 않습니다.");
+            throw new MemberNotMatchException("게시글 삭제는 게시글 작성자만 할 수 있습니다.");
         }
 
         return new IdResponseDto(schedule.getId());
@@ -108,16 +102,16 @@ public class SchedulesService {
 
 
     @Transactional
-    public IdAndStatusResponseDto closeUpSchedule(CloseUpScheduleRequestDto closeUpRequestDto) {
-        final Schedule schedule = schedulesRepository.findById(closeUpRequestDto.getScheduleId()).orElseThrow(ScheduleNotFoundException::new);
+    public IdAndStatusResponseDto changeScheduleStatus(Long scheduleId) throws ScheduleStatusIsAlreadyChangedException {
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
 
         if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
-            throw new MemberNotMatchException("현재 로그인 한 회원과 게시글 작성자가 일치하지 않습니다.");
+            throw new MemberNotMatchException("게시글 마감은 게시글 작성자만 할 수 있습니다.");
         }
 
         if (schedule.getStatus() == ScheduleStatus.DONE) {
-            log.debug("{}번 게시글은 이미 마감 처리되었습니다.", closeUpRequestDto.getScheduleId());
-            throw new IllegalArgumentException("이미 신청 마감 처리 되었습니다.");
+            log.debug("{}번 게시글은 이미 마감 처리되었습니다.", scheduleId);
+            throw new ScheduleStatusIsAlreadyChangedException("이미 마감 처리된 게시글 입니다.");
         }
         schedule.updateStatusToDone();
         return IdAndStatusResponseDto.of(schedule);

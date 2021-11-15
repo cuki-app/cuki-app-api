@@ -79,7 +79,7 @@ public class Schedule extends BaseTimeEntity {
     }
 
     public void updateNumberOfPeopleWaiting(PermissionResult result) {
-        if (result.equals(PermissionResult.NONE)) {
+        if (result == PermissionResult.NONE) {
             this.numberOfPeopleWaiting++;
         } else {
             this.numberOfPeopleWaiting--;
@@ -92,7 +92,7 @@ public class Schedule extends BaseTimeEntity {
     }
 
     public void updateStatusToDone() {
-        if (status.equals(ScheduleStatus.IN_PROGRESS)) {
+        if (status == ScheduleStatus.IN_PROGRESS) {
             this.status = ScheduleStatus.DONE;
         }
     }

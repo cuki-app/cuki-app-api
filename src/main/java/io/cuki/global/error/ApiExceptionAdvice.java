@@ -2,6 +2,8 @@ package io.cuki.global.error;
 
 import io.cuki.domain.comment.exception.CommentNotFoundException;
 import io.cuki.domain.member.exception.*;
+import io.cuki.domain.schedule.exception.ParticipationNotFoundException;
+import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.global.common.response.ErrorResponse;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import io.cuki.infra.email.exception.IncorrectVerificationCodeException;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiExceptionAdvice {
 
     @ExceptionHandler({MemberNotFoundException.class, ScheduleNotFoundException.class,
-            CommentNotFoundException.class})
+            CommentNotFoundException.class, ParticipationNotFoundException.class})
     public ResponseEntity<ErrorResponse<String>> notFoundException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -52,9 +54,16 @@ public class ApiExceptionAdvice {
     }
 
     @ExceptionHandler(IllegalAccessException.class)
-    public ResponseEntity<ErrorResponse<String>> IllegalAccessException(Exception e) {
+    public ResponseEntity<ErrorResponse<String>> illegalAccessException(Exception e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.badRequest(e.getMessage()));
+    }
+
+    @ExceptionHandler(ScheduleStatusIsAlreadyChangedException.class)
+    public ResponseEntity<ErrorResponse<String>> conflictException(Exception e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.conflict(e.getMessage()));
     }
 }

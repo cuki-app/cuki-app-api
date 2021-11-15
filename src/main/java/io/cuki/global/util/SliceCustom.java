@@ -1,7 +1,6 @@
 package io.cuki.global.util;
 
 import lombok.Getter;
-
 import java.util.List;
 
 @Getter

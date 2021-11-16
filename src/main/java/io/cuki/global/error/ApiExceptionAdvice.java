@@ -4,7 +4,7 @@ import io.cuki.domain.comment.exception.CommentNotFoundException;
 import io.cuki.domain.member.exception.*;
 import io.cuki.domain.participation.exception.DuplicateParticipationException;
 import io.cuki.domain.participation.exception.FixedNumberOutOfBoundsException;
-import io.cuki.domain.participation.exception.ParticipationFunctionException;
+import io.cuki.domain.participation.exception.InappropriateAccessToParticipationException;
 import io.cuki.domain.participation.exception.ParticipationNotFoundException;
 import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.global.common.response.ErrorResponse;
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionAdvice {
 
-    @ExceptionHandler({MemberNotFoundException.class, ScheduleNotFoundException.class,
-            CommentNotFoundException.class, ParticipationNotFoundException.class})
+    @ExceptionHandler({MemberNotFoundException.class, CommentNotFoundException.class,
+                        ScheduleNotFoundException.class})
     public ResponseEntity<ErrorResponse<String>> notFoundException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -63,7 +63,7 @@ public class ApiExceptionAdvice {
                 .body(ErrorResponse.badRequest(e.getMessage()));
     }
 
-    @ExceptionHandler({ScheduleStatusIsAlreadyChangedException.class, ParticipationFunctionException.class,
+    @ExceptionHandler({ScheduleStatusIsAlreadyChangedException.class, InappropriateAccessToParticipationException.class,
             DuplicateParticipationException.class, FixedNumberOutOfBoundsException.class
 
     })
@@ -71,5 +71,13 @@ public class ApiExceptionAdvice {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.conflict(e.getMessage()));
+    }
+
+
+    @ExceptionHandler({ParticipationNotFoundException.class})
+    public ResponseEntity<ErrorResponse<String>> notFoundException(Exception e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.notFound(e.getMessage()));
     }
 }

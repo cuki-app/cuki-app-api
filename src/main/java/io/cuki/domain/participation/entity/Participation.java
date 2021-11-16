@@ -1,6 +1,7 @@
 package io.cuki.domain.participation.entity;
 
 import io.cuki.domain.member.entity.Member;
+import io.cuki.domain.participation.exception.PermissionIsAlreadyDecidedException;
 import io.cuki.domain.schedule.entity.Schedule;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +42,15 @@ public class Participation {
     }
 
     public void updateResult(PermissionResult result) {
-        this.result = result;
+        if (isNotYetDecidedOnPermission()) {
+            this.result = result;
+        }
+    }
+
+    private boolean isNotYetDecidedOnPermission() {
+        if (getResult() != PermissionResult.NONE) {
+            throw new PermissionIsAlreadyDecidedException("참여 여부가 이미 결정이 되었습니다.");
+        }
+        return true;
     }
 }

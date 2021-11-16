@@ -4,10 +4,10 @@ import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.model.BaseTimeEntity;
 import io.cuki.domain.participation.entity.Participation;
 import io.cuki.domain.participation.entity.PermissionResult;
+import io.cuki.domain.participation.exception.FixedNumberOutOfBoundsException;
 import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-
 import javax.persistence.*;
 import java.util.Set;
 
@@ -74,7 +74,7 @@ public class Schedule extends BaseTimeEntity {
     }
 
 
-    public void updateCurrentNumberOfPeople() {
+    public void updateCurrentNumberOfPeople() { // 어디서 사용하는지 확인할 것
         this.currentNumberOfPeople++;
         if (currentNumberOfPeople == fixedNumberOfPeople) {
             updateStatusToDone();
@@ -84,14 +84,20 @@ public class Schedule extends BaseTimeEntity {
     public void updateNumberOfPeopleWaiting(PermissionResult result) {
         if (result == PermissionResult.NONE) {
             this.numberOfPeopleWaiting++;
-        } else {
+        } else {   // accept or reject
             this.numberOfPeopleWaiting--;
+            if (result == PermissionResult.ACCEPT) {
+                updateCurrentNumberOfPeople();
+            }
         }
     }
 
 
     public boolean isNotOverFixedNumber() {
-        return currentNumberOfPeople < fixedNumberOfPeople;
+        if (currentNumberOfPeople >= fixedNumberOfPeople) {
+            throw new FixedNumberOutOfBoundsException("정원이 초과되었습니다.");
+        }
+        return true;
     }
 
     public void updateStatusToDone() {
@@ -100,13 +106,15 @@ public class Schedule extends BaseTimeEntity {
         }
     }
 
-    public boolean statusIsNotDone(Schedule schedule) throws ScheduleStatusIsAlreadyChangedException {
-        if (schedule.getStatus() == ScheduleStatus.DONE) {
-            log.debug("{}번 게시글은 이미 마감 처리되었습니다.", schedule.getId());
+    public boolean statusIsNotDone() throws ScheduleStatusIsAlreadyChangedException {
+        if (getStatus() == ScheduleStatus.DONE) {
+            log.debug("{}번 게시글은 이미 마감 처리되었습니다.", getId());
             throw new ScheduleStatusIsAlreadyChangedException("이미 마감 처리된 게시글 입니다.");
         }
         return true;
     }
+
+
 
     // 어노테이션으로 대체 가능
     private void checkDetailsValidation(String details) {

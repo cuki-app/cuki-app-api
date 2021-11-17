@@ -16,10 +16,10 @@ public class WriterVerification {
         return false;
     }
 
-    public static boolean isCheckedAsTheWriter(Long comparingID, Long writerId) throws WriterAuthorityException {
-        if (isWriter(comparingID, writerId)) {
-            return true;
+    public static boolean hasWriterAuthority(Long comparingID, Long writerId) {
+        if (!isWriter(comparingID, writerId)) {
+            throw new WriterAuthorityException("게시글 작성자만 확인할 수 있는 정보입니다.");
         }
-        throw new WriterAuthorityException("게시글 작성자만 확인할 수 있는 정보입니다.");
+        return true;
     }
 }

@@ -2,10 +2,7 @@ package io.cuki.global.error;
 
 import io.cuki.domain.comment.exception.CommentNotFoundException;
 import io.cuki.domain.member.exception.*;
-import io.cuki.domain.participation.exception.DuplicateParticipationException;
-import io.cuki.domain.participation.exception.FixedNumberOutOfBoundsException;
-import io.cuki.domain.participation.exception.InappropriateAccessToParticipationException;
-import io.cuki.domain.participation.exception.ParticipationNotFoundException;
+import io.cuki.domain.participation.exception.*;
 import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.global.common.response.ErrorResponse;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
@@ -22,7 +19,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiExceptionAdvice {
 
     @ExceptionHandler({MemberNotFoundException.class, CommentNotFoundException.class,
-                        ScheduleNotFoundException.class})
+                        ScheduleNotFoundException.class, ParticipationNotFoundException.class})
     public ResponseEntity<ErrorResponse<String>> notFoundException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -36,8 +33,9 @@ public class ApiExceptionAdvice {
                 .body(ErrorResponse.unauthorized(e.getMessage()));
     }
 
-    @ExceptionHandler(MemberNotMatchException.class)
-    public ResponseEntity<ErrorResponse<String>> memberNotMatchException(RuntimeException e) {
+    @ExceptionHandler({MemberNotMatchException.class, WriterAuthorityException.class,
+            PermissionIsAlreadyDecidedException.class})
+    public ResponseEntity<ErrorResponse<String>> forbiddenException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ErrorResponse.forbidden(e.getMessage()));
@@ -65,19 +63,11 @@ public class ApiExceptionAdvice {
 
     @ExceptionHandler({ScheduleStatusIsAlreadyChangedException.class, InappropriateAccessToParticipationException.class,
             DuplicateParticipationException.class, FixedNumberOutOfBoundsException.class
-
     })
-    public ResponseEntity<ErrorResponse<String>> conflictException(Exception e) {
+    public ResponseEntity<ErrorResponse<String>> conflictException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.conflict(e.getMessage()));
     }
 
-
-    @ExceptionHandler({ParticipationNotFoundException.class})
-    public ResponseEntity<ErrorResponse<String>> notFoundException(Exception e) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.notFound(e.getMessage()));
-    }
 }

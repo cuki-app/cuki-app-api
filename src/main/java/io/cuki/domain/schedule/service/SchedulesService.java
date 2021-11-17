@@ -100,7 +100,7 @@ public class SchedulesService {
 
 
     @Transactional
-    public IdAndStatusResponseDto changeScheduleStatus(Long scheduleId) throws ScheduleStatusIsAlreadyChangedException {
+    public IdAndStatusResponseDto changeScheduleStatus(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
 
         if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {

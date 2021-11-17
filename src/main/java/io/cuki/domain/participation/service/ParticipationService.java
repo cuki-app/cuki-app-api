@@ -2,11 +2,11 @@ package io.cuki.domain.participation.service;
 
 import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.member.exception.MemberNotFoundException;
+import io.cuki.domain.member.exception.MemberNotMatchException;
 import io.cuki.domain.participation.exception.*;
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.participation.dto.*;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
-import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.domain.schedule.utils.WriterVerification;
 import io.cuki.domain.participation.entity.PermissionResult;
 import io.cuki.domain.participation.entity.Participation;
@@ -32,72 +32,58 @@ public class ParticipationService {
 
 
     @Transactional
-    public ParticipationResultResponseDto createParticipation(Long scheduleId, ParticipationRegistrationRequestDto requestDto) throws DuplicateParticipationException, ScheduleStatusIsAlreadyChangedException, InappropriateAccessToParticipationException, ScheduleNotFoundException {
+    public ParticipationResultResponseDto createParticipation(Long scheduleId, ParticipationRegistrationRequestDto requestDto) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
         final Member member = memberRepository.findById(requestDto.getMemberId()).orElseThrow(MemberNotFoundException::new);
 
-        if (WriterVerification.isWriter(requestDto.getMemberId(), schedule.getMember().getId())) {
+        if (WriterVerification.isWriter(member.getId(), schedule.getMember().getId())) {
             throw new InappropriateAccessToParticipationException("게시글 작성자는 참여 기능을 사용할 수 없습니다.");
         }
-
-        if (participationRepository.findByMemberIdAndScheduleId(requestDto.getMemberId(), scheduleId).isPresent()) {
+        if (participationRepository.findByMemberAndSchedule(member, schedule).isPresent()) {
             throw new DuplicateParticipationException("중복 참여는 불가능합니다.");
         }
-
-        if (!schedule.isNotOverFixedNumber()) {
-            throw new FixedNumberOutOfBoundsException("정원이 초과되었습니다.");
-        }
-
+        schedule.isNotOverFixedNumber();
         schedule.statusIsNotDone();
-        //
+
         final Participation participation = requestDto.toEntity(member, schedule);
         participationRepository.save(participation);
         schedule.updateNumberOfPeopleWaiting(participation.getResult());
 
-
         return ParticipationResultResponseDto.of(participation);
     }
 
+    @Transactional
+    public List<MyParticipationResponseDto> getMyParticipationList(Long memberId) {
+        List<MyParticipationResponseDto> responseDtoList = new ArrayList<>();
 
+        participationRepository.findByMemberId(memberId)
+                .forEach(participation -> responseDtoList.add(MyParticipationResponseDto.of(participation)));
 
-    public Set<WaitingListInfoResponseDto> getWaitingList(Long scheduleId) throws WriterAuthorityException, ScheduleNotFoundException {
-        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
-        if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
-            throw new WriterAuthorityException("게시글 작성자만 확인할 수 있는 정보입니다.");
-        }
+        Collections.sort(responseDtoList);
 
-        Set<WaitingListInfoResponseDto> responseDtoSet = new HashSet<>();
-        participationRepository.findBySchedule(schedule).forEach(participation ->  responseDtoSet.add(WaitingListInfoResponseDto.of(participation)));
-
-        return responseDtoSet;
+        return responseDtoList;
     }
 
 
-    // 테스트 후 삭제할 것
-    // 참여 대기자 정보 보기 (작성자만)
-    public WaitingDetailsInfoResponseDto getWaitingDetailsInfo(Long participationId) throws IllegalAccessException {
-        Participation participation = participationRepository.findById(participationId).orElseThrow(
-                () -> new IllegalArgumentException("참여 정보가 존재하지 않습니다.")
-        );
-
-        if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), participation.getSchedule().getMember().getId())) {
-            return new WaitingDetailsInfoResponseDto(participation.getId(), participation.getMember().getNickname(), participation.getReasonForParticipation());
-        } else {
-            throw new IllegalAccessException("참여 대기자의 정보는 게시글 작성자만 볼 수 있습니다.");
+    // 스케쥴 상세조회 (스케쥴에 정의된 API)+ 참여한 스케쥴 상세조회 (this)
+    @Transactional
+    public OneParticipationResponseDto getOneParticipation(Long memberId, Long participationId) {
+        final Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new ParticipationNotFoundException("참여 정보가 존재하지 않습니다."));
+        if (!participation.getMember().getId().equals(memberId)) {
+            throw new MemberNotMatchException("참여자에 관한 정보는 참여 당사자만 확인할 수 있습니다.");
         }
-
+        return OneParticipationResponseDto.of(participation);
     }
 
 
     // 참여 수락 또는 거절하기
     @Transactional
-    public PermissionResponseDto updatePermission(PermissionRequestDto permissionRequestDto) throws ParticipationNotFoundException, WriterAuthorityException, ScheduleStatusIsAlreadyChangedException {
-        // requestDto - participation id, answer
+    public PermissionResponseDto updatePermission(PermissionRequestDto permissionRequestDto) {
         final Participation participation = participationRepository.findById(permissionRequestDto.getParticipationId()).orElseThrow(() -> new ParticipationNotFoundException("참여 정보가 존재하지 않습니다."));
         final Schedule schedule = participation.getSchedule();
 
         // 반환값이 전부 true 가 나와야 비즈니스 로직으로 넘어간다.
-        WriterVerification.isCheckedAsTheWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId());
+        WriterVerification.hasWriterAuthority(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId());
         schedule.isNotOverFixedNumber();
         schedule.statusIsNotDone();
         // permission 이 true 인지 false 인지에 따라 비즈니스를 짜자.
@@ -115,39 +101,28 @@ public class ParticipationService {
     }
 
 
+    public Set<WaitingListInfoResponseDto> getWaitingList(Long scheduleId) {
+        final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
+        WriterVerification.hasWriterAuthority(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId());
+        Set<WaitingListInfoResponseDto> responseDtoSet = new HashSet<>();
+
+        participationRepository.findByScheduleIdAndResult(scheduleId, PermissionResult.NONE)
+                .forEach(participation ->  responseDtoSet.add(WaitingListInfoResponseDto.of(participation)));
+
+        return responseDtoSet;
+    }
+
+
+    // 닉네임 매핑할 때 persistence 문제 생길텐데? -> 왜 안생기지?
     public Set<ParticipantInfoResponseDto> getParticipantList(Long scheduleId) {
-        // 확정자 명단 조회는 누구나 조회 가능한지?
-        Set<ParticipantInfoResponseDto> members = new HashSet<>();
-        final Set<Participation> participantsByAccept = participationRepository.findByScheduleIdAndResult(scheduleId, PermissionResult.ACCEPT);
-        for (Participation participation : participantsByAccept) {
-            members.add(ParticipantInfoResponseDto.of(participation));
-        }
-        return members;
-    }
+        Set<ParticipantInfoResponseDto> participantInfoResponseDtoSet = new HashSet<>();
 
-    @Transactional
-    public List<MyParticipationResponseDto> getMyParticipationList(Long memberId) {
-        List<MyParticipationResponseDto> responseDtoList = new ArrayList<>();
-
-        participationRepository.findByMemberId(memberId)
-                .forEach(participation -> responseDtoList.add(MyParticipationResponseDto.of(participation)));
-
-        Collections.sort(responseDtoList);
-
-        return responseDtoList;
+        participationRepository.findByScheduleIdAndResult(scheduleId, PermissionResult.ACCEPT)
+                .forEach(participation -> participantInfoResponseDtoSet.add(ParticipantInfoResponseDto.of(participation)));
+        return participantInfoResponseDtoSet;
     }
 
 
-    // 내가 참여한 게시글 상세 조회
-    // 스케쥴 상세조회 (스케쥴에 정의된 API)+ 참여한 스케쥴 상세조회 (this)
-    @Transactional
-    public OneParticipationResponseDto getOneParticipation(Long memberId, Long participationId) throws ParticipationNotFoundException {
-        // exception 처리 해야 함
-        final Participation participation = participationRepository.findById(participationId).orElseThrow(() -> new ParticipationNotFoundException("참여 정보가 존재하지 않습니다."));
-        // participation id 와 member id 가 일치해야 볼 수 있다.
-        // member id = 2(작성자) 가 participation id 를 알고 uri 치고 들어오면 보임
-        return OneParticipationResponseDto.of(participation);
-    }
 }
 
 

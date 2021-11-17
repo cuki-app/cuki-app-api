@@ -100,13 +100,14 @@ public class ParticipationService {
         return PermissionResponseDto.of(participation);
     }
 
-    // 수정해야 할 것
+
     public Set<WaitingListInfoResponseDto> getWaitingList(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
         WriterVerification.hasWriterAuthority(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId());
         Set<WaitingListInfoResponseDto> responseDtoSet = new HashSet<>();
-        // 대기자 정보니까 - participation result 가 none 인 것들만 뽑아야지
-        participationRepository.findBySchedule(schedule).forEach(participation ->  responseDtoSet.add(WaitingListInfoResponseDto.of(participation)));
+
+        participationRepository.findByScheduleIdAndResult(scheduleId, PermissionResult.NONE)
+                .forEach(participation ->  responseDtoSet.add(WaitingListInfoResponseDto.of(participation)));
 
         return responseDtoSet;
     }

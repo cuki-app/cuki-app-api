@@ -33,7 +33,8 @@ public class ApiExceptionAdvice {
                 .body(ErrorResponse.unauthorized(e.getMessage()));
     }
 
-    @ExceptionHandler({MemberNotMatchException.class, WriterAuthorityException.class})
+    @ExceptionHandler({MemberNotMatchException.class, WriterAuthorityException.class,
+            PermissionIsAlreadyDecidedException.class})
     public ResponseEntity<ErrorResponse<String>> forbiddenException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)

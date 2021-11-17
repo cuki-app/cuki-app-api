@@ -3,9 +3,6 @@ package io.cuki.domain.participation.controller;
 
 import io.cuki.domain.member.exception.MemberNotMatchException;
 import io.cuki.domain.participation.dto.*;
-import io.cuki.domain.participation.exception.*;
-import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
-import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.global.common.response.ApiResponse;
 import io.cuki.domain.participation.service.ParticipationService;
 import io.cuki.global.util.SecurityUtil;
@@ -73,7 +70,7 @@ public class ParticipationController {
         return ApiResponse.ok(participationService.getWaitingList(scheduleId));
     }
 
-    
+
     @ApiOperation(value = "참여 확정자 리스트(닉네임) 명단 조회", notes = "모든 회원이 조회 가능")
     @GetMapping("/schedules/{scheduleId}/participants")
     public ApiResponse<Set<ParticipantInfoResponseDto>> getParticipantList(@PathVariable Long scheduleId) {

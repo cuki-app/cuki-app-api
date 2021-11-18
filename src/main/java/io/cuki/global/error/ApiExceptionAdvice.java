@@ -2,6 +2,8 @@ package io.cuki.global.error;
 
 import io.cuki.domain.comment.exception.CommentNotFoundException;
 import io.cuki.domain.member.exception.*;
+import io.cuki.domain.participation.exception.*;
+import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.global.common.response.ErrorResponse;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import io.cuki.infra.email.exception.IncorrectVerificationCodeException;
@@ -16,8 +18,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionAdvice {
 
-    @ExceptionHandler({MemberNotFoundException.class, ScheduleNotFoundException.class,
-            CommentNotFoundException.class})
+    @ExceptionHandler({MemberNotFoundException.class, CommentNotFoundException.class,
+                        ScheduleNotFoundException.class, ParticipationNotFoundException.class})
     public ResponseEntity<ErrorResponse<String>> notFoundException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -31,8 +33,9 @@ public class ApiExceptionAdvice {
                 .body(ErrorResponse.unauthorized(e.getMessage()));
     }
 
-    @ExceptionHandler(MemberNotMatchException.class)
-    public ResponseEntity<ErrorResponse<String>> memberNotMatchException(RuntimeException e) {
+    @ExceptionHandler({MemberNotMatchException.class, WriterAuthorityException.class,
+            PermissionIsAlreadyDecidedException.class})
+    public ResponseEntity<ErrorResponse<String>> forbiddenException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ErrorResponse.forbidden(e.getMessage()));
@@ -53,9 +56,19 @@ public class ApiExceptionAdvice {
     }
 
     @ExceptionHandler(IllegalAccessException.class)
-    public ResponseEntity<ErrorResponse<String>> IllegalAccessException(Exception e) {
+    public ResponseEntity<ErrorResponse<String>> illegalAccessException(Exception e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.badRequest(e.getMessage()));
     }
+
+    @ExceptionHandler({ScheduleStatusIsAlreadyChangedException.class, InappropriateAccessToParticipationException.class,
+            DuplicateParticipationException.class, FixedNumberOutOfBoundsException.class
+    })
+    public ResponseEntity<ErrorResponse<String>> conflictException(RuntimeException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.conflict(e.getMessage()));
+    }
+
 }

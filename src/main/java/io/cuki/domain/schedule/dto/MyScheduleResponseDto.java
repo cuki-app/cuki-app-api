@@ -15,17 +15,17 @@ import java.time.LocalDateTime;
 @Getter
 public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> {
 
-    private Long scheduleId;
+    private final Long scheduleId;
 
-    private String title;
+    private final String title;
 
-    private String nickname;
+    private final String nickname;
 
-    private LocalDateTime startDateTime;
+    private final LocalDateTime startDateTime;
 
-    private LocalDateTime endDateTime;
+    private final LocalDateTime endDateTime;
 
-    private ScheduleStatus status;
+    private final ScheduleStatus status;
 
 
     public static MyScheduleResponseDto of(Schedule schedule) {

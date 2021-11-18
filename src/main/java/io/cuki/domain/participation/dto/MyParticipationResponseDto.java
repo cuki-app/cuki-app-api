@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ParticipationResponseDto implements Comparable<ParticipationResponseDto> {
+public class MyParticipationResponseDto implements Comparable<MyParticipationResponseDto> {
 
     private Long scheduleId;
 
@@ -28,8 +28,8 @@ public class ParticipationResponseDto implements Comparable<ParticipationRespons
 
     private ScheduleStatus status;
 
-    public static ParticipationResponseDto of(Participation participation) {
-        return ParticipationResponseDto.builder()
+    public static MyParticipationResponseDto of(Participation participation) {
+        return MyParticipationResponseDto.builder()
                 .scheduleId(participation.getSchedule().getId())
                 .participationId(participation.getId())
                 .title(participation.getSchedule().getTitle())
@@ -42,7 +42,7 @@ public class ParticipationResponseDto implements Comparable<ParticipationRespons
 
 
     @Override
-    public int compareTo(ParticipationResponseDto o) {
+    public int compareTo(MyParticipationResponseDto o) {
         final LocalDateTime now = LocalDateTime.now();
         final long dDays = Duration.between(now, getStartDateTime()).toDays();
         final long targetDdays = Duration.between(now, o.getStartDateTime()).toDays();

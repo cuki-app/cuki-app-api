@@ -21,7 +21,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @ApiOperation(value = "내 정보 조회")
+    @ApiOperation(value = "내 정보 조회 - 프론트 개발자용(회원 id 모를 경우)")
     @GetMapping("/me")
     public ApiResponse<MemberInfoResponseDto> getMyInfo() {
         return ApiResponse.ok(memberService.getMyInfo());

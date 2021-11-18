@@ -73,10 +73,17 @@ public class AuthService {
         Nickname nickname = new Nickname(randomNickname);
         while (memberRepository.existsByNickname(nickname)){
             randomNickname = Nickname.createRandomNickname();
+            nickname.updateNickname(randomNickname);
         }
 
         // 3. 멤버 객체 저장
-        Member member = Member.toMember(email, passwordEncoder.encode("1234"), randomNickname, true, Authority.ROLE_USER);
+        Member member = Member.builder()
+                .email(new Email(email))
+                .password(passwordEncoder.encode("1234"))
+                .nickname(nickname)
+                .activated(true)
+                .authority(Authority.ROLE_USER)
+                .build();
 
         return MemberInfoResponseDto.of(memberRepository.save(member));
     }

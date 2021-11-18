@@ -50,13 +50,21 @@ public class CommentService {
 
     // 댓글 등록
     @Transactional
-    public SuccessfullyRegisteredCommentResponseDto registerComment(RegisterCommentRequestDto registerCommentRequestDto, Long scheduleId) {
+    public SuccessfullyRegisteredCommentResponseDto registerComment(RegisterCommentRequestDto requestDto, Long scheduleId) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new MemberNotFoundException("디비에서 현재 접속중인 멤버의 id를 찾을 수 없습니다."));
         Schedule schedule = schedulesRepository.findById(scheduleId)
                 .orElseThrow(ScheduleNotFoundException::new);
 
-        Comment comment = commentRepository.save(registerCommentRequestDto.of(member, schedule));
+        Comment.isValidContent(requestDto.getContent());
+
+        Comment comment = Comment.builder()
+                .content(requestDto.getContent())
+                .member(member)
+                .schedule(schedule)
+                .build();
+
+        commentRepository.save(comment);
 
         return SuccessfullyRegisteredCommentResponseDto.builder()
                 .commentId(comment.getId())

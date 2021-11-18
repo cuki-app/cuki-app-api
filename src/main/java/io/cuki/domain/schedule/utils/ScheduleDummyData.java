@@ -28,7 +28,6 @@ public class ScheduleDummyData implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         final Member member = Member.builder()
-                .id(1L)
                 .email(new Email("potato@email.com"))
                 .password("sweeeeeet_potato")
                 .nickname(new Nickname("납작한감자"))
@@ -56,13 +55,12 @@ public class ScheduleDummyData implements InitializingBean {
             System.out.println("schedules[i] = " + schedules[i]);
         }
 
-        for (int i = 0; i < 30; i++) {
-            for (int j = 0; j < 100; j++) {
-                Thread.sleep(20);
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 30; j++) {
                 Comment comment = Comment.builder()
-                        .content("댓글이당당당 " + (j+1))
+                        .content("댓글이당당당 " + (i+1))
                         .member(member)
-                        .schedule(schedules[i])
+                        .schedule(schedules[j])
                         .build();
                 System.out.println("comment = " + comment.getContent());
                 commentRepository.save(comment);

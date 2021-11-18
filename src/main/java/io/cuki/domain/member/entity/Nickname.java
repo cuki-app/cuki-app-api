@@ -50,7 +50,6 @@ public class Nickname {
     }
 
     public boolean isValidNickname(String nickname) {
-        log.debug("입력한 nickname -> {}", nickname);
         final String NICKNAME_REGEX = "^[0-9|a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*$";
 
         if (nickname == null) {

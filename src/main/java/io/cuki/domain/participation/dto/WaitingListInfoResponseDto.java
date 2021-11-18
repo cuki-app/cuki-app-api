@@ -15,7 +15,7 @@ public class WaitingListInfoResponseDto {
     private String reasonForParticipation;
 
     public static WaitingListInfoResponseDto of(Participation participation) {
-        return new WaitingListInfoResponseDto(participation.getId(), participation.getMember().getNickname(), participation.getReasonForParticipation());
+        return new WaitingListInfoResponseDto(participation.getId(), participation.getMember().getNickname().getNickname(), participation.getReasonForParticipation());
     }
 
 }

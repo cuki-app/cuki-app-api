@@ -19,7 +19,6 @@ public class Email {
 
     public Email(String email) {
         this.email = email;
-        log.debug("Email 생성자 접근");
     }
 
     public static Boolean isValidEmail(String email) {

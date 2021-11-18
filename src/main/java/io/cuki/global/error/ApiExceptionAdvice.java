@@ -47,7 +47,8 @@ public class ApiExceptionAdvice {
             IncorrectVerificationCodeException.class, VerificationCodeExpiredException.class,
             DeactivatedMemberException.class, UsernameNotFoundException.class,
             SendMailFailedException.class, RefeshTokenNotFoundException.class,
-            NickNameNotValidException.class, EmailAddressNotValidException.class
+            NicknameNotValidException.class, EmailAddressNotValidException.class,
+            NicknameAlreadyExistException.class
     })
     public ResponseEntity<ErrorResponse<String>> illegalArgumentException(RuntimeException e) {
         return ResponseEntity

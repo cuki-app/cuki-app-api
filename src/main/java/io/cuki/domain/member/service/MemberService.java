@@ -42,15 +42,23 @@ public class MemberService {
     // 마이페이지 수정
     @Transactional
     public MemberInfoResponseDto updateMyPageInfo(Long memberId, UpdateMyPageInfoRequestDto requestDto) {
+        String nickname = requestDto.getNickname();
+
         // 1. 회원 조회
         Member member = memberRepository.findById(memberId)
             .orElseThrow(MemberNotFoundException::new);
 
         // 2. 닉네임 중복 확인
-        if (memberRepository.existsByNickname(new Nickname(requestDto.getNickname()))) {
-            log.error("닉네임 중복 확인 : 해당 닉네임은 이미 존재합니다. -> {}", requestDto.getNickname());
+        if (memberRepository.existsByNickname(new Nickname(nickname))) {
+            log.error("닉네임 중복 확인 : 해당 닉네임은 이미 존재합니다. -> {}", nickname);
             throw new NicknameAlreadyExistException();
         }
-        return MemberInfoResponseDto.of(member.updateMemberInfo(requestDto));
+
+        // 3. 닉네임 검증
+        if (member.getNickname().isValidNickname(nickname)) {
+            member.updateMemberInfo(requestDto);
+        }
+
+        return MemberInfoResponseDto.of(member);
     }
 }

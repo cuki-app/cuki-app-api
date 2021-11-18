@@ -44,13 +44,8 @@ public class Member {
         this.authority = authority;
     }
 
-    public Member updateMemberInfo(UpdateMyPageInfoRequestDto requestDto) {
-        String nickname = requestDto.getNickname();
-        if (this.nickname.isValidNickname(nickname)) {
-            this.nickname.updateNickname(nickname);
-        }
-
-        return this;
+    public void updateMemberInfo(UpdateMyPageInfoRequestDto requestDto) {
+        this.nickname.updateNickname(requestDto.getNickname());
     }
 
 

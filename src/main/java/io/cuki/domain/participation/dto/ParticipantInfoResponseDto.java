@@ -11,6 +11,6 @@ public class ParticipantInfoResponseDto {
     private String nickname;
 
     public static ParticipantInfoResponseDto of(Participation participation) {
-        return new ParticipantInfoResponseDto(participation.getId(), participation.getMember().getNickname());
+        return new ParticipantInfoResponseDto(participation.getId(), participation.getMember().getNickname().getNickname());
     }
 }

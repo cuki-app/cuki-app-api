@@ -19,7 +19,7 @@ public class Comment extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(min = 1, max = 2000)
+    @Size(min = 1, max = 1000)
     @Column(nullable = false)
     private String content;
 
@@ -30,5 +30,6 @@ public class Comment extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "schedule_id")
     private Schedule schedule;
+
 
 }

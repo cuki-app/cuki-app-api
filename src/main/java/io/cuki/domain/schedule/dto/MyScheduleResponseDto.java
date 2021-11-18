@@ -32,7 +32,7 @@ public class MyScheduleResponseDto implements Comparable<MyScheduleResponseDto> 
         return MyScheduleResponseDto.builder()
                 .scheduleId(schedule.getId())
                 .title(schedule.getTitle())
-                .nickname(schedule.getMember().getNickname())
+                .nickname(schedule.getMember().getNickname().getNickname())
                 .startDateTime(schedule.getDateTime().getStartDateTime())
                 .endDateTime(schedule.getDateTime().getEndDateTime())
                 .status(schedule.getStatus())

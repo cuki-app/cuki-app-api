@@ -77,12 +77,12 @@ public class CommentService {
         List<CommentResponseDto> responseDtos = new ArrayList<>();
 
         for (Comment comment : commentsSlice) {
-            log.debug("댓글 id = {}, 댓글 생성일 = {}, 댓글 내용 = {} ", comment.getId(), comment.getCreatedDate(), comment.getContent());
+            log.debug("댓글 조회 : 댓글 id = {}, 댓글 생성일 = {}", comment.getId(), comment.getCreatedDate());
             responseDtos.add(
                     CommentResponseDto.builder()
                             .commentId(comment.getId())
                             .writerId(comment.getMember().getId())
-                            .nickname(comment.getMember().getNickname())
+                            .nickname(comment.getMember().getNickname().getNickname())
                             .content(comment.getContent())
                             .textDate(makeTextDate(comment.getCreatedDate()))
                             .commentAuthority(Objects.equals(memberId, comment.getMember().getId()) ? CommentAuthority.OWNER : CommentAuthority.GUEST)

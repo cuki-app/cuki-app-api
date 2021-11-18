@@ -122,9 +122,4 @@ public class ParticipationService {
                 .forEach(participation -> participantInfoResponseDtoSet.add(ParticipantInfoResponseDto.of(participation)));
         return participantInfoResponseDtoSet;
     }
-
-
 }
-
-
-

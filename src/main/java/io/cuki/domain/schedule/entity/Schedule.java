@@ -5,10 +5,10 @@ import io.cuki.domain.model.BaseTimeEntity;
 import io.cuki.domain.participation.entity.Participation;
 import io.cuki.domain.participation.entity.PermissionResult;
 import io.cuki.domain.participation.exception.FixedNumberOutOfBoundsException;
-import io.cuki.domain.schedule.exception.DetailsNotValidException;
-import io.cuki.domain.schedule.exception.FixedNumberValidException;
+import io.cuki.domain.schedule.exception.InvaldDetailsException;
+import io.cuki.domain.schedule.exception.InvalidFixedNumberException;
 import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
-import io.cuki.domain.schedule.exception.TitleNotValidException;
+import io.cuki.domain.schedule.exception.InvalidTitleException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import javax.persistence.*;
@@ -90,7 +90,7 @@ public class Schedule extends BaseTimeEntity {
         }
     }
 
-    public void updateCurrentNumberOfPeople() { // 어디서 사용하는지 확인할 것
+    private void updateCurrentNumberOfPeople() {
         this.currentNumberOfPeople++;
         if (currentNumberOfPeople == fixedNumberOfPeople) {
             updateStatusToDone();
@@ -126,15 +126,15 @@ public class Schedule extends BaseTimeEntity {
     private void checkDetailsValidation(String details) {
         if (details == null) {
             log.error("세부 설명 = {}", details);
-            throw new DetailsNotValidException("세부 설명을 입력해주세요.");
+            throw new InvaldDetailsException("세부 설명은 필수 입력 사항입니다.");
         }
         if (details.replace(" ", "").isEmpty()) {
             log.error("세부 설명은 공백 이거나 빈문자열이어서는 안됩니다. = {}", details);
-            throw new DetailsNotValidException("세부 설명을 입력해주세요.");
+            throw new InvaldDetailsException("세부 설명은 공백으로 두실 수 없습니다.");
         }
         if (details.length() > 300) {
             log.error("세부 설명이 300자를 초과했습니다. = {}/{}", details.length(), 300);
-            throw new DetailsNotValidException("세부 설명은 300자를 초과하면 안됩니다.");
+            throw new InvaldDetailsException("세부 설명은 300자를 초과하면 안됩니다.");
         }
     }
 
@@ -142,11 +142,11 @@ public class Schedule extends BaseTimeEntity {
     private void checkTitleValidation(String title) {
         if (title == null) {
             log.error("제목 = {}", title);
-            throw new TitleNotValidException("제목을 입력해주세요.");
+            throw new InvalidTitleException("제목은 필수 입력 사항입니다.");
         }
         if (title.replace(" ", "").isEmpty()) {
-            log.error("제목은 공백이거나 빈 문자열일 수 없습니다. = {}", title);
-            throw new TitleNotValidException("제목은 공백이거나 빈 문자열일 수 없습니다.");
+            log.error("제목은 공백 이거나 빈문자열이어서는 안됩니다. = {}", title);
+            throw new InvalidTitleException("제목은 공백으로 두실 수 없습니다.");
         }
     }
 
@@ -155,7 +155,7 @@ public class Schedule extends BaseTimeEntity {
         log.debug("유효성 - fixedNumberOfPeople = {}", fixedNumberOfPeople);
         if (fixedNumberOfPeople < 1) {
             log.error("모집 인원은 1명 이상이어야 합니다. = {}명", fixedNumberOfPeople);
-            throw new FixedNumberValidException("모집 인원은 1명 이상 입력해주세요.");
+            throw new InvalidFixedNumberException("모집 인원을 1명 이상 입력해주세요.");
         }
     }
 

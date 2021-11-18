@@ -3,20 +3,20 @@ package io.cuki.global.error;
 import io.cuki.domain.comment.exception.CommentNotFoundException;
 import io.cuki.domain.member.exception.*;
 import io.cuki.domain.participation.exception.*;
-import io.cuki.domain.schedule.exception.DetailsNotValidException;
-import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
-import io.cuki.domain.schedule.exception.TitleNotValidException;
+import io.cuki.domain.schedule.exception.*;
 import io.cuki.global.common.response.ErrorResponse;
-import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import io.cuki.infra.email.exception.IncorrectVerificationCodeException;
 import io.cuki.infra.email.exception.SendMailFailedException;
 import io.cuki.infra.email.exception.VerificationCodeExpiredException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class ApiExceptionAdvice {
 
@@ -50,14 +50,25 @@ public class ApiExceptionAdvice {
             DeactivatedMemberException.class, UsernameNotFoundException.class,
             SendMailFailedException.class, RefeshTokenNotFoundException.class,
             NickNameNotValidException.class, EmailAddressNotValidException.class,
-            DetailsNotValidException.class, TitleNotValidException.class,
-            FixedNumberOutOfBoundsException.class
+            InvaldDetailsException.class, InvalidTitleException.class,
+            InvalidFixedNumberException.class, InvalidLocationException.class,
+            InvalidPeriodException.class
     })
     public ResponseEntity<ErrorResponse<String>> badRequestException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.badRequest(e.getMessage()));
     }
+
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse<String>> parseException(RuntimeException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.badRequest("시작일과 종료일의 날짜 포맷을 지켜서 작성해주십시오."));
+    }
+
 
     @ExceptionHandler(IllegalAccessException.class)
     public ResponseEntity<ErrorResponse<String>> illegalAccessException(Exception e) {

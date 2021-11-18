@@ -23,7 +23,7 @@ public class AuthController {
     @PostMapping("/members/sign-up/email")
     public ApiResponse<Boolean> duplicateEmailAddressForSignUp(@RequestBody ValidateDuplicateEmailAddressForSignUpRequestDto requestDto) {
         if (authService.existsEmailAddress(requestDto.getEmail())) {
-            log.debug("{} -> 이미 가입되어 있는 유저입니다.", requestDto.getEmail());
+            log.error("{} -> 이미 가입되어 있는 유저입니다.", requestDto.getEmail());
             throw new MemberAlreadyExistException("이미 가입되어 있는 유저입니다.");
         }
         return ApiResponse.ok(true);
@@ -45,7 +45,7 @@ public class AuthController {
     @PostMapping("/auth/login/email")
     public ApiResponse<Boolean> existsEmailAddress(@RequestBody ValidateExistEmailAddressForLoginRequestDto requestDto) {
         if (!authService.existsEmailAddress(requestDto.getEmail())) {
-            log.debug("{} -> 존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.", requestDto.getEmail());
+            log.error("{} -> 존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.", requestDto.getEmail());
             throw new MemberNotFoundException("존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.");
         }
         return ApiResponse.ok(true);

@@ -2,7 +2,9 @@ package io.cuki.domain.schedule.utils;
 
 import io.cuki.domain.comment.entity.Comment;
 import io.cuki.domain.comment.repository.CommentRepository;
+import io.cuki.domain.member.entity.Email;
 import io.cuki.domain.member.entity.Member;
+import io.cuki.domain.member.entity.Nickname;
 import io.cuki.domain.schedule.entity.Location;
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.SchedulePeriod;
@@ -27,9 +29,9 @@ public class ScheduleDummyData implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         final Member member = Member.builder()
                 .id(1L)
-                .email("potato@email.com")
+                .email(new Email("potato@email.com"))
                 .password("sweeeeeet_potato")
-                .nickname("납작한감자")
+                .nickname(new Nickname("납작한감자"))
                 .activated(true)
                 .authority(Authority.ROLE_USER)
                 .build();

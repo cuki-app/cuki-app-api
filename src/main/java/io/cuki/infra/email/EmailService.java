@@ -45,7 +45,7 @@ public class EmailService {
     public void sendMessageForSignUp(String email) {
         String verificationCode = createVerificationCode();
         MimeMessage message = createMessageForSignUp(email, verificationCode);
-
+        
         log.debug("관리자 계정: {}", SENDER_EMAIL);
         log.debug("보내는 대상: {}", email);
         log.debug("인증 번호: {}", verificationCode);
@@ -57,7 +57,7 @@ public class EmailService {
             mailSender.send(message);
         } catch (MailException e){
             e.printStackTrace();
-            log.error("메일 전송에 실패했습니다.");
+            log.error("메일 전송에 실패했습니다. email : {}", email);
             throw new SendMailFailedException("메일 전송에 실패했습니다.");
         }
     }
@@ -79,7 +79,7 @@ public class EmailService {
             mailSender.send(message);
         } catch (MailException e){
             e.printStackTrace();
-            log.error("메일 전송에 실패했습니다.");
+            log.error("메일 전송에 실패했습니다. email : {}", email);
             throw new SendMailFailedException("메일 전송에 실패했습니다.");
         }
     }

@@ -1,5 +1,6 @@
 package io.cuki.domain.member.service;
 
+import io.cuki.domain.member.entity.Email;
 import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.member.exception.DeactivatedMemberException;
 import io.cuki.domain.member.exception.MemberNotFoundException;
@@ -27,7 +28,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username){
-        return memberRepository.findByEmail(username)
+        Email email = new Email(username);
+        return memberRepository.findByEmail(email)
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("가입되어 있지 않은 메일 주소입니다."));
     }

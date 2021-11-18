@@ -56,6 +56,8 @@ public class CommentService {
         Schedule schedule = schedulesRepository.findById(scheduleId)
                 .orElseThrow(ScheduleNotFoundException::new);
 
+        Comment.isValidContent(requestDto.getContent());
+
         Comment comment = Comment.builder()
                 .content(requestDto.getContent())
                 .member(member)

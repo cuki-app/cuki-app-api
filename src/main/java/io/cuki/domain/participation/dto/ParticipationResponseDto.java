@@ -33,7 +33,7 @@ public class ParticipationResponseDto implements Comparable<ParticipationRespons
                 .scheduleId(participation.getSchedule().getId())
                 .participationId(participation.getId())
                 .title(participation.getSchedule().getTitle())
-                .nickname(participation.getSchedule().getMember().getNickname())
+                .nickname(participation.getSchedule().getMember().getNickname().getNickname())
                 .startDateTime(participation.getSchedule().getDateTime().getStartDateTime())
                 .endDateTime(participation.getSchedule().getDateTime().getEndDateTime())
                 .status(participation.getSchedule().getStatus())

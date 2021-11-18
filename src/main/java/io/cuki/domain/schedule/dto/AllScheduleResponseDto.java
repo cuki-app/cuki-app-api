@@ -38,7 +38,7 @@ public class AllScheduleResponseDto {
         return AllScheduleResponseDto.builder()
                 .scheduleId(schedule.getId())
                 .title(schedule.getTitle())
-                .nickname(schedule.getMember().getNickname())
+                .nickname(schedule.getMember().getNickname().getNickname())
                 .place(schedule.getLocation().getPlace())
                 .startDateTime(schedule.getDateTime().getStartDateTime())
                 .endDateTime(schedule.getDateTime().getEndDateTime())

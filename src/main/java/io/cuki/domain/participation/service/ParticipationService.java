@@ -92,7 +92,7 @@ public class ParticipationService {
         );
 
         if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), participation.getSchedule().getMember().getId())) {
-            return new WaitingDetailsInfoResponseDto(participation.getId(), participation.getMember().getNickname(), participation.getReasonForParticipation());
+            return new WaitingDetailsInfoResponseDto(participation.getId(), participation.getMember().getNickname().getNickname(), participation.getReasonForParticipation());
         } else {
             throw new IllegalAccessException("참여 대기자의 정보는 게시글 작성자만 볼 수 있습니다.");
         }

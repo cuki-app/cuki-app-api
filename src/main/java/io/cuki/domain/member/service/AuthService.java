@@ -1,11 +1,10 @@
 package io.cuki.domain.member.service;
 
-import io.cuki.domain.member.entity.Member;
+import io.cuki.domain.member.entity.*;
 import io.cuki.domain.member.entity.jwt.TokenProvider;
 import io.cuki.domain.member.exception.*;
 import io.cuki.infra.email.EmailService;
 import io.cuki.domain.member.dto.*;
-import io.cuki.domain.member.entity.RefreshToken;
 import io.cuki.domain.member.repository.MemberRepository;
 import io.cuki.domain.member.repository.RefreshTokenRepository;
 import io.cuki.global.util.SecurityUtil;
@@ -35,14 +34,19 @@ public class AuthService {
 
     // 메일주소 존재 여부 확인
     public Boolean existsEmailAddress(String email) {
-        return memberRepository.existsByEmail(email);
+        Email.isValidEmail(email);
+        Email email1 = new Email(email);
+        return memberRepository.existsByEmail(email1);
     }
 
     // 회원가입 - 인증코드 전송
     @Transactional
     public Boolean sendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) {
-        if (!existsEmailAddress(requestDto.getEmail())) {
-            emailService.sendMessageForSignUp(requestDto.getEmail());
+        String email = requestDto.getEmail();
+        Email.isValidEmail(email);
+
+        if (!existsEmailAddress(email)) {
+            emailService.sendMessageForSignUp(email);
         } else {
             log.error("{} -> 이미 가입되어 있는 유저입니다. 비정상적인 접근입니다.", requestDto.getEmail());
             throw new MemberAlreadyExistException("이미 가입되어 있는 유저입니다. 비정상적인 접근입니다.");
@@ -54,6 +58,7 @@ public class AuthService {
     @Transactional
     public MemberInfoResponseDto signUp(SignUpRequestDto signUpRequestDto) {
         final String email = signUpRequestDto.getEmail();
+        Email.isValidEmail(email);
 
         // 1. 인증코드 검증
         if (!existsEmailAddress(email)) {
@@ -64,13 +69,14 @@ public class AuthService {
         }
 
         // 2. 닉네임 랜덤 생성
-        String nickname = Member.createRandomNickname();
+        String randomNickname = Nickname.createRandomNickname();
+        Nickname nickname = new Nickname(randomNickname);
         while (memberRepository.existsByNickname(nickname)){
-            nickname = Member.createRandomNickname();
+            randomNickname = Nickname.createRandomNickname();
         }
 
         // 3. 멤버 객체 저장
-        Member member = signUpRequestDto.toMember(passwordEncoder, nickname);
+        Member member = Member.toMember(email, passwordEncoder.encode("1234"), randomNickname, true, Authority.ROLE_USER);
 
         return MemberInfoResponseDto.of(memberRepository.save(member));
     }

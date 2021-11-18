@@ -82,7 +82,7 @@ public class CommentService {
                     CommentResponseDto.builder()
                             .commentId(comment.getId())
                             .writerId(comment.getMember().getId())
-                            .nickname(comment.getMember().getNickname())
+                            .nickname(comment.getMember().getNickname().getNickname())
                             .content(comment.getContent())
                             .textDate(makeTextDate(comment.getCreatedDate()))
                             .commentAuthority(Objects.equals(memberId, comment.getMember().getId()) ? CommentAuthority.OWNER : CommentAuthority.GUEST)

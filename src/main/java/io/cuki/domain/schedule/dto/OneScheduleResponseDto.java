@@ -43,7 +43,7 @@ public class OneScheduleResponseDto {
         return OneScheduleResponseDto.builder()
                 .scheduleId(schedule.getId())
                 .title(schedule.getTitle())
-                .nickname(schedule.getMember().getNickname())
+                .nickname(schedule.getMember().getNickname().getNickname())
                 .startDateTime(schedule.getDateTime().getStartDateTime())
                 .endDateTime(schedule.getDateTime().getEndDateTime())
                 .fixedNumberOfPeople(schedule.getFixedNumberOfPeople())

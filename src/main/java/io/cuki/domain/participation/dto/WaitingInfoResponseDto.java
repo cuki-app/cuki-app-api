@@ -13,7 +13,7 @@ public class WaitingInfoResponseDto {
     private String nickname;
 
     public static WaitingInfoResponseDto of(Participation participation) {
-        return new WaitingInfoResponseDto(participation.getId(), participation.getMember().getNickname());
+        return new WaitingInfoResponseDto(participation.getId(), participation.getMember().getNickname().getNickname());
     }
 
 }

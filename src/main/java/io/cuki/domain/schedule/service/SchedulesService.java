@@ -115,6 +115,5 @@ public class SchedulesService {
         return IdAndStatusResponseDto.of(schedule);
     }
 
-
 }
 

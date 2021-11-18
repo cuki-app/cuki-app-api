@@ -7,6 +7,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -15,18 +17,19 @@ public class CukiScheduler {
 
     private final SchedulesRepository schedulesRepository;
 
-    // repo 에서 endDateTime 에 접근해야 하는데, query 를 날려서 접근 해야 할 것 같다.
+
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void manageSchedule() {
-        schedulesRepository.findAllByStatus(ScheduleStatus.IN_PROGRESS)
-                .forEach(schedule -> {
-                    if (schedule.getDateTime().getEndDateTime().toLocalDate().equals(LocalDate.now())) {
-                        log.info("end date = {}", schedule.getDateTime().getEndDateTime().toLocalDate());
-                        log.info("현재 LocalDate = {}", LocalDate.now());
-                        schedule.updateStatusToDone();
-                    }
-                });
+        final LocalDate today = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonthValue(), LocalDate.now().getDayOfMonth());
+        final LocalTime startTime = LocalTime.of(0, 0, 0, 0);
+        final LocalTime endTime = LocalTime.of(23, 59, 59, 999_999_999);
+        log.debug("오늘 날짜 = {}, 오늘 시간 = {} ~ {}", today, startTime, endTime);
+
+        schedulesRepository
+                .findByDateTime_EndDateTimeBetweenAndStatus(LocalDateTime.of(today, startTime), LocalDateTime.of(today, endTime), ScheduleStatus.IN_PROGRESS)
+                .forEach(Schedule::updateStatusToDone);
+
         }
 
     }

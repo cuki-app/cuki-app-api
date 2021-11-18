@@ -29,7 +29,7 @@ public class Schedule extends BaseTimeEntity {
     private Location location;
 
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @Embedded
     private SchedulePeriod dateTime;    // period
 
     @Column(nullable = false)

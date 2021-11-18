@@ -5,6 +5,7 @@ import io.cuki.domain.schedule.entity.ScheduleStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SchedulesRepository extends JpaRepository<Schedule, Long> {
@@ -15,4 +16,5 @@ public interface SchedulesRepository extends JpaRepository<Schedule, Long> {
 
     Slice<Schedule> findBy(Pageable pageable);
 
+    List<Schedule> findByDateTime_EndDateTimeBetweenAndStatus(LocalDateTime start, LocalDateTime end, ScheduleStatus status);
 }

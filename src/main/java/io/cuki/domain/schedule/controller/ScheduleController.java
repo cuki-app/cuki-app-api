@@ -73,4 +73,8 @@ public class ScheduleController {
         log.error("슬랙 어펜더 테스트용 API 입니다. error log.");
     }
 
+    @GetMapping("/schedulerTest")
+    public ApiResponse<List<AllScheduleResponseDto>> getScheduler() {
+        return ApiResponse.ok(schedulesService.getScheduler());
+    }
 }

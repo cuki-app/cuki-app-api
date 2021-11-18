@@ -5,7 +5,6 @@ import io.cuki.domain.schedule.entity.Location;
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.SchedulePeriod;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
-
 import java.time.LocalDateTime;
 
 public class ScheduleFixtureBuilder {
@@ -70,14 +69,11 @@ public class ScheduleFixtureBuilder {
     }
 
     public Schedule build() {
-        return new Schedule(title,
-                member,
+        return new Schedule(title, member,
                 new SchedulePeriod(startDateTime, endDateTime),
                 fixedNumberOfPeople,
-                currentNumberOfPeople,
                 location,
-                details,
-                status
+                details
         );
     }
 

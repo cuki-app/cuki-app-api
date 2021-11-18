@@ -5,7 +5,10 @@ import io.cuki.domain.model.BaseTimeEntity;
 import io.cuki.domain.participation.entity.Participation;
 import io.cuki.domain.participation.entity.PermissionResult;
 import io.cuki.domain.participation.exception.FixedNumberOutOfBoundsException;
+import io.cuki.domain.schedule.exception.InvaldDetailsException;
+import io.cuki.domain.schedule.exception.InvalidFixedNumberException;
 import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
+import io.cuki.domain.schedule.exception.InvalidTitleException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import javax.persistence.*;
@@ -29,7 +32,7 @@ public class Schedule extends BaseTimeEntity {
     private Location location;
 
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @Embedded
     private SchedulePeriod dateTime;    // period
 
     @Column(nullable = false)
@@ -57,29 +60,24 @@ public class Schedule extends BaseTimeEntity {
 
 
     @Builder
-    public Schedule(String title, Member member, SchedulePeriod dateTime, int fixedNumberOfPeople, int currentNumberOfPeople, Location location, String details, ScheduleStatus status) {
-        System.out.println("validation 하는 Schedule 생성자 호출");
+    public Schedule(String title, Member member, SchedulePeriod dateTime, int fixedNumberOfPeople, Location location, String details) {
+        log.debug("Schedule.Schedule() - 호출");
+        log.debug("생성자 - fixedNumberOfPeople = {}", fixedNumberOfPeople);
         checkTitleValidation(title);
         checkFixedNumberOfPeople(fixedNumberOfPeople);
         checkDetailsValidation(details);
+        int WRITER_ONESELF = 1;
 
         this.title = title;
         this.member = member;
         this.dateTime = dateTime;
-        this.fixedNumberOfPeople = fixedNumberOfPeople;
-        this.currentNumberOfPeople = currentNumberOfPeople;
+        this.fixedNumberOfPeople = fixedNumberOfPeople+WRITER_ONESELF;
+        this.currentNumberOfPeople = WRITER_ONESELF;
         this.location = location;
         this.details = details;
-        this.status = status;
+        this.status = ScheduleStatus.IN_PROGRESS;
     }
 
-
-    public void updateCurrentNumberOfPeople() { // 어디서 사용하는지 확인할 것
-        this.currentNumberOfPeople++;
-        if (currentNumberOfPeople == fixedNumberOfPeople) {
-            updateStatusToDone();
-        }
-    }
 
     public void updateNumberOfPeopleWaiting(PermissionResult result) {
         if (result == PermissionResult.NONE) {
@@ -92,13 +90,13 @@ public class Schedule extends BaseTimeEntity {
         }
     }
 
-
-    public boolean isNotOverFixedNumber() {
-        if (currentNumberOfPeople >= fixedNumberOfPeople) {
-            throw new FixedNumberOutOfBoundsException("정원이 초과되었습니다.");
+    private void updateCurrentNumberOfPeople() {
+        this.currentNumberOfPeople++;
+        if (currentNumberOfPeople == fixedNumberOfPeople) {
+            updateStatusToDone();
         }
-        return true;
     }
+
 
     public void updateStatusToDone() {
         if (status == ScheduleStatus.IN_PROGRESS) {
@@ -106,9 +104,17 @@ public class Schedule extends BaseTimeEntity {
         }
     }
 
+    public boolean isNotOverFixedNumber() {
+        if (currentNumberOfPeople >= fixedNumberOfPeople) {
+            log.error("확정자 = {}, 정원 = {}", currentNumberOfPeople, fixedNumberOfPeople);
+            throw new FixedNumberOutOfBoundsException("정원이 초과되었습니다.");
+        }
+        return true;
+    }
+
     public boolean statusIsNotDone() throws ScheduleStatusIsAlreadyChangedException {
         if (getStatus() == ScheduleStatus.DONE) {
-            log.debug("{}번 게시글은 이미 마감 처리되었습니다.", getId());
+            log.error("{}번 게시글은 이미 마감 처리되었습니다.", getId());
             throw new ScheduleStatusIsAlreadyChangedException("이미 마감 처리된 게시글 입니다.");
         }
         return true;
@@ -116,33 +122,40 @@ public class Schedule extends BaseTimeEntity {
 
 
 
-    // 어노테이션으로 대체 가능
+
     private void checkDetailsValidation(String details) {
         if (details == null) {
-            throw new IllegalArgumentException("세부 설명이 null 이면 안됩니다.");
+            log.error("세부 설명 = {}", details);
+            throw new InvaldDetailsException("세부 설명은 필수 입력 사항입니다.");
         }
         if (details.replace(" ", "").isEmpty()) {
-            throw new IllegalArgumentException("세부 설명은 공백 이거나 빈문자열이어서는 안됩니다.");
+            log.error("세부 설명은 공백 이거나 빈문자열이어서는 안됩니다. = {}", details);
+            throw new InvaldDetailsException("세부 설명은 공백으로 두실 수 없습니다.");
         }
         if (details.length() > 300) {
-            throw new IllegalArgumentException("세부 설명은 300자를 초과하면 안됩니다.");
+            log.error("세부 설명이 300자를 초과했습니다. = {}/{}", details.length(), 300);
+            throw new InvaldDetailsException("세부 설명은 300자를 초과하면 안됩니다.");
         }
     }
 
-    // 어노테이션으로 대체 가능
+
     private void checkTitleValidation(String title) {
         if (title == null) {
-            throw new IllegalArgumentException("제목은 Null 일 수 없습니다.");
+            log.error("제목 = {}", title);
+            throw new InvalidTitleException("제목은 필수 입력 사항입니다.");
         }
         if (title.replace(" ", "").isEmpty()) {
-            throw new IllegalArgumentException("제목은 공백이거나 빈 문자열일 수 없습니다.");
+            log.error("제목은 공백 이거나 빈문자열이어서는 안됩니다. = {}", title);
+            throw new InvalidTitleException("제목은 공백으로 두실 수 없습니다.");
         }
     }
 
-    // 어노테이션으로 대체 가능
+
     private void checkFixedNumberOfPeople(int fixedNumberOfPeople) {
+        log.debug("유효성 - fixedNumberOfPeople = {}", fixedNumberOfPeople);
         if (fixedNumberOfPeople < 1) {
-            throw new IllegalArgumentException("모집인원은 1명 이상이어야 합니다.");
+            log.error("모집 인원은 1명 이상이어야 합니다. = {}명", fixedNumberOfPeople);
+            throw new InvalidFixedNumberException("모집 인원을 1명 이상 입력해주세요.");
         }
     }
 

@@ -1,23 +1,19 @@
 package io.cuki.domain.schedule.entity;
 
-import lombok.AllArgsConstructor;
+import io.cuki.domain.schedule.exception.InvalidPeriodException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Slf4j
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Embeddable
 public class SchedulePeriod {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
 
     private LocalDateTime startDateTime;
 
@@ -32,19 +28,23 @@ public class SchedulePeriod {
 
     private void checkPeriodValidation(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         if (startDateTime == null) {
-            throw new IllegalArgumentException("시작일은 null 일 수 없습니다.");
+            log.error("시작일 = {}", startDateTime);
+            throw new InvalidPeriodException("시작일을 입력해주세요.");
         }
 
         if (endDateTime == null) {
-            throw new IllegalArgumentException("종료일은 null 일 수 없습니다.");
+            log.error("종료일 = {}", endDateTime);
+            throw new InvalidPeriodException("종료일을 입력해주세요.");
         }
 
         if (startDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("시작일(" + startDateTime + ")은 현재 시간보다 이전일 수 없습니다.");
+            log.error("시작일 {} 이 현재일 {} 보다 이전 입니다. = ", startDateTime, LocalDateTime.now());
+            throw new InvalidPeriodException("시작일(" + startDateTime + ")은 현재 시간보다 이전일 수 없습니다.");
         }
 
         if (startDateTime.compareTo(endDateTime) > 0) {
-            throw new IllegalArgumentException("시작일(" + startDateTime + ")이 종료일(" + endDateTime + " )보다 늦습니다.");
+            log.error("시작일 {} 이 종료일 {} 보다 늦습니다. = ", startDateTime, endDateTime);
+            throw new InvalidPeriodException("시작일(" + startDateTime + ")이 종료일(" + endDateTime + " )보다 늦습니다.");
         }
     }
 

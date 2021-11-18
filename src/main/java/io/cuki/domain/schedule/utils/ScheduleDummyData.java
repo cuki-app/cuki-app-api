@@ -45,10 +45,8 @@ public class ScheduleDummyData implements InitializingBean {
                 .member(member)
                 .dateTime(new SchedulePeriod(startDate, startDate.plusDays(2)))
                 .fixedNumberOfPeople(3)
-                .currentNumberOfPeople(1)
                 .location(new Location("합정 교보문고"))
                 .details("더미 데이터 " + (i+1))
-                .status(ScheduleStatus.IN_PROGRESS)
                 .build();
             schedulesRepository.save(schedules[i]);
         }

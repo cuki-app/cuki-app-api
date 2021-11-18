@@ -1,10 +1,12 @@
 package io.cuki.domain.schedule.utils;
 
 import io.cuki.domain.participation.exception.WriterAuthorityException;
+import io.cuki.global.util.SecurityUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.util.Objects;
 
-
+@Slf4j
 @Component
 public class WriterVerification {
 
@@ -17,7 +19,8 @@ public class WriterVerification {
 
     public static boolean hasWriterAuthority(Long comparingID, Long writerId) {
         if (!isWriter(comparingID, writerId)) {
-            throw new WriterAuthorityException("게시글 작성자만 확인할 수 있는 정보입니다.");
+            log.debug("요청한 사용자 = {}, 게시글 작성자 = {}", comparingID, writerId);
+            throw new WriterAuthorityException("해당 기능은 게시글 작성자만 사용 가능합니다.");
         }
         return true;
     }

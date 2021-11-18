@@ -1,6 +1,7 @@
 package io.cuki.global.error;
 
 import io.cuki.domain.comment.exception.CommentNotFoundException;
+import io.cuki.domain.comment.exception.CommentNotValidException;
 import io.cuki.domain.member.exception.*;
 import io.cuki.domain.participation.exception.*;
 import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
@@ -48,7 +49,7 @@ public class ApiExceptionAdvice {
             DeactivatedMemberException.class, UsernameNotFoundException.class,
             SendMailFailedException.class, RefeshTokenNotFoundException.class,
             NicknameNotValidException.class, EmailAddressNotValidException.class,
-            NicknameAlreadyExistException.class
+            NicknameAlreadyExistException.class, CommentNotValidException.class
     })
     public ResponseEntity<ErrorResponse<String>> illegalArgumentException(RuntimeException e) {
         return ResponseEntity

@@ -8,11 +8,9 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 
-@Builder
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Comment extends BaseTimeEntity {
 
     @Id
@@ -31,5 +29,10 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(nullable = false, name = "schedule_id")
     private Schedule schedule;
 
-
+    @Builder
+    private Comment(String content, Member member, Schedule schedule) {
+        this.content = content;
+        this.member = member;
+        this.schedule = schedule;
+    }
 }

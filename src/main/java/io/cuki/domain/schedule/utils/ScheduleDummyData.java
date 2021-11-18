@@ -57,13 +57,12 @@ public class ScheduleDummyData implements InitializingBean {
             System.out.println("schedules[i] = " + schedules[i]);
         }
 
-        for (int i = 0; i < 30; i++) {
-            for (int j = 0; j < 100; j++) {
-                Thread.sleep(20);
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 30; j++) {
                 Comment comment = Comment.builder()
-                        .content("댓글이당당당 " + (j+1))
+                        .content("댓글이당당당 " + (i+1))
                         .member(member)
-                        .schedule(schedules[i])
+                        .schedule(schedules[j])
                         .build();
                 System.out.println("comment = " + comment.getContent());
                 commentRepository.save(comment);

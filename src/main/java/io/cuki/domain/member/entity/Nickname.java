@@ -1,11 +1,12 @@
 package io.cuki.domain.member.entity;
 
-import io.cuki.domain.member.exception.NickNameNotValidException;
+import io.cuki.domain.member.exception.NicknameNotValidException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.Size;
 import java.util.Objects;
@@ -16,6 +17,7 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Nickname {
 
+    @Column(nullable = false, unique = true)
     @Size(min = 2, max = 10)
     private String nickname;
 
@@ -54,16 +56,16 @@ public class Nickname {
 
         if (nickname == null) {
             log.error("닉네임은 null 일 수 없습니다. -> {}", nickname);
-            throw new NickNameNotValidException("닉네임을 입력해주세요.");
+            throw new NicknameNotValidException("닉네임을 입력해주세요.");
         } else if (nickname.trim().isEmpty()) {
             log.error("닉네임은 공백 일 수 없습니다. -> {}", nickname);
-            throw new NickNameNotValidException("닉네임을 입력해주세요.");
+            throw new NicknameNotValidException("닉네임을 입력해주세요.");
         } else if (nickname.length() < 2 || nickname.length() > 10) {
             log.error("닉네임은 2 ~ 10 사이어야 합니다. -> {}", nickname);
-            throw new NickNameNotValidException("닉네임은 2 ~ 10 사이어야 합니다.");
+            throw new NicknameNotValidException("닉네임은 2 ~ 10 사이어야 합니다.");
         } else if (!nickname.matches(NICKNAME_REGEX)) {
             log.error("닉네임에 특수 문자가 있습니다. -> {}", nickname);
-            throw new NickNameNotValidException("닉네임은 한글, 영문, 숫자만 사용할 수 있습니다.");
+            throw new NicknameNotValidException("닉네임은 한글, 영문, 숫자만 사용할 수 있습니다.");
         }
 
         return true;

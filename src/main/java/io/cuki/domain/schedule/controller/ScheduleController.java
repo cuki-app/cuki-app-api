@@ -63,18 +63,13 @@ public class ScheduleController {
 
     @ApiOperation(value = "게시글 상태 - 모집중 -> 마감(DONE)으로 변경")
     @PutMapping("/schedules/{scheduleId}/status")
-    public ApiResponse<IdAndStatusResponseDto> changeScheduleStatus(@PathVariable Long scheduleId) throws ScheduleStatusIsAlreadyChangedException {
-        return ApiResponse.ok(schedulesService.changeScheduleStatus(scheduleId));
+    public ApiResponse<IdAndStatusResponseDto> changeScheduleStatusToDone(@PathVariable Long scheduleId) throws ScheduleStatusIsAlreadyChangedException {
+        return ApiResponse.ok(schedulesService.changeScheduleStatusToDone(scheduleId));
     }
 
     @ApiOperation(value = "슬랙 어펜더 테스트용 API")
     @GetMapping("/slack")
     public void slackAppender() {
         log.error("슬랙 어펜더 테스트용 API 입니다. error log.");
-    }
-
-    @GetMapping("/schedulerTest")
-    public ApiResponse<List<AllScheduleResponseDto>> getScheduler() {
-        return ApiResponse.ok(schedulesService.getScheduler());
     }
 }

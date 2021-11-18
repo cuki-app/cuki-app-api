@@ -46,10 +46,8 @@ public class ScheduleDummyData implements InitializingBean {
                 .member(member)
                 .dateTime(new SchedulePeriod(startDate, startDate.plusDays(2)))
                 .fixedNumberOfPeople(3)
-                .currentNumberOfPeople(1)
                 .location(new Location("합정 교보문고"))
                 .details("더미 데이터 " + (i+1))
-                .status(ScheduleStatus.IN_PROGRESS)
                 .build();
             schedulesRepository.save(schedules[i]);
         }
@@ -60,7 +58,7 @@ public class ScheduleDummyData implements InitializingBean {
 
         for (int i = 0; i < 30; i++) {
             for (int j = 0; j < 100; j++) {
-//                Thread.sleep(20);
+                Thread.sleep(20);
                 Comment comment = Comment.builder()
                         .content("댓글이당당당 " + (j+1))
                         .member(member)

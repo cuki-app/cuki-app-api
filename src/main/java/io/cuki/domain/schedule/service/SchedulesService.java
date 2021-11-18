@@ -2,14 +2,11 @@ package io.cuki.domain.schedule.service;
 
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleAuthority;
-import io.cuki.domain.schedule.entity.ScheduleStatus;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
-import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.domain.schedule.utils.*;
 import io.cuki.domain.schedule.repository.SchedulesRepository;
 import io.cuki.domain.member.repository.MemberRepository;
 import io.cuki.domain.member.exception.MemberNotFoundException;
-import io.cuki.domain.member.exception.MemberNotMatchException;
 import io.cuki.global.util.SecurityUtil;
 import io.cuki.domain.schedule.dto.*;
 import io.cuki.global.util.SliceCustom;
@@ -33,19 +30,19 @@ public class SchedulesService {
     @Transactional
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
         final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .map(registrationRequestDto::toEntity)
-                .orElseThrow(MemberNotFoundException::new);
-        log.debug("모집 인원(작성자 포함) = {}", schedule.getFixedNumberOfPeople());
+                                            .map(registrationRequestDto::toEntity)
+                                            .orElseThrow(MemberNotFoundException::new);
+        log.debug("모집 인원( 작성자 포함 ) = {}", schedule.getFixedNumberOfPeople());
 
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
     }
 
+
     @Transactional(readOnly = true) //
     public SliceCustom<AllScheduleResponseDto> getAllSchedule(int page, int size) {
         log.debug("client request - page number = {}, page size = {}", page, size);
-        final Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
-        final PageRequest pageRequest = PageRequest.of(page, size, sort);
 
+        final PageRequest pageRequest = makePageRequest(page, size);
         List<AllScheduleResponseDto> dtoList = new ArrayList<>();
         final boolean hasNext = schedulesRepository.findBy(pageRequest).hasNext();
         schedulesRepository.findBy(pageRequest).forEach(schedule -> dtoList.add(AllScheduleResponseDto.of(schedule)));
@@ -57,16 +54,21 @@ public class SchedulesService {
         return new SliceCustom<>(dtoList, dtoSlice.hasNext(), dtoSlice.getNumber());
     }
 
+    private PageRequest makePageRequest(int page, int size) {
+        final Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+        return PageRequest.of(page, size, sort);
+    }
+
     // 일정 상세 조회
     @Transactional(readOnly = true)
     public OneScheduleResponseDto getOneSchedule(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
 
-        if (!SecurityUtil.getCurrentMemberId().equals(schedule.getMember().getId())) {
-            return OneScheduleResponseDto.of(schedule, ScheduleAuthority.GUEST);
-        } else {
+        if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
             return OneScheduleResponseDto.of(schedule, ScheduleAuthority.OWNER);
         }
+
+        return OneScheduleResponseDto.of(schedule, ScheduleAuthority.GUEST);
     }
 
 
@@ -88,30 +90,22 @@ public class SchedulesService {
     public IdResponseDto deleteSchedule(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
 
-        if (WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
-            schedulesRepository.delete(schedule);
-        } else {
-            log.debug("로그인 한 회원 = {}, 게시글 작성자 = {}", SecurityUtil.getCurrentMemberId(), schedule.getId());
-            throw new MemberNotMatchException("게시글 삭제는 게시글 작성자만 할 수 있습니다.");
-        }
+        WriterVerification.hasWriterAuthority(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId());
+        schedulesRepository.delete(schedule);
 
         return new IdResponseDto(schedule.getId());
     }
 
 
     @Transactional
-    public IdAndStatusResponseDto changeScheduleStatus(Long scheduleId) {
+    public IdAndStatusResponseDto changeScheduleStatusToDone(Long scheduleId) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
 
-        if (!WriterVerification.isWriter(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId())) {
-            throw new MemberNotMatchException("게시글 마감은 게시글 작성자만 할 수 있습니다.");
-        }
+        WriterVerification.hasWriterAuthority(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId());
+        schedule.statusIsNotDone();
 
-        if (schedule.getStatus() == ScheduleStatus.DONE) {
-            log.debug("{}번 게시글은 이미 마감 처리되었습니다.", scheduleId);
-            throw new ScheduleStatusIsAlreadyChangedException("이미 마감 처리된 게시글 입니다.");
-        }
         schedule.updateStatusToDone();
+        log.debug("ScheduleService#changeScheduleStatusToDone - status = {}", schedule.getStatus());
         return IdAndStatusResponseDto.of(schedule);
     }
 

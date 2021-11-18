@@ -12,8 +12,6 @@ public interface SchedulesRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findAllByMemberId(Long memberId);
 
-    List<Schedule> findAllByStatus(ScheduleStatus status);
-
     Slice<Schedule> findBy(Pageable pageable);
 
     List<Schedule> findByDateTime_EndDateTimeBetweenAndStatus(LocalDateTime start, LocalDateTime end, ScheduleStatus status);

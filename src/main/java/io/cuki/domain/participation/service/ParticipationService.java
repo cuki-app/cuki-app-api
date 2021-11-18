@@ -116,7 +116,6 @@ public class ParticipationService {
     // 닉네임 매핑할 때 persistence 문제 생길텐데? -> 왜 안생기지?
     public Set<ParticipantInfoResponseDto> getParticipantList(Long scheduleId) {
         Set<ParticipantInfoResponseDto> participantInfoResponseDtoSet = new HashSet<>();
-        //
 
         participationRepository.findByScheduleIdAndResult(scheduleId, PermissionResult.ACCEPT)
                 .forEach(participation -> participantInfoResponseDtoSet.add(ParticipantInfoResponseDto.of(participation)));

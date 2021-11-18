@@ -4,13 +4,13 @@ import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.schedule.entity.Location;
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.SchedulePeriod;
-import io.cuki.domain.schedule.entity.ScheduleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 
+@Slf4j
 @Builder
 @AllArgsConstructor
 @Getter
@@ -30,16 +30,14 @@ public class ScheduleRegistrationRequestDto {
 
 
     public Schedule toEntity(Member member) {
-        final int ONESELF = 1;
+        log.debug("ScheduleRegistrationRequestDto.toEntity - 호출");
         return Schedule.builder()
                 .title(title)
                 .member(member)
                 .dateTime(new SchedulePeriod(startDateTime, endDateTime))
-                .fixedNumberOfPeople((fixedNumberOfPeople+ONESELF))
-                .currentNumberOfPeople(ONESELF)
+                .fixedNumberOfPeople(fixedNumberOfPeople)
                 .location(new Location(place))
                 .details(details)
-                .status(ScheduleStatus.IN_PROGRESS)
                 .build();
     }
 

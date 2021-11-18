@@ -2,10 +2,13 @@ package io.cuki.domain.schedule.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 
+@Slf4j
 @Getter
 @NoArgsConstructor
 @Entity

@@ -3,7 +3,9 @@ package io.cuki.global.error;
 import io.cuki.domain.comment.exception.CommentNotFoundException;
 import io.cuki.domain.member.exception.*;
 import io.cuki.domain.participation.exception.*;
+import io.cuki.domain.schedule.exception.DetailsNotValidException;
 import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
+import io.cuki.domain.schedule.exception.TitleNotValidException;
 import io.cuki.global.common.response.ErrorResponse;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import io.cuki.infra.email.exception.IncorrectVerificationCodeException;
@@ -47,9 +49,11 @@ public class ApiExceptionAdvice {
             IncorrectVerificationCodeException.class, VerificationCodeExpiredException.class,
             DeactivatedMemberException.class, UsernameNotFoundException.class,
             SendMailFailedException.class, RefeshTokenNotFoundException.class,
-            NickNameNotValidException.class, EmailAddressNotValidException.class
+            NickNameNotValidException.class, EmailAddressNotValidException.class,
+            DetailsNotValidException.class, TitleNotValidException.class,
+            FixedNumberOutOfBoundsException.class
     })
-    public ResponseEntity<ErrorResponse<String>> illegalArgumentException(RuntimeException e) {
+    public ResponseEntity<ErrorResponse<String>> badRequestException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.badRequest(e.getMessage()));

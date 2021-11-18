@@ -1,6 +1,5 @@
 package io.cuki.domain.schedule.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,16 +8,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-//@AllArgsConstructor
 @NoArgsConstructor
-//@Entity
 @Embeddable
 public class SchedulePeriod {
-
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-
 
     private LocalDateTime startDateTime;
 
@@ -28,10 +20,6 @@ public class SchedulePeriod {
     public SchedulePeriod(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         checkPeriodValidation(startDateTime, endDateTime);
         this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-    }
-
-    public SchedulePeriod(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 

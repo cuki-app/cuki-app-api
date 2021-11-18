@@ -2,7 +2,6 @@ package io.cuki.domain.schedule.service;
 
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleAuthority;
-import io.cuki.domain.schedule.entity.SchedulePeriod;
 import io.cuki.domain.schedule.entity.ScheduleStatus;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
@@ -19,9 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -119,16 +115,5 @@ public class SchedulesService {
         return IdAndStatusResponseDto.of(schedule);
     }
 
-
-    public List<AllScheduleResponseDto> getScheduler() {
-        List<AllScheduleResponseDto> dtoList = new ArrayList<>();
-        final SchedulePeriod schedulePeriod = new SchedulePeriod(LocalDateTime.now());
-
-        final List<Schedule> scheduleList = schedulesRepository.findByDateTime_EndDateTimeDate(LocalDateTime.now().toLocalDate());
-        for (Schedule schedule : scheduleList) {
-            dtoList.add(AllScheduleResponseDto.of(schedule));
-        }
-        return dtoList;
-    }
 }
 

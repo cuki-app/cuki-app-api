@@ -28,7 +28,6 @@ public class ScheduleDummyData implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         final Member member = Member.builder()
-                .id(1L)
                 .email(new Email("potato@email.com"))
                 .password("sweeeeeet_potato")
                 .nickname(new Nickname("납작한감자"))
@@ -60,7 +59,7 @@ public class ScheduleDummyData implements InitializingBean {
 
         for (int i = 0; i < 30; i++) {
             for (int j = 0; j < 100; j++) {
-//                Thread.sleep(20);
+                Thread.sleep(20);
                 Comment comment = Comment.builder()
                         .content("댓글이당당당 " + (j+1))
                         .member(member)

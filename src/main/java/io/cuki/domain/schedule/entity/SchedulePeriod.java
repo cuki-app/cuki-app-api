@@ -9,14 +9,15 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor
-@Entity
+//@Entity
+@Embeddable
 public class SchedulePeriod {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
 
 
     private LocalDateTime startDateTime;
@@ -27,6 +28,10 @@ public class SchedulePeriod {
     public SchedulePeriod(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         checkPeriodValidation(startDateTime, endDateTime);
         this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+    }
+
+    public SchedulePeriod(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 

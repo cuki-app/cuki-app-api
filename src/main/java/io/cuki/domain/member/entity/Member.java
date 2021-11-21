@@ -10,6 +10,12 @@ import javax.persistence.*;
 @Slf4j
 @Entity
 @Getter
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uq_member_email", columnNames = {"email"}),
+                @UniqueConstraint(name = "uq_member_nickname", columnNames = {"nickname"})
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
@@ -18,14 +24,14 @@ public class Member {
     private Long id;
 
     @Embedded
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private Email email;
 
     @JsonIgnore
     private String password;
 
     @Embedded
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private Nickname nickname;
 
     @Column(nullable = false)

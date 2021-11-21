@@ -32,19 +32,20 @@ public class AuthService {
     private final EmailService emailService;
 
 
-    // 메일주소 존재 여부 확인
+    // 사용자 존재 유무 검사
     public Boolean existsEmailAddress(String email) {
-        Email.isValidEmail(email);
-        Email email1 = new Email(email);
-        return memberRepository.existsByEmail(email1);
+        return memberRepository.existsByEmail(new Email(email));
     }
 
     // 회원가입 - 인증코드 전송
     @Transactional
     public Boolean sendVerificationCodeForSignUp(SendVerificationCodeForSignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
+
+        // 1. 이메일 검증
         Email.isValidEmail(email);
 
+        // 2. 인증코드 전송 (가입되어있는 사용자가 아닐 경우)
         if (!existsEmailAddress(email)) {
             emailService.sendMessageForSignUp(email);
         } else {
@@ -58,9 +59,11 @@ public class AuthService {
     @Transactional
     public MemberInfoResponseDto signUp(SignUpRequestDto signUpRequestDto) {
         final String email = signUpRequestDto.getEmail();
+
+        // 1. 이메일 검증
         Email.isValidEmail(email);
 
-        // 1. 인증코드 검증
+        // 2. 인증코드 검증
         if (!existsEmailAddress(email)) {
             emailService.verifyCode(email, signUpRequestDto.getVerificationCode());
         } else {
@@ -68,7 +71,7 @@ public class AuthService {
             throw new MemberAlreadyExistException("이미 가입되어 있는 유저입니다. 비정상적인 접근입니다.");
         }
 
-        // 2. 닉네임 랜덤 생성
+        // 3. 닉네임 랜덤 생성
         String randomNickname = Nickname.createRandomNickname();
         Nickname nickname = new Nickname(randomNickname);
         while (memberRepository.existsByNickname(nickname)){
@@ -76,7 +79,7 @@ public class AuthService {
             nickname.updateNickname(randomNickname);
         }
 
-        // 3. 멤버 객체 저장
+        // 4. 멤버 객체 저장
         Member member = Member.builder()
                 .email(new Email(email))
                 .password(passwordEncoder.encode("1234"))

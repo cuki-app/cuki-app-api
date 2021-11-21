@@ -41,7 +41,7 @@ public class AuthService {
 
     // 회원가입 - 인증코드 전송
     @Transactional
-    public Boolean sendVerificationCodeForSignUp(SendVerificationCodeCodeForSignUpRequestDto requestDto) {
+    public Boolean sendVerificationCodeForSignUp(SendVerificationCodeForSignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
         Email.isValidEmail(email);
 

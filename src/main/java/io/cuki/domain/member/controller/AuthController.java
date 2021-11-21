@@ -31,7 +31,7 @@ public class AuthController {
 
     @ApiOperation(value = "회원가입 2단계 - 인증번호 발송")
     @PostMapping("/members/sign-up/verification-code")
-    public ApiResponse<Boolean> sendVerificationCodeForSignUp(@RequestBody SendVerificationCodeCodeForSignUpRequestDto requestDto) {
+    public ApiResponse<Boolean> sendVerificationCodeForSignUp(@RequestBody SendVerificationCodeForSignUpRequestDto requestDto) {
         return ApiResponse.ok(authService.sendVerificationCodeForSignUp(requestDto));
     }
 

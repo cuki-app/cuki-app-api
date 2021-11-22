@@ -11,16 +11,10 @@ import java.util.Objects;
 @Slf4j
 @Getter
 @NoArgsConstructor
-@Entity
+@Embeddable
 public class Location {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "place")
     private String place;
-
 
 
     public Location(String place) {

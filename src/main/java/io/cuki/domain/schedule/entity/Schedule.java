@@ -27,25 +27,22 @@ public class Schedule extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
-
-    @OneToOne(cascade = CascadeType.ALL)
+    @Embedded
     private Location location;
-
 
     @Embedded
     private SchedulePeriod dateTime;    // period
 
     @Column(nullable = false)
-    private int fixedNumberOfPeople;
+    private Integer fixedNumberOfPeople;
 
     @Column(nullable = false)
-    private int currentNumberOfPeople;
-
+    private Integer currentNumberOfPeople;
 
     @Column(length = 300, nullable = false)
     private String details;
 
-    private int numberOfPeopleWaiting;
+    private Integer numberOfPeopleWaiting;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
@@ -60,21 +57,23 @@ public class Schedule extends BaseTimeEntity {
 
 
     @Builder
-    public Schedule(String title, Member member, SchedulePeriod dateTime, int fixedNumberOfPeople, Location location, String details) {
+    public Schedule(String title, Member member, SchedulePeriod dateTime, Integer fixedNumberOfPeople, Location location, String details) {
         log.debug("Schedule.Schedule() - 호출");
         log.debug("생성자 - fixedNumberOfPeople = {}", fixedNumberOfPeople);
         checkTitleValidation(title);
         checkFixedNumberOfPeople(fixedNumberOfPeople);
         checkDetailsValidation(details);
         int WRITER_ONESELF = 1;
+        int NONE = 0;
 
         this.title = title;
         this.member = member;
         this.dateTime = dateTime;
-        this.fixedNumberOfPeople = fixedNumberOfPeople+WRITER_ONESELF;
+        this.fixedNumberOfPeople = (fixedNumberOfPeople + WRITER_ONESELF);
         this.currentNumberOfPeople = WRITER_ONESELF;
         this.location = location;
         this.details = details;
+        this.numberOfPeopleWaiting = NONE;
         this.status = ScheduleStatus.IN_PROGRESS;
     }
 
@@ -92,7 +91,7 @@ public class Schedule extends BaseTimeEntity {
 
     private void updateCurrentNumberOfPeople() {
         this.currentNumberOfPeople++;
-        if (currentNumberOfPeople == fixedNumberOfPeople) {
+        if (currentNumberOfPeople.equals(fixedNumberOfPeople)) {
             updateStatusToDone();
         }
     }
@@ -104,23 +103,19 @@ public class Schedule extends BaseTimeEntity {
         }
     }
 
-    public boolean isNotOverFixedNumber() {
+    public void isNotOverFixedNumber() {
         if (currentNumberOfPeople >= fixedNumberOfPeople) {
             log.error("확정자 = {}, 정원 = {}", currentNumberOfPeople, fixedNumberOfPeople);
             throw new FixedNumberOutOfBoundsException("정원이 초과되었습니다.");
         }
-        return true;
     }
 
-    public boolean statusIsNotDone() throws ScheduleStatusIsAlreadyChangedException {
+    public void statusIsNotDone() {
         if (getStatus() == ScheduleStatus.DONE) {
             log.error("{}번 게시글은 이미 마감 처리되었습니다.", getId());
             throw new ScheduleStatusIsAlreadyChangedException("이미 마감 처리된 게시글 입니다.");
         }
-        return true;
     }
-
-
 
 
     private void checkDetailsValidation(String details) {
@@ -151,7 +146,7 @@ public class Schedule extends BaseTimeEntity {
     }
 
 
-    private void checkFixedNumberOfPeople(int fixedNumberOfPeople) {
+    private void checkFixedNumberOfPeople(Integer fixedNumberOfPeople) {
         log.debug("유효성 - fixedNumberOfPeople = {}", fixedNumberOfPeople);
         if (fixedNumberOfPeople < 1) {
             log.error("모집 인원은 1명 이상이어야 합니다. = {}명", fixedNumberOfPeople);

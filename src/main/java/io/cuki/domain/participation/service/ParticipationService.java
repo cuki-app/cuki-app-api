@@ -30,7 +30,6 @@ public class ParticipationService {
     private final ParticipationRepository participationRepository;
 
 
-
     @Transactional
     public ParticipationResultResponseDto createParticipation(Long scheduleId, ParticipationRegistrationRequestDto requestDto) {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
@@ -42,6 +41,7 @@ public class ParticipationService {
         if (participationRepository.findByMemberAndSchedule(member, schedule).isPresent()) {
             throw new DuplicateParticipationException("중복 참여는 불가능합니다.");
         }
+        // 스케쥴 유효성 검사   // return type? method name
         schedule.isNotOverFixedNumber();
         schedule.statusIsNotDone();
 

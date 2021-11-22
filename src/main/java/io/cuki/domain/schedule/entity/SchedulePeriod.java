@@ -1,16 +1,16 @@
 package io.cuki.domain.schedule.entity;
 
 import io.cuki.domain.schedule.exception.InvalidPeriodException;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@ToString
 @Slf4j
 @Getter
-@Builder
 @NoArgsConstructor
 @Embeddable
 public class SchedulePeriod {
@@ -38,12 +38,12 @@ public class SchedulePeriod {
         }
 
         if (startDateTime.isBefore(LocalDateTime.now())) {
-            log.error("시작일 {} 이 현재일 {} 보다 이전 입니다. = ", startDateTime, LocalDateTime.now());
+            log.error("시작일 {} 이 현재일 {} 보다 이전 입니다.", startDateTime, LocalDateTime.now());
             throw new InvalidPeriodException("시작일(" + startDateTime + ")은 현재 시간보다 이전일 수 없습니다.");
         }
 
         if (startDateTime.compareTo(endDateTime) > 0) {
-            log.error("시작일 {} 이 종료일 {} 보다 늦습니다. = ", startDateTime, endDateTime);
+            log.error("시작일 {} 이 종료일 {} 보다 늦습니다.", startDateTime, endDateTime);
             throw new InvalidPeriodException("시작일(" + startDateTime + ")이 종료일(" + endDateTime + " )보다 늦습니다.");
         }
     }

@@ -51,7 +51,7 @@ public class ApiExceptionAdvice {
             DeactivatedMemberException.class, UsernameNotFoundException.class,
             SendMailFailedException.class, RefeshTokenNotFoundException.class,
             NicknameNotValidException.class, EmailAddressNotValidException.class,
-            InvaldDetailsException.class, InvalidTitleException.class,
+            InvalidDetailsException.class, InvalidTitleException.class,
             InvalidFixedNumberException.class, InvalidLocationException.class,
             InvalidPeriodException.class, NicknameAlreadyExistException.class,
             CommentNotValidException.class

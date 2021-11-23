@@ -5,7 +5,7 @@ import io.cuki.domain.model.BaseTimeEntity;
 import io.cuki.domain.participation.entity.Participation;
 import io.cuki.domain.participation.entity.PermissionResult;
 import io.cuki.domain.participation.exception.FixedNumberOutOfBoundsException;
-import io.cuki.domain.schedule.exception.InvaldDetailsException;
+import io.cuki.domain.schedule.exception.InvalidDetailsException;
 import io.cuki.domain.schedule.exception.InvalidFixedNumberException;
 import io.cuki.domain.schedule.exception.ScheduleStatusIsAlreadyChangedException;
 import io.cuki.domain.schedule.exception.InvalidTitleException;
@@ -14,9 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import javax.persistence.*;
 import java.util.Set;
 
+@ToString
 @Slf4j
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Schedule extends BaseTimeEntity {
 
@@ -57,9 +58,9 @@ public class Schedule extends BaseTimeEntity {
 
 
     @Builder
-    public Schedule(String title, Member member, SchedulePeriod dateTime, Integer fixedNumberOfPeople, Location location, String details) {
-        log.debug("Schedule.Schedule() - 호출");
-        log.debug("생성자 - fixedNumberOfPeople = {}", fixedNumberOfPeople);
+    private Schedule(String title, Member member, SchedulePeriod dateTime, Integer fixedNumberOfPeople, Location location, String details) {
+        log.info("Schedule.Schedule() - 호출");
+        log.info("생성자 파라미터 - fixedNumberOfPeople = {}", fixedNumberOfPeople);
         checkTitleValidation(title);
         checkFixedNumberOfPeople(fixedNumberOfPeople);
         checkDetailsValidation(details);
@@ -75,6 +76,10 @@ public class Schedule extends BaseTimeEntity {
         this.details = details;
         this.numberOfPeopleWaiting = NONE;
         this.status = ScheduleStatus.IN_PROGRESS;
+    }
+
+    public static Schedule create(String title, Member member, SchedulePeriod dateTime, Integer fixedNumberOfPeople, Location location, String details) {
+        return new Schedule(title, member, dateTime, fixedNumberOfPeople, location, details);
     }
 
 
@@ -121,15 +126,15 @@ public class Schedule extends BaseTimeEntity {
     private void checkDetailsValidation(String details) {
         if (details == null) {
             log.error("세부 설명 = {}", details);
-            throw new InvaldDetailsException("세부 설명은 필수 입력 사항입니다.");
+            throw new InvalidDetailsException("세부 설명은 필수 입력 사항입니다.");
         }
         if (details.replace(" ", "").isEmpty()) {
             log.error("세부 설명은 공백 이거나 빈문자열이어서는 안됩니다. = {}", details);
-            throw new InvaldDetailsException("세부 설명은 공백으로 두실 수 없습니다.");
+            throw new InvalidDetailsException("세부 설명은 공백으로 두실 수 없습니다.");
         }
         if (details.length() > 300) {
             log.error("세부 설명이 300자를 초과했습니다. = {}/{}", details.length(), 300);
-            throw new InvaldDetailsException("세부 설명은 300자를 초과하면 안됩니다.");
+            throw new InvalidDetailsException("세부 설명은 300자를 초과하면 안됩니다.");
         }
     }
 

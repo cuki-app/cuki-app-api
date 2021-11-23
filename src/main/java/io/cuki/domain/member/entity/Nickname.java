@@ -60,10 +60,7 @@ public class Nickname {
         } else if (nickname.length() < 2 || nickname.length() > 10) {
             log.error("닉네임은 2 ~ 10 사이어야 합니다. -> {}", nickname);
             throw new NicknameNotValidException("닉네임은 2 ~ 10 사이어야 합니다.");
-        }
-
-        final Matcher matcher = NICKNAME_PATTERN.matcher(nickname);
-        if (!matcher.matches()) {
+        } else if (!NICKNAME_PATTERN.matcher(nickname).matches()) {
             log.error("닉네임에 특수 문자가 있습니다. -> {}", nickname);
             throw new NicknameNotValidException("닉네임은 한글, 영문, 숫자만 사용할 수 있습니다.");
         }

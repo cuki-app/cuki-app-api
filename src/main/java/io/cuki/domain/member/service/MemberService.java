@@ -5,15 +5,12 @@ import io.cuki.domain.member.dto.UpdateMyPageInfoRequestDto;
 import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.member.entity.Nickname;
 import io.cuki.domain.member.exception.MemberNotFoundException;
-import io.cuki.domain.member.exception.MemberNotMatchException;
 import io.cuki.domain.member.exception.NicknameAlreadyExistException;
 import io.cuki.domain.member.repository.MemberRepository;
 import io.cuki.global.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -60,5 +57,16 @@ public class MemberService {
         }
 
         return MemberInfoResponseDto.of(member);
+    }
+
+    public Nickname getRandomNickname() {
+        final Nickname nickname = new Nickname(Nickname.createRandomNickname());
+
+        if (memberRepository.existsByNickname(nickname)) {
+            log.error("이미 존재하는 랜덤 닉네임입니다. -> {}", nickname.getNickname());
+            throw new NicknameAlreadyExistException("다시 한번 눌려주세요.");
+        }
+
+        return nickname;
     }
 }

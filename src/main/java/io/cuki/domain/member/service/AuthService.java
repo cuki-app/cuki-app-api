@@ -73,10 +73,6 @@ public class AuthService {
 
         // 3. 랜덤 닉네임 가져오기
         Nickname nickname = memberService.getRandomNickname();
-        if (memberRepository.existsByNickname(nickname)) {
-            log.error("회원가입 최종 단계 - 이미 존재하는 랜덤 닉네임입니다. -> {}", nickname.getNickname());
-            throw new NicknameAlreadyExistException("다시 한번 눌려주세요.");
-        }
 
         // 4. 멤버 객체 저장
         Member member = Member.builder()

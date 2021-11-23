@@ -60,6 +60,13 @@ public class MemberService {
     }
 
     public Nickname getRandomNickname() {
-        return new Nickname(Nickname.createRandomNickname());
+        final Nickname nickname = new Nickname(Nickname.createRandomNickname());
+
+        if (memberRepository.existsByNickname(nickname)) {
+            log.error("이미 존재하는 랜덤 닉네임입니다. -> {}", nickname.getNickname());
+            throw new NicknameAlreadyExistException("다시 한번 눌려주세요.");
+        }
+
+        return nickname;
     }
 }

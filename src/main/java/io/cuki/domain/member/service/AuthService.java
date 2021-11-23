@@ -30,7 +30,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final EmailService emailService;
-
+    private final MemberService memberService;
 
     // 사용자 존재 유무 검사
     public Boolean existsEmailAddress(String email) {
@@ -43,7 +43,7 @@ public class AuthService {
         String email = requestDto.getEmail();
 
         // 1. 이메일 검증
-        Email.isValidEmail(email);
+        Email.checkValidEmail(email);
 
         // 2. 인증코드 전송 (가입되어있는 사용자가 아닐 경우)
         if (!existsEmailAddress(email)) {
@@ -61,7 +61,7 @@ public class AuthService {
         final String email = signUpRequestDto.getEmail();
 
         // 1. 이메일 검증
-        Email.isValidEmail(email);
+        Email.checkValidEmail(email);
 
         // 2. 인증코드 검증
         if (!existsEmailAddress(email)) {
@@ -71,12 +71,11 @@ public class AuthService {
             throw new MemberAlreadyExistException("이미 가입되어 있는 유저입니다. 비정상적인 접근입니다.");
         }
 
-        // 3. 닉네임 랜덤 생성
-        String randomNickname = Nickname.createRandomNickname();
-        Nickname nickname = new Nickname(randomNickname);
-        while (memberRepository.existsByNickname(nickname)){
-            randomNickname = Nickname.createRandomNickname();
-            nickname.updateNickname(randomNickname);
+        // 3. 랜덤 닉네임 가져오기
+        Nickname nickname = memberService.getRandomNickname();
+        if (memberRepository.existsByNickname(nickname)) {
+            log.error("회원가입 최종 단계 - 이미 존재하는 랜덤 닉네임입니다. -> {}", nickname.getNickname());
+            throw new NicknameAlreadyExistException("다시 한번 눌려주세요.");
         }
 
         // 4. 멤버 객체 저장
@@ -169,7 +168,7 @@ public class AuthService {
         return tokenResponseDto;
     }
 
-    // 로그아웃 - 리프레쉬 토큰 값 삭제
+    // 로그아웃 - 리프레쉬 토큰 삭제
     @Transactional
     public Boolean logout() {
         try {

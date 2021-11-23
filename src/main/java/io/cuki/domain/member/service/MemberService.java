@@ -5,15 +5,12 @@ import io.cuki.domain.member.dto.UpdateMyPageInfoRequestDto;
 import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.member.entity.Nickname;
 import io.cuki.domain.member.exception.MemberNotFoundException;
-import io.cuki.domain.member.exception.MemberNotMatchException;
 import io.cuki.domain.member.exception.NicknameAlreadyExistException;
 import io.cuki.domain.member.repository.MemberRepository;
 import io.cuki.global.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -60,5 +57,9 @@ public class MemberService {
         }
 
         return MemberInfoResponseDto.of(member);
+    }
+
+    public Nickname getRandomNickname() {
+        return new Nickname(Nickname.createRandomNickname());
     }
 }

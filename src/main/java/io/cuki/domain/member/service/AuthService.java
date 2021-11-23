@@ -33,8 +33,8 @@ public class AuthService {
     private final MemberService memberService;
 
     // 사용자 존재 유무 검사
-    public Boolean existsEmailAddress(String email) {
-        return memberRepository.existsByEmail(new Email(email));
+    public Boolean existsEmailAddress(Email email) {
+        return memberRepository.existsByEmail(email);
     }
 
     // 회원가입 - 인증코드 전송
@@ -42,11 +42,8 @@ public class AuthService {
     public Boolean sendVerificationCodeForSignUp(SendVerificationCodeForSignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
 
-        // 1. 이메일 검증
-        Email.checkValidEmail(email);
-
-        // 2. 인증코드 전송 (가입되어있는 사용자가 아닐 경우)
-        if (!existsEmailAddress(email)) {
+        // 인증코드 전송 (가입되어있는 사용자가 아닐 경우)
+        if (!existsEmailAddress(new Email(email))) {
             emailService.sendMessageForSignUp(email);
         } else {
             log.error("{} -> 이미 가입되어 있는 유저입니다. 비정상적인 접근입니다.", requestDto.getEmail());
@@ -60,21 +57,18 @@ public class AuthService {
     public MemberInfoResponseDto signUp(SignUpRequestDto signUpRequestDto) {
         final String email = signUpRequestDto.getEmail();
 
-        // 1. 이메일 검증
-        Email.checkValidEmail(email);
-
-        // 2. 인증코드 검증
-        if (!existsEmailAddress(email)) {
+        // 1. 인증코드 검증
+        if (!existsEmailAddress(new Email(email))) {
             emailService.verifyCode(email, signUpRequestDto.getVerificationCode());
         } else {
             log.error("{} -> 이미 가입되어 있는 유저입니다. 비정상적인 접근입니다.", email);
             throw new MemberAlreadyExistException("이미 가입되어 있는 유저입니다. 비정상적인 접근입니다.");
         }
 
-        // 3. 랜덤 닉네임 가져오기
+        // 2. 랜덤 닉네임 가져오기
         Nickname nickname = memberService.getRandomNickname();
 
-        // 4. 멤버 객체 저장
+        // 3. 멤버 객체 저장
         Member member = Member.builder()
                 .email(new Email(email))
                 .password(passwordEncoder.encode("1234"))
@@ -91,7 +85,7 @@ public class AuthService {
     public Boolean sendVerificationCodeForLogin(SendVerificationCodeForLoginRequestDto requestDto) {
         final String email = requestDto.getEmail();
 
-        if (existsEmailAddress(email)) {
+        if (existsEmailAddress(new Email(email))) {
             emailService.sendMessageForLogin(email);
         } else {
             log.error("{} -> 존재하지 않는 회원입니다. 비정상적인 접근입니다.", requestDto.getEmail());
@@ -106,7 +100,7 @@ public class AuthService {
         final String email = loginRequestDto.getEmail();
 
         // 1. 인증코드 검증
-        if (existsEmailAddress(email)) {
+        if (existsEmailAddress(new Email(email))) {
             emailService.verifyCode(email, loginRequestDto.getVerificationCode());
         } else {
             log.error("{} -> 존재하지 않는 회원입니다. 비정상적인 접근입니다.", email);

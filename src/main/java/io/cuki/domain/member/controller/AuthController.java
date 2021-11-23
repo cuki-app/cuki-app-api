@@ -1,6 +1,7 @@
 package io.cuki.domain.member.controller;
 
 import io.cuki.domain.member.dto.*;
+import io.cuki.domain.member.entity.Email;
 import io.cuki.domain.member.exception.MemberAlreadyExistException;
 import io.cuki.domain.member.exception.MemberNotFoundException;
 import io.cuki.global.common.response.ApiResponse;
@@ -22,8 +23,10 @@ public class AuthController {
     @ApiOperation(value = "회원가입 1단계 - 이메일 중복확인")
     @PostMapping("/members/sign-up/email")
     public ApiResponse<Boolean> duplicateEmailAddressForSignUp(@RequestBody ValidateDuplicateEmailAddressForSignUpRequestDto requestDto) {
-        if (authService.existsEmailAddress(requestDto.getEmail())) {
-            log.error("{} -> 이미 가입되어 있는 유저입니다.", requestDto.getEmail());
+        final String email = requestDto.getEmail();
+
+        if (authService.existsEmailAddress(new Email(email))) {
+            log.error("{} -> 이미 가입되어 있는 유저입니다.", email);
             throw new MemberAlreadyExistException("이미 가입되어 있는 유저입니다.");
         }
         return ApiResponse.ok(true);
@@ -44,8 +47,10 @@ public class AuthController {
     @ApiOperation(value = "로그인 1단계 - 회원 여부 체크")
     @PostMapping("/auth/login/email")
     public ApiResponse<Boolean> existsEmailAddress(@RequestBody ValidateExistEmailAddressForLoginRequestDto requestDto) {
-        if (!authService.existsEmailAddress(requestDto.getEmail())) {
-            log.error("{} -> 존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.", requestDto.getEmail());
+        final String email = requestDto.getEmail();
+
+        if (!authService.existsEmailAddress(new Email(email))) {
+            log.error("{} -> 존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.", email);
             throw new MemberNotFoundException("존재하지 않는 회원입니다. 메일 주소를 다시 한번 확인해 주세요.");
         }
         return ApiResponse.ok(true);

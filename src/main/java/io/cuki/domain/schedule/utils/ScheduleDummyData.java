@@ -26,7 +26,7 @@ public class ScheduleDummyData implements InitializingBean {
     private final CommentRepository commentRepository;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         final Member member = Member.builder()
                 .email(new Email("potato@email.com"))
                 .password("sweeeeeet_potato")

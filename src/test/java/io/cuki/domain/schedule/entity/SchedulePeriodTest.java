@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@DisplayName("Schedule Period 도메인 테스트")
+@DisplayName("스케쥴 - Schedule Period 도메인 테스트")
 class SchedulePeriodTest {
 
     Logger log = LoggerFactory.getLogger(this.getClass());

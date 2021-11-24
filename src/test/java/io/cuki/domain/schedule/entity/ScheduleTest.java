@@ -190,13 +190,11 @@ class ScheduleTest {
         final Schedule schedule = ScheduleFixtureBuilder.builder().build();
         assertNotNull(schedule);
 
-        final Member newMember = Member.builder()
-                                        .email(new Email("cuki@cuki.com"))
-                                        .password("cuki_server_engineer")
-                                        .nickname(new Nickname("근사한쿠키"))
-                                        .activated(true)
-                                        .authority(Authority.ROLE_USER)
-                                        .build();
+        final Member newMember = MemberFixtureBuilder.builder()
+                                    .email("mintcuki@cuki.com")
+                                    .password("mint_cuki_engineer")
+                                    .nickname("민트쿠키")
+                                    .build();
         final Schedule newSchedule = ScheduleFixtureBuilder.builder().member(newMember).build();
         assertNotEquals(schedule, newSchedule);
     }

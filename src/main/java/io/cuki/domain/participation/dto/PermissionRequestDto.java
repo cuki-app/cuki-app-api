@@ -9,5 +9,5 @@ public class PermissionRequestDto {
 
     private Long participationId;
 
-    private boolean answer;
+    private Boolean accept;
 }

@@ -39,7 +39,6 @@ public class Participation {
 
     public Participation(Member member, Schedule schedule, String reasonForParticipation) {
         checkReasonForParticipation(reasonForParticipation);
-
         this.member = member;
         this.schedule = schedule;
         this.reasonForParticipation = reasonForParticipation;
@@ -51,7 +50,7 @@ public class Participation {
     }
 
     public void updateResult(PermissionResult result) {
-        if (isNotYetDecidedOnPermission()) {
+        if (isNotYetDecidedOnPermission()) { // accept or reject
             this.result = result;
         }
     }

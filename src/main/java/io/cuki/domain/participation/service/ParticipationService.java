@@ -41,16 +41,12 @@ public class ParticipationService {
         if (participationRepository.findByMemberAndSchedule(member, schedule).isPresent()) {
             throw new DuplicateParticipationException("중복 참여는 불가능합니다.");
         }
+
         schedule.checkScheduleConditionForParticipation();
 
-//        schedule.isNotOverFixedNumber();
-//        schedule.statusIsNotDone();
-
-//        final Participation participation = requestDto.toEntity(member, schedule);
         final Participation participation = Participation.create(member, schedule, requestDto.getReasonForParticipation());
-
         participationRepository.save(participation);
-        schedule.updateNumberOfPeopleWaiting(participation.getResult());
+        schedule.updateNumberOfPeopleWaiting(participation.getResult());    //
 
         return ParticipationResultResponseDto.of(participation);
     }
@@ -85,22 +81,14 @@ public class ParticipationService {
         final Participation participation = participationRepository.findById(permissionRequestDto.getParticipationId()).orElseThrow(() -> new ParticipationNotFoundException("참여 정보가 존재하지 않습니다."));
         final Schedule schedule = participation.getSchedule();
 
-        // 반환값이 전부 true 가 나와야 비즈니스 로직으로 넘어간다.
         WriterVerification.hasWriterAuthority(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId());
         schedule.checkScheduleConditionForParticipation();
-//        schedule.isNotOverFixedNumber();
-//        schedule.statusIsNotDone();
-        // permission 이 true 인지 false 인지에 따라 비즈니스를 짜자.
-        if (permissionRequestDto.isAnswer()) {
-            participation.updateResult(PermissionResult.ACCEPT);
-            log.debug("ParticipationService #updatePermission(): permission result - ACCEPT.");
-            // 아무데서나 이 메소드를 남용하면???
-            schedule.updateNumberOfPeopleWaiting(PermissionResult.ACCEPT);
-        } else {
-            participation.updateResult(PermissionResult.REJECT);
-            log.debug("ParticipationService #updatePermission(): permission result - REJECT.");
-            schedule.updateNumberOfPeopleWaiting(PermissionResult.REJECT);
-        }
+
+        PermissionResult result = permissionRequestDto.getAccept() ? PermissionResult.ACCEPT : PermissionResult.REJECT;
+        log.debug("ParticipationService #updatePermission(): result = {}", result);
+        participation.updateResult(result);
+        schedule.updateNumberOfPeopleWaiting(result);   //
+
         return PermissionResponseDto.of(participation);
     }
 

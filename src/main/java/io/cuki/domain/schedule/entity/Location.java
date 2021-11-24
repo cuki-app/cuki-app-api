@@ -3,11 +3,13 @@ package io.cuki.domain.schedule.entity;
 import io.cuki.domain.schedule.exception.InvalidLocationException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import javax.persistence.*;
 import java.util.Objects;
 
 
+@ToString
 @Slf4j
 @Getter
 @NoArgsConstructor

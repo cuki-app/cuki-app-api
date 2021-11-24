@@ -51,7 +51,7 @@ public class ApiExceptionAdvice {
             DeactivatedMemberException.class, UsernameNotFoundException.class,
             SendMailFailedException.class, RefeshTokenNotFoundException.class,
             NicknameNotValidException.class, EmailAddressNotValidException.class,
-            InvaldDetailsException.class, InvalidTitleException.class,
+            InvalidDetailsException.class, InvalidTitleException.class,
             InvalidFixedNumberException.class, InvalidLocationException.class,
             InvalidPeriodException.class, NicknameAlreadyExistException.class,
             CommentNotValidException.class
@@ -60,15 +60,6 @@ public class ApiExceptionAdvice {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.badRequest(e.getMessage()));
-    }
-
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse<String>> parseException(RuntimeException e) {
-        log.error(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.badRequest("시작일과 종료일의 날짜 포맷을 지켜서 작성해주십시오."));
     }
 
 

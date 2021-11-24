@@ -191,8 +191,8 @@ class ScheduleTest {
         assertNotNull(schedule);
 
         final Member newMember = Member.builder()
-                                        .email(new Email("cuki@email.com"))
-                                        .password("coolCuki")
+                                        .email(new Email("cuki@cuki.com"))
+                                        .password("cuki_server_engineer")
                                         .nickname(new Nickname("근사한쿠키"))
                                         .activated(true)
                                         .authority(Authority.ROLE_USER)

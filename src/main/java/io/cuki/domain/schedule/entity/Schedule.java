@@ -46,7 +46,7 @@ public class Schedule extends BaseTimeEntity {
     private Integer numberOfPeopleWaiting;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Member member;
+    private Member member;  // writer
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -115,14 +115,19 @@ public class Schedule extends BaseTimeEntity {
         }
     }
 
-    public void isNotOverFixedNumber() {
+    public void checkScheduleConditionForParticipation() {
+        checkOverFixedNumberValidation();
+        checkStatusValidation();
+    }
+
+    private void checkOverFixedNumberValidation() {
         if (currentNumberOfPeople >= fixedNumberOfPeople) {
             log.error("확정자 = {}, 정원 = {}", currentNumberOfPeople, fixedNumberOfPeople);
             throw new FixedNumberOutOfBoundsException("정원이 초과되었습니다.");
         }
     }
 
-    public void statusIsNotDone() {
+    public void checkStatusValidation() {
         if (getStatus() == ScheduleStatus.DONE) {
             log.error("{}번 게시글은 이미 마감 처리되었습니다.", getId());
             throw new ScheduleStatusIsAlreadyChangedException("이미 마감 처리된 게시글 입니다.");

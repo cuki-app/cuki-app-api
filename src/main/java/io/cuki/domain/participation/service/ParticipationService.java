@@ -41,11 +41,14 @@ public class ParticipationService {
         if (participationRepository.findByMemberAndSchedule(member, schedule).isPresent()) {
             throw new DuplicateParticipationException("중복 참여는 불가능합니다.");
         }
-        // 스케쥴 유효성 검사   // return type? method name
-        schedule.isNotOverFixedNumber();
-        schedule.statusIsNotDone();
+        schedule.checkScheduleConditionForParticipation();
 
-        final Participation participation = requestDto.toEntity(member, schedule);
+//        schedule.isNotOverFixedNumber();
+//        schedule.statusIsNotDone();
+
+//        final Participation participation = requestDto.toEntity(member, schedule);
+        final Participation participation = Participation.create(member, schedule, requestDto.getReasonForParticipation());
+
         participationRepository.save(participation);
         schedule.updateNumberOfPeopleWaiting(participation.getResult());
 
@@ -84,8 +87,9 @@ public class ParticipationService {
 
         // 반환값이 전부 true 가 나와야 비즈니스 로직으로 넘어간다.
         WriterVerification.hasWriterAuthority(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId());
-        schedule.isNotOverFixedNumber();
-        schedule.statusIsNotDone();
+        schedule.checkScheduleConditionForParticipation();
+//        schedule.isNotOverFixedNumber();
+//        schedule.statusIsNotDone();
         // permission 이 true 인지 false 인지에 따라 비즈니스를 짜자.
         if (permissionRequestDto.isAnswer()) {
             participation.updateResult(PermissionResult.ACCEPT);

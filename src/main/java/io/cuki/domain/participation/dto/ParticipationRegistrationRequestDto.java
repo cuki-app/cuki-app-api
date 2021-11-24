@@ -16,12 +16,11 @@ public class ParticipationRegistrationRequestDto {
 
 
     public Participation toEntity(Member member, Schedule schedule) {
-        final PermissionResult result = PermissionResult.NONE;
+
         return Participation.builder()
                     .member(member)
                     .schedule(schedule)
                     .reasonForParticipation(reasonForParticipation)
-                    .result(result)
                     .build();
     }
 }

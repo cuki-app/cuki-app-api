@@ -63,15 +63,6 @@ public class ApiExceptionAdvice {
     }
 
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse<String>> parseException(RuntimeException e) {
-        log.error(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.badRequest("시작일과 종료일의 날짜 포맷을 지켜서 작성해주십시오."));
-    }
-
-
     @ExceptionHandler(IllegalAccessException.class)
     public ResponseEntity<ErrorResponse<String>> illegalAccessException(Exception e) {
         return ResponseEntity

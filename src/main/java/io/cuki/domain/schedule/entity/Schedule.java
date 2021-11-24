@@ -79,7 +79,14 @@ public class Schedule extends BaseTimeEntity {
     }
 
     public static Schedule create(String title, Member member, SchedulePeriod dateTime, Integer fixedNumberOfPeople, Location location, String details) {
-        return new Schedule(title, member, dateTime, fixedNumberOfPeople, location, details);
+        return Schedule.builder()
+                    .title(title)
+                    .member(member)
+                    .dateTime(dateTime)
+                    .fixedNumberOfPeople(fixedNumberOfPeople)
+                    .location(location)
+                    .details(details)
+                    .build();
     }
 
 

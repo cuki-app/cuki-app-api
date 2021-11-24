@@ -1,7 +1,9 @@
 package io.cuki.domain.schedule.service;
 
+import io.cuki.domain.schedule.entity.Location;
 import io.cuki.domain.schedule.entity.Schedule;
 import io.cuki.domain.schedule.entity.ScheduleAuthority;
+import io.cuki.domain.schedule.entity.SchedulePeriod;
 import io.cuki.domain.schedule.exception.ScheduleNotFoundException;
 import io.cuki.domain.schedule.utils.*;
 import io.cuki.domain.schedule.repository.SchedulesRepository;
@@ -30,17 +32,26 @@ public class SchedulesService {
     @Transactional
     public IdResponseDto createSchedule(ScheduleRegistrationRequestDto registrationRequestDto) {
         final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                                            .map(registrationRequestDto::toEntity)
-                                            .orElseThrow(MemberNotFoundException::new);
-        log.debug("모집 인원( 작성자 포함 ) = {}", schedule.getFixedNumberOfPeople());
+                .map(member -> Schedule.create(
+                        registrationRequestDto.getTitle(),
+                        member,
+                        new SchedulePeriod(registrationRequestDto.getStartDateTime(), registrationRequestDto.getEndDateTime()),
+                        registrationRequestDto.getFixedNumberOfPeople(),
+                        new Location(registrationRequestDto.getPlace()),
+                        registrationRequestDto.getDetails()))
+                .orElseThrow(MemberNotFoundException::new);
 
+//        final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+//                                            .map(registrationRequestDto::toEntity)
+//                                            .orElseThrow(MemberNotFoundException::new);
+        log.debug("모집 인원( 작성자 포함 ) = {}", schedule.getFixedNumberOfPeople());
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
     }
 
 
     @Transactional(readOnly = true) //
     public SliceCustom<AllScheduleResponseDto> getAllSchedule(int page, int size) {
-        log.debug("client request - page number = {}, page size = {}", page, size);
+        log.info("client request - page number = {}, page size = {}", page, size);
 
         final PageRequest pageRequest = makePageRequest(page, size);
         List<AllScheduleResponseDto> dtoList = new ArrayList<>();

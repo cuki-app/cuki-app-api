@@ -7,9 +7,11 @@ import io.cuki.domain.schedule.entity.SchedulePeriod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 
+@ToString
 @Slf4j
 @Builder
 @AllArgsConstructor
@@ -41,15 +43,4 @@ public class ScheduleRegistrationRequestDto {
                 .build();
     }
 
-    @Override
-    public String toString() {
-        return "ScheduleRegistrationRequestDto{" +
-                "title='" + title + '\'' +
-                ", startDateTime=" + startDateTime +
-                ", endDateTime=" + endDateTime +
-                ", fixedNumberOfPeople=" + fixedNumberOfPeople +
-                ", place='" + place + '\'' +
-                ", details='" + details + '\'' +
-                '}';
-    }
 }

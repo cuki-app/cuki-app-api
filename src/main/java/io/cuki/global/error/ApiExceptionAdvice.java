@@ -54,7 +54,7 @@ public class ApiExceptionAdvice {
             InvalidDetailsException.class, InvalidTitleException.class,
             InvalidFixedNumberException.class, InvalidLocationException.class,
             InvalidPeriodException.class, NicknameAlreadyExistException.class,
-            CommentNotValidException.class
+            CommentNotValidException.class, InvalidReasonForParticipationException.class
     })
     public ResponseEntity<ErrorResponse<String>> badRequestException(RuntimeException e) {
         return ResponseEntity

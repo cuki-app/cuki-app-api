@@ -113,7 +113,7 @@ public class SchedulesService {
         final Schedule schedule = schedulesRepository.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
 
         WriterVerification.hasWriterAuthority(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId());
-        schedule.statusIsNotDone();
+        schedule.checkStatusValidation();
 
         schedule.updateStatusToDone();
         log.debug("ScheduleService#changeScheduleStatusToDone - status = {}", schedule.getStatus());

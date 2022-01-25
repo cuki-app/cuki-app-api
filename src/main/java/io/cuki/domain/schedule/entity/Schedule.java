@@ -101,6 +101,10 @@ public class Schedule extends BaseTimeEntity {
         }
     }
 
+    /** todo
+     * 1. 확정자수 = 정원. 같으면 모집 마감을 하고
+     * 2. 확정자수 > 정원. 초과하면 허가용 유효성 검사를 추가해야한다.
+     */
     private void updateCurrentNumberOfPeople() {
         this.currentNumberOfPeople++;
         if (currentNumberOfPeople >= fixedNumberOfPeople) {
@@ -120,6 +124,9 @@ public class Schedule extends BaseTimeEntity {
         checkStatusValidation();
     }
 
+    /** todo
+     *  참여 허가 결정할 때 꼭 체크해야 하는 유효성 검사 (정원 초과 방지를 위해)
+     */
     private void checkOverFixedNumberValidation() {
         if (currentNumberOfPeople >= fixedNumberOfPeople) {
             log.error("확정자 = {}, 정원 = {}", currentNumberOfPeople, fixedNumberOfPeople);
@@ -163,6 +170,10 @@ public class Schedule extends BaseTimeEntity {
     }
 
 
+    /**
+     * todo 스케쥴을 등록할 때 하는 유효성 검사니까 최소 모집 인원만 검사
+     *
+     */
     private void checkFixedNumberOfPeople(Integer fixedNumberOfPeople) {
         log.debug("유효성 - fixedNumberOfPeople = {}", fixedNumberOfPeople);
         if (fixedNumberOfPeople < 1) {

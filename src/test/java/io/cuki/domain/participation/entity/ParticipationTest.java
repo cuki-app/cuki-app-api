@@ -1,6 +1,7 @@
 package io.cuki.domain.participation.entity;
 
 import io.cuki.domain.member.entity.Member;
+import io.cuki.domain.participation.exception.FixedNumberOutOfBoundsException;
 import io.cuki.domain.participation.exception.InvalidReasonForParticipationException;
 import io.cuki.domain.schedule.entity.MemberFixtureBuilder;
 import io.cuki.domain.schedule.entity.Schedule;
@@ -103,20 +104,18 @@ class ParticipationTest {
     }
 
     @Test
-    @DisplayName("참여 확정자 수가 모집 정원수를 초과하면 에러가 발생한다.")
-    @Disabled("도메인 로직에 허점을 발견해서 수정 중")
-    void 에러() {
+    @DisplayName("참여 확정자 수가 모집 정원을 초과하면 FixedNumberOutOfBoundsException 예외가 발생한다.")
+    void 참여확정자_수가_정원을_초과하는_경우() {
         // given
         Schedule schedule = createSchedule();
         // when
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             schedule.updateNumberOfPeopleWaiting(PermissionResult.NONE);
             schedule.updateNumberOfPeopleWaiting(PermissionResult.ACCEPT);
         }
-        System.out.println("schedule.getCurrentNumberOfPeople() = " + schedule.getCurrentNumberOfPeople());
-        System.out.println("schedule.getFixedNumberOfPeople() = " + schedule.getFixedNumberOfPeople());
-        System.out.println("schedule.getStatus() = " + schedule.getStatus());
-
+        // then
+        assertThrows(FixedNumberOutOfBoundsException.class,
+                schedule::checkScheduleConditionForParticipation);
     }
 
     private Schedule createSchedule() {

@@ -1,16 +1,13 @@
 package io.cuki.domain.schedule.entity;
 
-import io.cuki.domain.member.entity.Authority;
-import io.cuki.domain.member.entity.Email;
 import io.cuki.domain.member.entity.Member;
-import io.cuki.domain.member.entity.Nickname;
 import io.cuki.domain.schedule.exception.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("스케쥴 등록 테스트")
+@DisplayName("스케쥴 도메인 테스트")
 class ScheduleTest {
 
 
@@ -191,10 +188,10 @@ class ScheduleTest {
         assertNotNull(schedule);
 
         final Member newMember = MemberFixtureBuilder.builder()
-                                    .email("mintcuki@cuki.com")
-                                    .password("mint_cuki_engineer")
-                                    .nickname("민트쿠키")
-                                    .build();
+                .email("mintcuki@cuki.com")
+                .password("mint_cuki_engineer")
+                .nickname("민트쿠키")
+                .build();
         final Schedule newSchedule = ScheduleFixtureBuilder.builder().member(newMember).build();
         assertNotEquals(schedule, newSchedule);
     }

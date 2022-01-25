@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 @Service
 public class SchedulesService {
 
+    /**
+     * todo 스케쥴 관련 비즈니스 로직을 처리하는 곳에서 member 도메인의 repository 와 협력관계를 갖는 게 적절한가? 필요한 메서드는 id로 멤버를 찾아주는 기능뿐인데
+     */
     private final MemberRepository memberRepository;
     private final SchedulesRepository schedulesRepository;
 
@@ -41,9 +44,6 @@ public class SchedulesService {
                         registrationRequestDto.getDetails()))
                 .orElseThrow(MemberNotFoundException::new);
 
-//        final Schedule schedule = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-//                                            .map(registrationRequestDto::toEntity)
-//                                            .orElseThrow(MemberNotFoundException::new);
         log.debug("모집 인원( 작성자 포함 ) = {}", schedule.getFixedNumberOfPeople());
         return new IdResponseDto(schedulesRepository.save(schedule).getId());
     }

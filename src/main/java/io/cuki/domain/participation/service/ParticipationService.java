@@ -82,6 +82,7 @@ public class ParticipationService {
         final Schedule schedule = participation.getSchedule();
 
         WriterVerification.hasWriterAuthority(SecurityUtil.getCurrentMemberId(), schedule.getMember().getId());
+        // 1. 정원 초과 여부(정원과 확정자수가 같은 경우에도 예외 터지는 로직), 모집 마감 여부 체크
         schedule.checkScheduleConditionForParticipation();
 
         PermissionResult result = permissionRequestDto.getAccept() ? PermissionResult.ACCEPT : PermissionResult.REJECT;

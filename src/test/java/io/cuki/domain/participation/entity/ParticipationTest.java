@@ -87,9 +87,7 @@ class ParticipationTest {
         assertEquals(0, schedule.getNumberOfPeopleWaiting());
     }
 
-    /**
-     * todo 참여를 아무도 안했는데, 그 모집글을 승인 혹은 거절하는 로직을 태우면 대기자(0명)에서 --가 되는데 -가 나올 것 같은데 막는 로직 안짜놓음.
-     */
+
     @Test
     @DisplayName("참여 요청을 승인한 경우 참여 확정자 수가 1명 늘어난다.")
     void 요청을_승인한_경우_확정자수() {

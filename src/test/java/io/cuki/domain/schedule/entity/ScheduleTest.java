@@ -2,6 +2,7 @@ package io.cuki.domain.schedule.entity;
 
 import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.schedule.exception.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
@@ -194,5 +195,34 @@ class ScheduleTest {
                 .build();
         final Schedule newSchedule = ScheduleFixtureBuilder.builder().member(newMember).build();
         assertNotEquals(schedule, newSchedule);
+    }
+
+    @Test
+    @DisplayName("이미 마감된 모집글을 마감 처리하면 ScheduleStatusIsAlreadyChangedException 예외가 발생한다.")
+    void 마감처리된_모집글_중복_마감처리하기() {
+        // 1. 모집글 마감 여부 확인 -> ⓐ마감 된 경우: 예외 던지기 | ⓑ마감되지 않은 경우: 모집글 상태 -> 마감으로 변경
+        // given - 이미 마감처리 된 모집글
+        Schedule schedule = ScheduleFixtureBuilder.builder().build();
+        schedule.updateStatusToDone();
+        // when, then
+        assertThrows(ScheduleStatusIsAlreadyChangedException.class, schedule::checkStatusValidation);
+    }
+
+    @Test
+    @DisplayName("모집글을 마감 처리하면 모집글 상태가 '마감' 으로 변경된다.")
+    void 모집글_상태_마감으로_변경() {
+        // given
+        Schedule schedule = ScheduleFixtureBuilder.builder().build();
+        // when
+        schedule.updateStatusToDone();
+        // then
+        assertEquals(ScheduleStatus.DONE, schedule.getStatus());
+    }
+
+    @Test
+    @DisplayName("페이징처리 테스트")
+    @Disabled("repository, service 테스트 배우는 중")
+    void 페이징처리_테스트() {
+
     }
 }

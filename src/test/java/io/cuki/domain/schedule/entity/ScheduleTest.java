@@ -2,6 +2,7 @@ package io.cuki.domain.schedule.entity;
 
 import io.cuki.domain.member.entity.Member;
 import io.cuki.domain.schedule.exception.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
@@ -216,5 +217,12 @@ class ScheduleTest {
         schedule.updateStatusToDone();
         // then
         assertEquals(ScheduleStatus.DONE, schedule.getStatus());
+    }
+
+    @Test
+    @DisplayName("페이징처리 테스트")
+    @Disabled("repository, service 테스트 배우는 중")
+    void 페이징처리_테스트() {
+
     }
 }

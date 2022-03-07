@@ -1,6 +1,7 @@
 # [ CUKI APP ]
-![img.png](img.png)
-####BACKEND SERVER REPOSITORY
+![img.png](img.png)  
+
+**BACKEND SERVER REPOSITORY**
 - 원하는 주제로 모임을 모집 혹은 참여할 수 있는 모임문화 플랫폼
 - Team Notion: https://www.notion.so/cuki-a1844d3102af4b9abf430b8e4cd10f80
 - Team Convention: https://github.com/cuki-app/cuki-app-api/blob/main/CONVENTIONS.md
@@ -24,7 +25,6 @@
   - 회원간의 소통을 위한 댓글 기능 제공
 
 ## Experience
-`개발 내용은 본인이 작업한 내용만 기술했습니다.`
 
 <details>
 <summary>강미진</summary>
@@ -50,8 +50,39 @@
 
 <details>
 <summary>강이현</summary>
+ 
+- 모임 일정 모집 api 설계 및 구현
+  - 일정 등록
+    - 모집 인원, 날짜, 장소 설정
+  - 일정 조회
+    - 일정 전체 조회
+    - 일정 상세 조회
+    - 나의 모집 일정 조회
+  - 일정 삭제
 
- 강이현님의 개발 내용 작성 공간
+<br> 
+
+- 참여 신청 api 설계 및 구현
+  - 참여 신청하기 
+  - 참여 대기자 명단 보기 
+  - 참여 대기자 정보 보기
+  - 참여 신청 승인/거절하기
+  - 참여 확정자 명단 보기
+  - 참여 신청 마감하기
+    - 작성자가 모집 마감한 경우
+    - 일정 종료일에 자동 마감
+    - 정원 수만큼 모집 되면 자동 마감
+
+<br> 
+
+- 일정 권한 설정에 따른 기능
+  - 작성자만 가능한 기능
+     - 참여 대기자 명단 보기
+     - 참여 대기자 정보 보기
+     - 참여 신청 승인/거절하기
+
+  - 참여자만 가능한 기능
+     - 참여 신청하기
 
 </details>
 
@@ -68,6 +99,8 @@
   - 에러 공통 응답 객체 추가 - 사용자 정의 예외와 에러 응답 객체를 만들어서 예외 발생 시 에러 응답 객체를 반환하여 에러 정보와 코드를 반환
   
 </details>
+
+<br>
 
 ## Directory Structure
 ```

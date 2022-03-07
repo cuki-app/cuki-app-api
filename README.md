@@ -253,6 +253,3 @@ src
                     │           └── SchedulesServiceTest.java
                     └── CukiApiApplicationTests.java
 ```
-
-
-

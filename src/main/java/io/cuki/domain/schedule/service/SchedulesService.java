@@ -25,10 +25,6 @@ import java.util.stream.Collectors;
 @Service
 public class SchedulesService {
 
-    /**
-     * todo
-     * 스케쥴 관련 비즈니스 로직을 처리하는 곳에서 member 도메인의 repository 와 협력관계를 갖는 게 적절한가? 필요한 메서드는 id로 멤버를 찾아주는 기능뿐인데
-     */
     private final MemberRepository memberRepository;
     private final SchedulesRepository schedulesRepository;
 
@@ -66,9 +62,7 @@ public class SchedulesService {
         return new SliceCustom<>(dtoList, dtoSlice.hasNext(), dtoSlice.getNumber());
     }
 
-    /** todo
-     * 스케쥴과 페이지를 만드는 메소드는 관계가 없다. srp 를 지키고 있지 않은 메소드
-     */
+
     private PageRequest makePageRequest(int page, int size) {
         final Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
         return PageRequest.of(page, size, sort);

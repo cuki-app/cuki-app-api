@@ -88,7 +88,7 @@ public class ParticipationService {
         PermissionResult result = permissionRequestDto.getAccept() ? PermissionResult.ACCEPT : PermissionResult.REJECT;
         log.debug("ParticipationService #updatePermission(): result = {}", result);
         participation.updateResult(result);
-        schedule.updateNumberOfPeopleWaiting(result);   //
+        schedule.updateNumberOfPeopleWaiting(result);
 
         return PermissionResponseDto.of(participation);
     }
@@ -106,7 +106,7 @@ public class ParticipationService {
     }
 
 
-    // 닉네임 매핑할 때 persistence 문제 생길텐데? -> 왜 안생기지?
+
     public Set<ParticipantInfoResponseDto> getParticipantList(Long scheduleId) {
         Set<ParticipantInfoResponseDto> participantInfoResponseDtoSet = new HashSet<>();
 
